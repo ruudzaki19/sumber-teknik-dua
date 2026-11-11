@@ -33,6 +33,12 @@ export const SAMPLE_SIGNATURE = FIXED_SIGNATURE_PATH;
 
 // Initial data: Start EMPTY as requested by the user!
 export async function seedInitialDataIfNeeded() {
+  const v2Clean = localStorage.getItem('sumber_tekhnik_v2_clean_start');
+  if (!v2Clean) {
+    await clearAllRoomsAndUnits();
+    localStorage.setItem('sumber_tekhnik_v2_clean_start', 'true');
+  }
+
   const settingsCount = await db.settings.count();
   if (settingsCount === 0) {
     await db.settings.put({

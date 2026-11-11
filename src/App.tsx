@@ -2,28 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import {
   Wrench,
-  Camera,
   Plus,
   DoorClosed,
-  QrCode,
   Search,
   Printer,
   Edit,
-  Cpu,
   Trash2,
   LogOut,
-  Calendar,
-  Layers,
-  ChevronDown,
-  ChevronUp
+  Calendar
 } from 'lucide-react';
 
-import { db, seedInitialDataIfNeeded, DEFAULT_SETTINGS, FIXED_SIGNATURE_PATH } from './db/db';
+import { db, seedInitialDataIfNeeded, FIXED_SIGNATURE_PATH } from './db/db';
 import { ACUnit, MaintenanceRecord, Room } from './types';
 import { useAuth } from './context/AuthContext';
 import { LoginScreen } from './components/LoginScreen';
-import { QRScannerModal } from './components/QRScannerModal';
-import { QRStickerModal } from './components/QRStickerModal';
 import { MaintenanceModal } from './components/MaintenanceModal';
 import { ACUnitModal } from './components/ACUnitModal';
 import { RoomModal } from './components/RoomModal';
@@ -41,10 +33,6 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Modals state
-  const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
-  const [isQRStickerOpen, setIsQRStickerOpen] = useState(false);
-  const [activeStickerUnit, setActiveStickerUnit] = useState<ACUnit | null>(null);
-
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [activePdfUnit, setActivePdfUnit] = useState<ACUnit | null>(null);
 
@@ -144,11 +132,11 @@ export const App: React.FC = () => {
     await db.maintenanceRecords.delete(recordId);
   };
 
-  // Fixed and robust search filter
+  // Search filter
   const q = searchQuery.trim().toLowerCase();
   const filteredRooms = rooms.filter(room => {
     if (!q) return true;
-    const matchesRoom = room.namaRuangan.toLowerCase().includes(q) || room.qrCodeId.toLowerCase().includes(q);
+    const matchesRoom = room.namaRuangan.toLowerCase().includes(q);
     const roomUnits = acUnits.filter(u => u.roomId === room.id);
     const matchesUnit = roomUnits.some(u => 
       u.merk.toLowerCase().includes(q) ||
@@ -161,7 +149,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col text-slate-800 pb-16">
-      {/* Top Navbar - Sumber Tekhnik 2 */}
+      {/* Top Navbar - Sumber Tekhnik 2 (Tanpa Scan QR) */}
       <header className="bg-brand-900 text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -178,31 +166,24 @@ export const App: React.FC = () => {
                 </span>
               </div>
               <p className="text-[11px] text-blue-200">
-                Sistem Pemeliharaan AC & Scan QR Ruangan
+                Sistem Pemeliharaan AC Ruangan
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsQRScannerOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 hover:bg-brand-500 active:scale-95 text-white text-xs font-semibold rounded-lg shadow-sm transition-all"
-            >
-              <Camera className="w-4 h-4 text-blue-200" />
-              <span>Scan QR</span>
-            </button>
-
             {/* User Profile & Logout */}
-            <div className="flex items-center gap-2 pl-2 border-l border-white/20">
+            <div className="flex items-center gap-2 pl-2">
               <span className="hidden sm:inline text-xs font-semibold text-blue-100">
                 {user.name}
               </span>
               <button
                 onClick={logout}
-                className="p-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
+                className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors inline-flex items-center gap-1 text-xs"
                 title="Keluar / Ganti Akun"
               >
                 <LogOut className="w-4 h-4 text-blue-200" />
+                <span className="hidden xs:inline">Keluar</span>
               </button>
             </div>
           </div>
@@ -213,7 +194,7 @@ export const App: React.FC = () => {
       <main className="max-w-6xl mx-auto px-3 sm:px-4 py-5 flex-1 w-full space-y-4">
         {/* Top Control Bar: Search & Tambah Ruangan */}
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
-          {/* Working Search Box */}
+          {/* Search Box */}
           <div className="relative w-full sm:w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
             <input
@@ -233,7 +214,7 @@ export const App: React.FC = () => {
             )}
           </div>
 
-          {/* + Tambah Ruangan (Satu-satunya tombol utama di header) */}
+          {/* + Tambah Ruangan */}
           <button
             onClick={() => {
               setEditingRoom(null);
@@ -292,7 +273,7 @@ export const App: React.FC = () => {
                 key={room.id}
                 className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden"
               >
-                {/* ROOM HEADER: Name on left, [Edit Ruangan] & [+ Tambah Unit AC] on right! */}
+                {/* ROOM HEADER: Name on left (tanpa QR ID), [Edit Ruangan] & [+ Tambah Unit AC] on right */}
                 <div className="bg-slate-50 p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-800 flex items-center justify-center font-bold">
@@ -302,13 +283,10 @@ export const App: React.FC = () => {
                       <h2 className="text-base font-black text-slate-900 tracking-tight uppercase">
                         {room.namaRuangan}
                       </h2>
-                      <span className="text-[11px] font-mono text-slate-400">
-                        ID QR: {room.qrCodeId}
-                      </span>
                     </div>
                   </div>
 
-                  {/* ACTION BUTTONS: [Edit Ruangan] and [+ Tambah Unit AC] right next to it! */}
+                  {/* ACTION BUTTONS: [Edit Ruangan] and [+ Tambah Unit AC] right next to it */}
                   <div className="flex items-center gap-2 self-end sm:self-auto">
                     <button
                       onClick={() => {
@@ -365,7 +343,7 @@ export const App: React.FC = () => {
                               </h3>
                             </div>
 
-                            {/* Direct Action Buttons for this Unit: [+ Tambah Catatan Servis] & [Cetak PDF] */}
+                            {/* Direct Action Buttons: [+ Tambah Catatan Servis] & [Cetak PDF] */}
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => {
@@ -388,17 +366,6 @@ export const App: React.FC = () => {
                               >
                                 <Printer className="w-3.5 h-3.5" />
                                 Cetak PDF
-                              </button>
-
-                              <button
-                                onClick={() => {
-                                  setActiveStickerUnit(unit);
-                                  setIsQRStickerOpen(true);
-                                }}
-                                className="p-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg"
-                                title="Stiker QR"
-                              >
-                                <QrCode className="w-4 h-4" />
                               </button>
 
                               <button
@@ -435,7 +402,7 @@ export const App: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* 12-ROW TABLE (Clean work log without prices) */}
+                          {/* 12-ROW TABLE (Clean work log without prices, supports multiline text) */}
                           <div className="p-3">
                             <div className="overflow-x-auto border border-slate-300 rounded-lg">
                               <table className="w-full text-xs text-left">
@@ -452,23 +419,23 @@ export const App: React.FC = () => {
                                   {unitRecords.length > 0 ? (
                                     unitRecords.map((rec, idx) => (
                                       <tr key={rec.id} className="hover:bg-slate-50 transition-colors">
-                                        <td className="py-2 px-3 text-center font-bold text-slate-600 border-r border-slate-200">
+                                        <td className="py-2 px-3 text-center font-bold text-slate-600 border-r border-slate-200 align-top">
                                           {rec.nomorUrut || idx + 1}
                                         </td>
-                                        <td className="py-2 px-3 font-medium text-slate-800 border-r border-slate-200 whitespace-nowrap">
+                                        <td className="py-2 px-3 font-medium text-slate-800 border-r border-slate-200 whitespace-nowrap align-top">
                                           {rec.tanggal}
                                         </td>
-                                        <td className="py-2 px-3 font-semibold text-slate-900 border-r border-slate-200">
+                                        <td className="py-2 px-3 font-semibold text-slate-900 border-r border-slate-200 whitespace-pre-line leading-relaxed align-top">
                                           {rec.uraianPekerjaan}
                                         </td>
-                                        <td className="py-1 px-2 text-center border-r border-slate-200">
+                                        <td className="py-1 px-2 text-center border-r border-slate-200 align-top">
                                           <img
                                             src={FIXED_SIGNATURE_PATH}
                                             alt="Paraf"
                                             className="h-6 max-w-[65px] mx-auto object-contain"
                                           />
                                         </td>
-                                        <td className="py-2 px-2 text-center">
+                                        <td className="py-2 px-2 text-center align-top">
                                           <button
                                             onClick={() => {
                                               setActiveUnitForRecord(unit);
@@ -493,7 +460,7 @@ export const App: React.FC = () => {
                               </table>
                             </div>
 
-                            {/* Direct Cetak PDF button at the bottom of the table */}
+                            {/* Direct Cetak PDF button at bottom of table */}
                             {unitRecords.length > 0 && (
                               <div className="mt-3 flex justify-end">
                                 <button
@@ -521,29 +488,7 @@ export const App: React.FC = () => {
       </main>
 
       {/* MODALS */}
-      {/* 1. Camera QR Scanner Modal */}
-      <QRScannerModal
-        isOpen={isQRScannerOpen}
-        onClose={() => setIsQRScannerOpen(false)}
-        onSelectUnit={(unit) => {
-          setActivePdfUnit(unit);
-          setIsPdfModalOpen(true);
-        }}
-        onSelectRoom={(room) => {
-          setSearchQuery(room.namaRuangan);
-        }}
-      />
-
-      {/* 2. QR Sticker Generator Modal */}
-      <QRStickerModal
-        isOpen={isQRStickerOpen}
-        onClose={() => setIsQRStickerOpen(false)}
-        unit={activeStickerUnit}
-        allUnits={acUnits}
-        settings={DEFAULT_SETTINGS as any}
-      />
-
-      {/* 3. Official PDF Export & Print Modal (Image 7 Kop Surat & Image 8 Paraf) */}
+      {/* 1. Official PDF Export & Print Modal (Fixed A4 proportions matching Gambar 5) */}
       {activePdfUnit && (
         <PdfExportModal
           isOpen={isPdfModalOpen}
@@ -554,7 +499,7 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 4. Maintenance Record Form Modal */}
+      {/* 2. Maintenance Record Form Modal (Multiline Textarea & Fixed Paraf) */}
       {activeUnitForRecord && (
         <MaintenanceModal
           isOpen={isMaintenanceModalOpen}
@@ -569,7 +514,7 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 5. AC Unit Form Modal */}
+      {/* 3. AC Unit Form Modal (Locked room, clean fields) */}
       {targetRoomForUnit && (
         <ACUnitModal
           isOpen={isUnitModalOpen}
@@ -581,7 +526,7 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 6. Room Form Modal */}
+      {/* 4. Room Form Modal (Clean name only) */}
       <RoomModal
         isOpen={isRoomModalOpen}
         onClose={() => setIsRoomModalOpen(false)}

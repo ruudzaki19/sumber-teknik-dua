@@ -18,15 +18,12 @@ export const RoomModal: React.FC<RoomModalProps> = ({
   onDelete
 }) => {
   const [namaRuangan, setNamaRuangan] = useState('');
-  const [qrCodeId, setQrCodeId] = useState('');
 
   useEffect(() => {
     if (room) {
       setNamaRuangan(room.namaRuangan);
-      setQrCodeId(room.qrCodeId);
     } else {
       setNamaRuangan('');
-      setQrCodeId(`QR-ROOM-${Date.now().toString(36).toUpperCase()}`);
     }
   }, [room, isOpen]);
 
@@ -42,7 +39,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
     onSave({
       id: room ? room.id : undefined,
       namaRuangan: namaRuangan.trim(),
-      qrCodeId: qrCodeId.trim() || `QR-ROOM-${Date.now().toString(36).toUpperCase()}`
+      qrCodeId: room?.qrCodeId || `ROOM-${Date.now().toString(36).toUpperCase()}`
     });
     onClose();
   };
@@ -73,22 +70,11 @@ export const RoomModal: React.FC<RoomModalProps> = ({
             <input
               type="text"
               required
+              autoFocus
+              placeholder="Contoh: Ruang Admin, Ruang Lobby, Ruang BKAL"
               value={namaRuangan}
               onChange={(e) => setNamaRuangan(e.target.value)}
               className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Kode QR Ruangan
-            </label>
-            <input
-              type="text"
-              required
-              value={qrCodeId}
-              onChange={(e) => setQrCodeId(e.target.value)}
-              className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-brand-800 font-bold focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 

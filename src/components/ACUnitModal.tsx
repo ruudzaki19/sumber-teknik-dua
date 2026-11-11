@@ -26,7 +26,6 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
   const [kapasitas, setKapasitas] = useState<string>('');
   const [noSeri, setNoSeri] = useState<string>('');
   const [ruanganLokasi, setRuanganLokasi] = useState<string>('');
-  const [qrCodeId, setQrCodeId] = useState<string>('');
 
   useEffect(() => {
     if (unit) {
@@ -37,9 +36,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
       setKapasitas(unit.kapasitas || '');
       setNoSeri(unit.noSeri || '');
       setRuanganLokasi(unit.ruanganLokasi || targetRoom?.namaRuangan?.toUpperCase() || '');
-      setQrCodeId(unit.qrCodeId || '');
     } else {
-      // Clean empty state as requested by user (no auto-fill defaults!)
       setMitra('');
       setJenisAc('');
       setMerk('');
@@ -47,7 +44,6 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
       setKapasitas('');
       setNoSeri('');
       setRuanganLokasi(targetRoom ? targetRoom.namaRuangan.toUpperCase() : '');
-      setQrCodeId(`AC-QR-${Date.now().toString(36).toUpperCase()}`);
     }
   }, [unit, targetRoom, isOpen]);
 
@@ -70,7 +66,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
       kapasitas: kapasitas.trim(),
       noSeri: noSeri.trim(),
       ruanganLokasi: ruanganLokasi.trim().toUpperCase(),
-      qrCodeId: qrCodeId.trim() || `AC-QR-${Date.now().toString(36).toUpperCase()}`
+      qrCodeId: unit?.qrCodeId || `AC-UNIT-${Date.now().toString(36).toUpperCase()}`
     });
     onClose();
   };
@@ -101,7 +97,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-3.5 max-h-[82vh] overflow-y-auto">
-          {/* Room Assignment (LOCKED - Fixed to targetRoom) */}
+          {/* Room (Locked) */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-brand-600" />
@@ -196,32 +192,17 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
             </div>
           </div>
 
-          {/* No Seri & Kode QR */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                No. Seri (Opsional)
-              </label>
-              <input
-                type="text"
-                value={noSeri}
-                onChange={(e) => setNoSeri(e.target.value)}
-                className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Kode QR (ID Unik)
-              </label>
-              <input
-                type="text"
-                required
-                value={qrCodeId}
-                onChange={(e) => setQrCodeId(e.target.value)}
-                className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-brand-800 font-bold focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-            </div>
+          {/* No Seri */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              No. Seri (Opsional)
+            </label>
+            <input
+              type="text"
+              value={noSeri}
+              onChange={(e) => setNoSeri(e.target.value)}
+              className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-brand-500"
+            />
           </div>
 
           {/* Actions */}

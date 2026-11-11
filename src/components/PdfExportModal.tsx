@@ -25,7 +25,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
 
   if (!isOpen) return null;
 
-  // 12 rows matching the physical card
+  // 12 rows matching the physical card (Gambar 5)
   const rows = Array.from({ length: 12 }, (_, index) => {
     const record = records.find(r => (r.nomorUrut || 0) === index + 1) || records[index];
     return {
@@ -37,11 +37,16 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
   const generatePdfBlob = async (): Promise<{ blob: Blob; filename: string } | null> => {
     if (!printAreaRef.current) return null;
     const element = printAreaRef.current;
+
+    // Capture with desktop A4 dimensions to eliminate mobile distortion and blurriness
     const canvas = await html2canvas(element, {
-      scale: 2.5,
+      scale: 2.5, // High resolution for crisp, clear text
       useCORS: true,
       logging: false,
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
+      width: 794,
+      height: 1123,
+      windowWidth: 1024
     });
 
     const imgData = canvas.toDataURL('image/png');
@@ -51,11 +56,8 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
       format: 'a4'
     });
 
-    const imgWidth = 210;
-    const pageHeight = 297;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    pdf.addImage(imgData, 'PNG', 0, 5, imgWidth, Math.min(imgHeight, pageHeight - 10));
+    // Exact A4 dimensions: 210mm x 297mm
+    pdf.addImage(imgData, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
     const filename = `Kartu_Pemeliharaan_AC_${unit.ruanganLokasi.replace(/[^a-zA-Z0-9]/g, '_')}_${year}.pdf`;
     const blob = pdf.output('blob');
     return { blob, filename };
@@ -112,7 +114,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
           <div>
             <h3 className="font-bold text-sm sm:text-base">Pratinjau Kartu Pemeliharaan AC</h3>
             <p className="text-blue-200 text-xs">
-              Kop Surat Resmi CV. SARANA REKATAMA BUANA
+              Format Standar A4 Resmi (Persis Gambar Asli)
             </p>
           </div>
           <button
@@ -157,102 +159,207 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
           </div>
         </div>
 
-        {/* Document Printable Viewport */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-200/70 flex justify-center">
+        {/* Document Printable Viewport - Horizontal scroll container for mobile */}
+        <div className="flex-1 overflow-auto p-4 bg-slate-200/80 flex justify-center">
+          {/* FIXED A4 CANVAS CONTAINER (Exact standard A4 794px width) */}
           <div
             ref={printAreaRef}
             id="printable-document"
-            className="w-full max-w-[760px] bg-white p-8 sm:p-10 shadow-lg text-black font-sans leading-tight border border-slate-300 select-text"
-            style={{ minHeight: '980px', backgroundColor: '#ffffff' }}
+            style={{
+              width: '794px',
+              minWidth: '794px',
+              maxWidth: '794px',
+              minHeight: '1123px',
+              height: '1123px',
+              backgroundColor: '#ffffff',
+              padding: '38px 46px',
+              boxSizing: 'border-box',
+              fontFamily: 'Arial, sans-serif'
+            }}
+            className="shadow-xl text-black border border-slate-300 select-text flex flex-col justify-between"
           >
-            {/* KOP SURAT (Image 7 Exact Crop) */}
-            <div className="w-full mb-3">
-              <img
-                src={FIXED_KOP_PATH}
-                alt="Kop Surat CV. SARANA REKATAMA BUANA"
-                className="w-full h-auto object-contain block"
-              />
-            </div>
-
-            {/* Title Box */}
-            <div className="border border-black py-1.5 px-4 text-center mb-4">
-              <h3 className="text-base sm:text-lg font-bold tracking-wider uppercase text-black">
-                KARTU PEMELIHARAAN AIR CONDITIONER TAHUN {year}
-              </h3>
-            </div>
-
-            {/* Metadata Table */}
-            <div className="border border-black mb-4">
-              <div className="grid grid-cols-12 divide-x divide-black text-xs font-semibold">
-                <div className="col-span-4 p-1.5 pl-3 border-b border-black">MITRA</div>
-                <div className="col-span-8 p-1.5 pl-3 border-b border-black font-normal">: {unit.mitra || ''}</div>
-
-                <div className="col-span-4 p-1.5 pl-3 border-b border-black">JENIS AC</div>
-                <div className="col-span-8 p-1.5 pl-3 border-b border-black font-bold">: {unit.jenisAc}</div>
-
-                <div className="col-span-4 p-1.5 pl-3 border-b border-black">MERK</div>
-                <div className="col-span-8 p-1.5 pl-3 border-b border-black font-bold">: {unit.merk}</div>
-
-                <div className="col-span-4 p-1.5 pl-3 border-b border-black">TYPE</div>
-                <div className="col-span-8 p-1.5 pl-3 border-b border-black font-normal">: {unit.typeModel || ''}</div>
-
-                <div className="col-span-4 p-1.5 pl-3 border-b border-black">KAPASITAS</div>
-                <div className="col-span-8 p-1.5 pl-3 border-b border-black font-bold">: {unit.kapasitas}</div>
-
-                <div className="col-span-4 p-1.5 pl-3 border-b border-black">NO. SERI</div>
-                <div className="col-span-8 p-1.5 pl-3 border-b border-black font-normal">: {unit.noSeri || ''}</div>
-
-                <div className="col-span-4 p-1.5 pl-3">RUANGAN / LOKASI</div>
-                <div className="col-span-8 p-1.5 pl-3 font-bold">: {unit.ruanganLokasi}</div>
+            <div>
+              {/* KOP SURAT (Image 7 Exact Crop) */}
+              <div className="w-full mb-3">
+                <img
+                  src={FIXED_KOP_PATH}
+                  alt="Kop Surat CV. SARANA REKATAMA BUANA"
+                  className="w-full h-auto object-contain block"
+                  style={{ maxHeight: '110px' }}
+                />
               </div>
-            </div>
 
-            {/* 12-ROW MAINTENANCE TABLE (No prices, pure work log) */}
-            <div className="border border-black overflow-hidden">
-              <table className="w-full text-xs text-black border-collapse">
-                <thead>
-                  <tr className="border-b border-black divide-x divide-black font-bold text-center">
-                    <th className="w-12 py-2">NO</th>
-                    <th className="w-36 py-2">TANGGAL</th>
-                    <th className="py-2 px-3 text-left">URAIAN PEKERJAAN</th>
-                    <th className="w-28 py-2">PARAF</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black">
-                  {rows.map(({ no, record }) => (
-                    <tr key={no} className="divide-x divide-black h-10">
-                      <td className="text-center font-semibold py-1">{no}</td>
-                      <td className="text-center py-1 px-2 font-medium">
-                        {record?.tanggal || ''}
-                      </td>
-                      <td className="py-1 px-3 font-medium">
-                        {record?.uraianPekerjaan || ''}
-                      </td>
-                      <td className="text-center py-0.5 px-1 align-middle">
-                        {record ? (
-                          <img
-                            src={FIXED_SIGNATURE_PATH}
-                            alt="Paraf"
-                            className="max-h-8 max-w-[75px] mx-auto object-contain"
-                          />
-                        ) : null}
-                      </td>
+              {/* Title Box (Identical to Gambar 5) */}
+              <div
+                style={{
+                  border: '1.5px solid #000000',
+                  padding: '7px 12px',
+                  textAlign: 'center',
+                  marginBottom: '16px'
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: '17px',
+                    fontWeight: 'bold',
+                    letterSpacing: '1px',
+                    textTransform: 'uppercase',
+                    margin: 0,
+                    color: '#000000'
+                  }}
+                >
+                  KARTU PEMELIHARAAN AIR CONDITIONER TAHUN {year}
+                </h3>
+              </div>
+
+              {/* Metadata Table (Identical to Gambar 5) */}
+              <div
+                style={{
+                  border: '1.5px solid #000000',
+                  marginBottom: '18px'
+                }}
+              >
+                <table
+                  style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    fontSize: '13px'
+                  }}
+                >
+                  <tbody>
+                    <tr style={{ borderBottom: '1px solid #000000' }}>
+                      <td style={{ width: '240px', padding: '5px 10px', fontWeight: 'bold' }}>MITRA</td>
+                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000' }}>: {unit.mitra || ''}</td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                    <tr style={{ borderBottom: '1px solid #000000' }}>
+                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>JENIS AC</td>
+                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.jenisAc || ''}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #000000' }}>
+                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>MERK</td>
+                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.merk || ''}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #000000' }}>
+                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>TYPE</td>
+                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000' }}>: {unit.typeModel || ''}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #000000' }}>
+                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>KAPASITAS</td>
+                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000', fontWeight: 'bold' }}>: {unit.kapasitas || ''}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #000000' }}>
+                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>NO. SERI</td>
+                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000' }}>: {unit.noSeri || ''}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>RUANGAN / LOKASI</td>
+                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.ruanganLokasi || ''}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* 12-ROW SERVICE HISTORY TABLE (Identical to Gambar 5) */}
+              <div
+                style={{
+                  border: '1.5px solid #000000'
+                }}
+              >
+                <table
+                  style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    fontSize: '12.5px'
+                  }}
+                >
+                  <thead>
+                    <tr
+                      style={{
+                        borderBottom: '1.5px solid #000000',
+                        fontWeight: 'bold',
+                        textAlign: 'center',
+                        backgroundColor: '#ffffff'
+                      }}
+                    >
+                      <th style={{ width: '45px', padding: '8px 4px', borderRight: '1px solid #000000' }}>NO</th>
+                      <th style={{ width: '135px', padding: '8px 6px', borderRight: '1px solid #000000' }}>TANGGAL</th>
+                      <th style={{ padding: '8px 12px', textAlign: 'center', borderRight: '1px solid #000000' }}>URAIAN PEKERJAAN</th>
+                      <th style={{ width: '120px', padding: '8px 6px' }}>PARAF</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map(({ no, record }) => (
+                      <tr
+                        key={no}
+                        style={{
+                          height: '38px',
+                          borderBottom: no < 12 ? '1px solid #000000' : 'none'
+                        }}
+                      >
+                        <td
+                          style={{
+                            textAlign: 'center',
+                            fontWeight: '600',
+                            borderRight: '1px solid #000000',
+                            verticalAlign: 'middle',
+                            padding: '4px'
+                          }}
+                        >
+                          {no}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: 'center',
+                            borderRight: '1px solid #000000',
+                            verticalAlign: 'middle',
+                            padding: '4px 8px',
+                            fontWeight: '500'
+                          }}
+                        >
+                          {record?.tanggal || ''}
+                        </td>
+                        <td
+                          style={{
+                            borderRight: '1px solid #000000',
+                            verticalAlign: 'middle',
+                            padding: '4px 12px',
+                            fontWeight: '500',
+                            whiteSpace: 'pre-line',
+                            lineHeight: '1.3'
+                          }}
+                        >
+                          {record?.uraianPekerjaan || ''}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: 'center',
+                            verticalAlign: 'middle',
+                            padding: '2px 6px'
+                          }}
+                        >
+                          {record ? (
+                            <img
+                              src={FIXED_SIGNATURE_PATH}
+                              alt="Paraf"
+                              style={{
+                                maxHeight: '32px',
+                                maxWidth: '90px',
+                                margin: '0 auto',
+                                display: 'block',
+                                objectFit: 'contain'
+                              }}
+                            />
+                          ) : null}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            {/* Verification Footer */}
-            <div className="mt-4 flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-300">
-              <div>
-                <span>ID Unit QR: </span>
-                <span className="font-mono font-semibold text-slate-800">{unit.qrCodeId}</span>
-              </div>
-              <div>
-                <span>Sistem Kartu Pemeliharaan AC • Sumber Tekhnik 2</span>
-              </div>
-            </div>
+            {/* Bottom minimal spacer to lock A4 height */}
+            <div style={{ height: '8px' }}></div>
           </div>
         </div>
       </div>
