@@ -80,7 +80,7 @@ export const LoginScreen: React.FC = () => {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 text-white mb-2 border border-white/20">
             <Wrench className="w-6 h-6 text-blue-300" />
           </div>
-          <h1 className="text-xl font-black tracking-tight uppercase">Sumber Tekhnik 2</h1>
+          <h1 className="text-xl font-black tracking-tight uppercase">Sumber Tekhnik Dua</h1>
           <p className="text-blue-200 text-xs mt-0.5">
             Sistem Pemeliharaan AC Ruangan
           </p>

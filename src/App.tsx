@@ -58,7 +58,7 @@ export const App: React.FC = () => {
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-brand-700 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-xs text-slate-500 font-semibold">Memuat Sumber Tekhnik 2...</p>
+          <p className="text-xs text-slate-500 font-semibold">Memuat Sumber Tekhnik Dua...</p>
         </div>
       </div>
     );
@@ -149,7 +149,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col text-slate-800 pb-16">
-      {/* Top Navbar - Sumber Tekhnik 2 (Tanpa Scan QR) */}
+      {/* Top Navbar - Sumber Tekhnik Dua (Tanpa Scan QR) */}
       <header className="bg-brand-900 text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -159,7 +159,7 @@ export const App: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-base sm:text-lg font-black tracking-tight uppercase">
-                  Sumber Tekhnik 2
+                  Sumber Tekhnik Dua
                 </h1>
                 <span className="text-[10px] bg-brand-700 text-blue-100 px-2 py-0.5 rounded font-mono font-medium">
                   Tahun 2026

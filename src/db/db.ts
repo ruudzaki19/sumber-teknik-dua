@@ -23,7 +23,7 @@ export class ACMakeDatabase extends Dexie {
 export const db = new ACMakeDatabase();
 
 export const DEFAULT_SETTINGS: CompanySettings = {
-  namaAplikasi: 'Sumber Tekhnik 2',
+  namaAplikasi: 'Sumber Tekhnik Dua',
   tahunDefault: '2026'
 };
 

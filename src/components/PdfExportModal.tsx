@@ -23,13 +23,13 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const printAreaRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [previewScale, setPreviewScale] = useState<number>(1);
+  const [previewScale, setPreviewScale] = useState<number>(0.45);
 
-  // Responsive scaling so the entire A4 page fits on mobile screens without being cut off
+  // Responsive scaling ONLY for the visual modal view on mobile
   useEffect(() => {
     const updateScale = () => {
       if (containerRef.current) {
-        const containerWidth = containerRef.current.clientWidth - 24; // padding allowance
+        const containerWidth = containerRef.current.clientWidth - 20;
         const standardA4Width = 794;
         const calculatedScale = Math.min(1, containerWidth / standardA4Width);
         setPreviewScale(calculatedScale > 0.3 ? calculatedScale : 0.45);
@@ -56,15 +56,29 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
     if (!printAreaRef.current) return null;
     const element = printAreaRef.current;
 
-    // Capture standard A4 desktop canvas (unscaled) for maximum crispness
+    // Use onclone to STRIP OUT any CSS scaling transforms during capture so the PDF is ALWAYS 100% FULL-SCREEN A4!
     const canvas = await html2canvas(element, {
-      scale: 2.5, // 2.5x high-DPI
+      scale: 2.5, // Ultra-sharp 2.5x High-DPI
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
-      width: 794,
-      height: 1123,
-      windowWidth: 1024
+      onclone: (clonedDoc) => {
+        const clonedElement = clonedDoc.getElementById('printable-document');
+        if (clonedElement) {
+          // Remove preview scale completely in the capture clone
+          clonedElement.style.transform = 'none';
+          clonedElement.style.webkitTransform = 'none';
+          clonedElement.style.position = 'static';
+          clonedElement.style.width = '794px';
+          clonedElement.style.minWidth = '794px';
+          clonedElement.style.maxWidth = '794px';
+          clonedElement.style.height = 'auto';
+          clonedElement.style.minHeight = '1120px';
+          clonedElement.style.margin = '0 auto';
+          clonedElement.style.padding = '36px 44px';
+          clonedElement.style.boxSizing = 'border-box';
+        }
+      }
     });
 
     const imgData = canvas.toDataURL('image/png');
@@ -74,8 +88,25 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
       format: 'a4'
     });
 
-    // Exact A4 dimensions: 210mm x 297mm
-    pdf.addImage(imgData, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
+    // Standard A4 dimensions: 210mm x 297mm
+    // Fill the page properly with clean 8mm margins
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const margin = 8; // 8mm margin
+    const targetWidth = pageWidth - (margin * 2); // 194mm width
+    const targetHeight = (canvas.height * targetWidth) / canvas.width;
+
+    pdf.addImage(
+      imgData,
+      'PNG',
+      margin,
+      margin,
+      targetWidth,
+      Math.min(targetHeight, pageHeight - (margin * 2)),
+      undefined,
+      'FAST'
+    );
+
     const filename = `Kartu_Pemeliharaan_AC_${unit.ruanganLokasi.replace(/[^a-zA-Z0-9]/g, '_')}_${year}.pdf`;
     const blob = pdf.output('blob');
     return { blob, filename };
@@ -125,7 +156,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
           </button>
         </div>
 
-        {/* Toolbar: ONLY ONE BIG DOWNLOAD PDF BUTTON (Cetak langsung & Tab baru removed as requested!) */}
+        {/* Toolbar: ONLY ONE BIG DOWNLOAD PDF BUTTON */}
         <div className="bg-slate-100 p-3 px-4 border-b border-slate-200 flex items-center justify-end shrink-0">
           <button
             onClick={handleDownloadPDF}
@@ -133,24 +164,24 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md disabled:opacity-50 transition-all active:scale-95"
           >
             <Download className="w-4 h-4" />
-            <span>{isGenerating ? 'Membuat PDF...' : 'Download PDF'}</span>
+            <span>{isGenerating ? 'Membuat PDF Full-Page...' : 'Download PDF'}</span>
           </button>
         </div>
 
-        {/* Document Viewport - Auto scaled so the entire A4 sheet fits on mobile screen */}
+        {/* Document Viewport - Auto scaled cleanly so the preview fits on mobile */}
         <div
           ref={containerRef}
           className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-6 bg-slate-200/90 flex justify-center items-start"
         >
-          {/* Wrapper for responsive visual scaling on phone */}
+          {/* Sizer box taking up the scaled dimensions */}
           <div
             style={{
               width: `${794 * previewScale}px`,
-              height: `${1123 * previewScale}px`,
+              height: `${1130 * previewScale}px`,
               position: 'relative'
             }}
           >
-            {/* The exact A4 Canvas (794px x 1123px) */}
+            {/* The exact A4 Document element */}
             <div
               ref={printAreaRef}
               id="printable-document"
@@ -158,9 +189,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                 width: '794px',
                 minWidth: '794px',
                 maxWidth: '794px',
-                height: '1123px',
-                minHeight: '1123px',
-                maxHeight: '1123px',
+                minHeight: '1120px',
                 backgroundColor: '#ffffff',
                 padding: '36px 44px',
                 boxSizing: 'border-box',
@@ -207,7 +236,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                   </h3>
                 </div>
 
-                {/* Metadata Table - SINKRON & BESAR (16px bold) */}
+                {/* Metadata Table - SINKRON & BESAR (15.5px bold) */}
                 <div
                   style={{
                     border: '1.5px solid #000000',
@@ -218,7 +247,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                     style={{
                       width: '100%',
                       borderCollapse: 'collapse',
-                      fontSize: '15px'
+                      fontSize: '15.5px'
                     }}
                   >
                     <tbody>
@@ -254,7 +283,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                   </table>
                 </div>
 
-                {/* 12-ROW SERVICE HISTORY TABLE - TULISAN BESAR & PROPORSIONAL (15px bold) */}
+                {/* 12-ROW SERVICE HISTORY TABLE - TULISAN BESAR, BOLD & MENGISI HALAMAN */}
                 <div
                   style={{
                     border: '1.5px solid #000000'
@@ -264,7 +293,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                     style={{
                       width: '100%',
                       borderCollapse: 'collapse',
-                      fontSize: '14.5px'
+                      fontSize: '15px'
                     }}
                   >
                     <thead>
@@ -354,8 +383,8 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                 </div>
               </div>
 
-              {/* Minimal bottom spacing */}
-              <div style={{ height: '6px' }}></div>
+              {/* Bottom minimal spacer */}
+              <div style={{ height: '8px' }}></div>
             </div>
           </div>
         </div>
