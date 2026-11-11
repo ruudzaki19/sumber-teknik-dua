@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { X, Download, Printer, ExternalLink } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { X, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ACUnit, MaintenanceRecord } from '../types';
@@ -22,10 +22,28 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const printAreaRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [previewScale, setPreviewScale] = useState<number>(1);
+
+  // Responsive scaling so the entire A4 page fits on mobile screens without being cut off
+  useEffect(() => {
+    const updateScale = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.clientWidth - 24; // padding allowance
+        const standardA4Width = 794;
+        const calculatedScale = Math.min(1, containerWidth / standardA4Width);
+        setPreviewScale(calculatedScale > 0.3 ? calculatedScale : 0.45);
+      }
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  // 12 rows matching the physical card (Gambar 5)
+  // 12 rows matching the physical card
   const rows = Array.from({ length: 12 }, (_, index) => {
     const record = records.find(r => (r.nomorUrut || 0) === index + 1) || records[index];
     return {
@@ -38,9 +56,9 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
     if (!printAreaRef.current) return null;
     const element = printAreaRef.current;
 
-    // Capture with desktop A4 dimensions to eliminate mobile distortion and blurriness
+    // Capture standard A4 desktop canvas (unscaled) for maximum crispness
     const canvas = await html2canvas(element, {
-      scale: 2.5, // High resolution for crisp, clear text
+      scale: 2.5, // 2.5x high-DPI
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
@@ -82,28 +100,10 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
       setTimeout(() => URL.revokeObjectURL(url), 10000);
     } catch (err) {
       console.error('Error generating PDF:', err);
-      alert('Gagal mendownload otomatis. Silakan gunakan tombol "Buka di Tab Baru" atau "Cetak Langsung".');
+      alert('Gagal mendownload PDF.');
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const handleOpenInNewTab = async () => {
-    setIsGenerating(true);
-    try {
-      const res = await generatePdfBlob();
-      if (!res) return;
-      const url = URL.createObjectURL(res.blob);
-      window.open(url, '_blank');
-    } catch (err) {
-      console.error('Error opening PDF:', err);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handleDirectPrint = () => {
-    window.print();
   };
 
   return (
@@ -114,7 +114,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
           <div>
             <h3 className="font-bold text-sm sm:text-base">Pratinjau Kartu Pemeliharaan AC</h3>
             <p className="text-blue-200 text-xs">
-              Format Standar A4 Resmi (Persis Gambar Asli)
+              Lokasi: <span className="text-white font-bold">{unit.ruanganLokasi}</span>
             </p>
           </div>
           <button
@@ -125,241 +125,238 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
           </button>
         </div>
 
-        {/* Toolbar */}
-        <div className="bg-slate-100 p-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
-          <div className="text-xs text-slate-600 font-semibold">
-            Lokasi: <span className="text-brand-900 font-bold">{unit.ruanganLokasi}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleOpenInNewTab}
-              disabled={isGenerating}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 shadow-sm transition-colors"
-              title="Buka langsung di tab baru browser untuk preview & simpan"
-            >
-              <ExternalLink className="w-3.5 h-3.5 text-brand-700" />
-              Buka di Tab Baru
-            </button>
-            <button
-              onClick={handleDirectPrint}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 shadow-sm transition-colors"
-            >
-              <Printer className="w-3.5 h-3.5 text-slate-600" />
-              Cetak Langsung
-            </button>
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isGenerating}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-lg shadow-sm disabled:opacity-50 transition-colors"
-            >
-              <Download className="w-3.5 h-3.5" />
-              {isGenerating ? 'Membuat PDF...' : 'Download PDF'}
-            </button>
-          </div>
+        {/* Toolbar: ONLY ONE BIG DOWNLOAD PDF BUTTON (Cetak langsung & Tab baru removed as requested!) */}
+        <div className="bg-slate-100 p-3 px-4 border-b border-slate-200 flex items-center justify-end shrink-0">
+          <button
+            onClick={handleDownloadPDF}
+            disabled={isGenerating}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md disabled:opacity-50 transition-all active:scale-95"
+          >
+            <Download className="w-4 h-4" />
+            <span>{isGenerating ? 'Membuat PDF...' : 'Download PDF'}</span>
+          </button>
         </div>
 
-        {/* Document Printable Viewport - Horizontal scroll container for mobile */}
-        <div className="flex-1 overflow-auto p-4 bg-slate-200/80 flex justify-center">
-          {/* FIXED A4 CANVAS CONTAINER (Exact standard A4 794px width) */}
+        {/* Document Viewport - Auto scaled so the entire A4 sheet fits on mobile screen */}
+        <div
+          ref={containerRef}
+          className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-6 bg-slate-200/90 flex justify-center items-start"
+        >
+          {/* Wrapper for responsive visual scaling on phone */}
           <div
-            ref={printAreaRef}
-            id="printable-document"
             style={{
-              width: '794px',
-              minWidth: '794px',
-              maxWidth: '794px',
-              minHeight: '1123px',
-              height: '1123px',
-              backgroundColor: '#ffffff',
-              padding: '38px 46px',
-              boxSizing: 'border-box',
-              fontFamily: 'Arial, sans-serif'
+              width: `${794 * previewScale}px`,
+              height: `${1123 * previewScale}px`,
+              position: 'relative'
             }}
-            className="shadow-xl text-black border border-slate-300 select-text flex flex-col justify-between"
           >
-            <div>
-              {/* KOP SURAT (Image 7 Exact Crop) */}
-              <div className="w-full mb-3">
-                <img
-                  src={FIXED_KOP_PATH}
-                  alt="Kop Surat CV. SARANA REKATAMA BUANA"
-                  className="w-full h-auto object-contain block"
-                  style={{ maxHeight: '110px' }}
-                />
-              </div>
+            {/* The exact A4 Canvas (794px x 1123px) */}
+            <div
+              ref={printAreaRef}
+              id="printable-document"
+              style={{
+                width: '794px',
+                minWidth: '794px',
+                maxWidth: '794px',
+                height: '1123px',
+                minHeight: '1123px',
+                maxHeight: '1123px',
+                backgroundColor: '#ffffff',
+                padding: '36px 44px',
+                boxSizing: 'border-box',
+                fontFamily: 'Arial, sans-serif',
+                transform: `scale(${previewScale})`,
+                transformOrigin: 'top left',
+                position: 'absolute',
+                top: 0,
+                left: 0
+              }}
+              className="shadow-2xl text-black select-text flex flex-col justify-between"
+            >
+              <div>
+                {/* KOP SURAT (Image 7 Exact Crop) */}
+                <div className="w-full mb-3">
+                  <img
+                    src={FIXED_KOP_PATH}
+                    alt="Kop Surat CV. SARANA REKATAMA BUANA"
+                    className="w-full h-auto object-contain block"
+                    style={{ maxHeight: '115px' }}
+                  />
+                </div>
 
-              {/* Title Box (Identical to Gambar 5) */}
-              <div
-                style={{
-                  border: '1.5px solid #000000',
-                  padding: '7px 12px',
-                  textAlign: 'center',
-                  marginBottom: '16px'
-                }}
-              >
-                <h3
+                {/* Title Box */}
+                <div
                   style={{
-                    fontSize: '17px',
-                    fontWeight: 'bold',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                    margin: 0,
-                    color: '#000000'
+                    border: '1.5px solid #000000',
+                    padding: '8px 12px',
+                    textAlign: 'center',
+                    marginBottom: '16px'
                   }}
                 >
-                  KARTU PEMELIHARAAN AIR CONDITIONER TAHUN {year}
-                </h3>
-              </div>
+                  <h3
+                    style={{
+                      fontSize: '19px',
+                      fontWeight: 'bold',
+                      letterSpacing: '1px',
+                      textTransform: 'uppercase',
+                      margin: 0,
+                      color: '#000000'
+                    }}
+                  >
+                    KARTU PEMELIHARAAN AIR CONDITIONER TAHUN {year}
+                  </h3>
+                </div>
 
-              {/* Metadata Table (Identical to Gambar 5) */}
-              <div
-                style={{
-                  border: '1.5px solid #000000',
-                  marginBottom: '18px'
-                }}
-              >
-                <table
+                {/* Metadata Table - SINKRON & BESAR (16px bold) */}
+                <div
                   style={{
-                    width: '100%',
-                    borderCollapse: 'collapse',
-                    fontSize: '13px'
+                    border: '1.5px solid #000000',
+                    marginBottom: '18px'
                   }}
                 >
-                  <tbody>
-                    <tr style={{ borderBottom: '1px solid #000000' }}>
-                      <td style={{ width: '240px', padding: '5px 10px', fontWeight: 'bold' }}>MITRA</td>
-                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000' }}>: {unit.mitra || ''}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #000000' }}>
-                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>JENIS AC</td>
-                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.jenisAc || ''}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #000000' }}>
-                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>MERK</td>
-                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.merk || ''}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #000000' }}>
-                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>TYPE</td>
-                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000' }}>: {unit.typeModel || ''}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #000000' }}>
-                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>KAPASITAS</td>
-                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000', fontWeight: 'bold' }}>: {unit.kapasitas || ''}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #000000' }}>
-                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>NO. SERI</td>
-                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000' }}>: {unit.noSeri || ''}</td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '5px 10px', fontWeight: 'bold' }}>RUANGAN / LOKASI</td>
-                      <td style={{ padding: '5px 10px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.ruanganLokasi || ''}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                  <table
+                    style={{
+                      width: '100%',
+                      borderCollapse: 'collapse',
+                      fontSize: '15px'
+                    }}
+                  >
+                    <tbody>
+                      <tr style={{ borderBottom: '1px solid #000000' }}>
+                        <td style={{ width: '250px', padding: '6px 12px', fontWeight: 'bold' }}>MITRA</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold' }}>: {unit.mitra || ''}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #000000' }}>
+                        <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>JENIS AC</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.jenisAc || ''}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #000000' }}>
+                        <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>MERK</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.merk || ''}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #000000' }}>
+                        <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>TYPE</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold' }}>: {unit.typeModel || ''}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #000000' }}>
+                        <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>KAPASITAS</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold' }}>: {unit.kapasitas || ''}</td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #000000' }}>
+                        <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>NO. SERI</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold' }}>: {unit.noSeri || ''}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>RUANGAN / LOKASI</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.ruanganLokasi || ''}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
 
-              {/* 12-ROW SERVICE HISTORY TABLE (Identical to Gambar 5) */}
-              <div
-                style={{
-                  border: '1.5px solid #000000'
-                }}
-              >
-                <table
+                {/* 12-ROW SERVICE HISTORY TABLE - TULISAN BESAR & PROPORSIONAL (15px bold) */}
+                <div
                   style={{
-                    width: '100%',
-                    borderCollapse: 'collapse',
-                    fontSize: '12.5px'
+                    border: '1.5px solid #000000'
                   }}
                 >
-                  <thead>
-                    <tr
-                      style={{
-                        borderBottom: '1.5px solid #000000',
-                        fontWeight: 'bold',
-                        textAlign: 'center',
-                        backgroundColor: '#ffffff'
-                      }}
-                    >
-                      <th style={{ width: '45px', padding: '8px 4px', borderRight: '1px solid #000000' }}>NO</th>
-                      <th style={{ width: '135px', padding: '8px 6px', borderRight: '1px solid #000000' }}>TANGGAL</th>
-                      <th style={{ padding: '8px 12px', textAlign: 'center', borderRight: '1px solid #000000' }}>URAIAN PEKERJAAN</th>
-                      <th style={{ width: '120px', padding: '8px 6px' }}>PARAF</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map(({ no, record }) => (
+                  <table
+                    style={{
+                      width: '100%',
+                      borderCollapse: 'collapse',
+                      fontSize: '14.5px'
+                    }}
+                  >
+                    <thead>
                       <tr
-                        key={no}
                         style={{
-                          height: '38px',
-                          borderBottom: no < 12 ? '1px solid #000000' : 'none'
+                          borderBottom: '1.5px solid #000000',
+                          fontWeight: 'bold',
+                          textAlign: 'center',
+                          backgroundColor: '#ffffff'
                         }}
                       >
-                        <td
-                          style={{
-                            textAlign: 'center',
-                            fontWeight: '600',
-                            borderRight: '1px solid #000000',
-                            verticalAlign: 'middle',
-                            padding: '4px'
-                          }}
-                        >
-                          {no}
-                        </td>
-                        <td
-                          style={{
-                            textAlign: 'center',
-                            borderRight: '1px solid #000000',
-                            verticalAlign: 'middle',
-                            padding: '4px 8px',
-                            fontWeight: '500'
-                          }}
-                        >
-                          {record?.tanggal || ''}
-                        </td>
-                        <td
-                          style={{
-                            borderRight: '1px solid #000000',
-                            verticalAlign: 'middle',
-                            padding: '4px 12px',
-                            fontWeight: '500',
-                            whiteSpace: 'pre-line',
-                            lineHeight: '1.3'
-                          }}
-                        >
-                          {record?.uraianPekerjaan || ''}
-                        </td>
-                        <td
-                          style={{
-                            textAlign: 'center',
-                            verticalAlign: 'middle',
-                            padding: '2px 6px'
-                          }}
-                        >
-                          {record ? (
-                            <img
-                              src={FIXED_SIGNATURE_PATH}
-                              alt="Paraf"
-                              style={{
-                                maxHeight: '32px',
-                                maxWidth: '90px',
-                                margin: '0 auto',
-                                display: 'block',
-                                objectFit: 'contain'
-                              }}
-                            />
-                          ) : null}
-                        </td>
+                        <th style={{ width: '50px', padding: '9px 4px', borderRight: '1px solid #000000' }}>NO</th>
+                        <th style={{ width: '140px', padding: '9px 6px', borderRight: '1px solid #000000' }}>TANGGAL</th>
+                        <th style={{ padding: '9px 12px', textAlign: 'center', borderRight: '1px solid #000000' }}>URAIAN PEKERJAAN</th>
+                        <th style={{ width: '125px', padding: '9px 6px' }}>PARAF</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {rows.map(({ no, record }) => (
+                        <tr
+                          key={no}
+                          style={{
+                            height: '40px',
+                            borderBottom: no < 12 ? '1px solid #000000' : 'none'
+                          }}
+                        >
+                          <td
+                            style={{
+                              textAlign: 'center',
+                              fontWeight: 'bold',
+                              borderRight: '1px solid #000000',
+                              verticalAlign: 'middle',
+                              padding: '4px'
+                            }}
+                          >
+                            {no}
+                          </td>
+                          <td
+                            style={{
+                              textAlign: 'center',
+                              borderRight: '1px solid #000000',
+                              verticalAlign: 'middle',
+                              padding: '4px 8px',
+                              fontWeight: 'bold'
+                            }}
+                          >
+                            {record?.tanggal || ''}
+                          </td>
+                          <td
+                            style={{
+                              borderRight: '1px solid #000000',
+                              verticalAlign: 'middle',
+                              padding: '5px 12px',
+                              fontWeight: 'bold',
+                              whiteSpace: 'pre-line',
+                              lineHeight: '1.35',
+                              textTransform: 'uppercase'
+                            }}
+                          >
+                            {record?.uraianPekerjaan || ''}
+                          </td>
+                          <td
+                            style={{
+                              textAlign: 'center',
+                              verticalAlign: 'middle',
+                              padding: '2px 6px'
+                            }}
+                          >
+                            {record ? (
+                              <img
+                                src={FIXED_SIGNATURE_PATH}
+                                alt="Paraf"
+                                style={{
+                                  maxHeight: '34px',
+                                  maxWidth: '95px',
+                                  margin: '0 auto',
+                                  display: 'block',
+                                  objectFit: 'contain'
+                                }}
+                              />
+                            ) : null}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
 
-            {/* Bottom minimal spacer to lock A4 height */}
-            <div style={{ height: '8px' }}></div>
+              {/* Minimal bottom spacing */}
+              <div style={{ height: '6px' }}></div>
+            </div>
           </div>
         </div>
       </div>
