@@ -18,20 +18,14 @@ export const RoomModal: React.FC<RoomModalProps> = ({
   onDelete
 }) => {
   const [namaRuangan, setNamaRuangan] = useState('');
-  const [gedungArea, setGedungArea] = useState('');
-  const [deskripsi, setDeskripsi] = useState('');
   const [qrCodeId, setQrCodeId] = useState('');
 
   useEffect(() => {
     if (room) {
       setNamaRuangan(room.namaRuangan);
-      setGedungArea(room.gedungArea || '');
-      setDeskripsi(room.deskripsi || '');
       setQrCodeId(room.qrCodeId);
     } else {
       setNamaRuangan('');
-      setGedungArea('');
-      setDeskripsi('');
       setQrCodeId(`QR-ROOM-${Date.now().toString(36).toUpperCase()}`);
     }
   }, [room, isOpen]);
@@ -48,8 +42,6 @@ export const RoomModal: React.FC<RoomModalProps> = ({
     onSave({
       id: room ? room.id : undefined,
       namaRuangan: namaRuangan.trim(),
-      gedungArea: gedungArea.trim(),
-      deskripsi: deskripsi.trim(),
       qrCodeId: qrCodeId.trim() || `QR-ROOM-${Date.now().toString(36).toUpperCase()}`
     });
     onClose();
@@ -58,7 +50,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto">
       <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200">
-        <div className="bg-brand-800 text-white p-4 flex items-center justify-between">
+        <div className="bg-brand-900 text-white p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <DoorClosed className="w-4 h-4 text-blue-200" />
             <h3 className="font-bold text-sm">
@@ -73,7 +65,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-3">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
               Nama Ruangan / Lokasi
@@ -81,36 +73,9 @@ export const RoomModal: React.FC<RoomModalProps> = ({
             <input
               type="text"
               required
-              placeholder="Contoh: Ruang Admin, Ruang Pak Andi, Gedung Galeri"
               value={namaRuangan}
               onChange={(e) => setNamaRuangan(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-medium text-slate-900"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Gedung / Lantai / Area (Opsional)
-            </label>
-            <input
-              type="text"
-              placeholder="Contoh: Gedung Kantor Lantai 2"
-              value={gedungArea}
-              onChange={(e) => setGedungArea(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Keterangan Tambahan
-            </label>
-            <textarea
-              rows={2}
-              placeholder="Catatan mengenai posisi AC atau akses ruangan"
-              value={deskripsi}
-              onChange={(e) => setDeskripsi(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-700"
+              className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -123,7 +88,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
               required
               value={qrCodeId}
               onChange={(e) => setQrCodeId(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-mono text-brand-800 font-bold"
+              className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-brand-800 font-bold focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -132,7 +97,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  if (confirm(`Hapus ruangan "${room.namaRuangan}"? Unit AC di dalamnya akan tetap tersimpan.`)) {
+                  if (confirm(`Hapus ruangan "${room.namaRuangan}"?`)) {
                     onDelete(room.id);
                     onClose();
                   }
@@ -154,7 +119,7 @@ export const RoomModal: React.FC<RoomModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 shadow-sm transition-colors"
+                className="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl inline-flex items-center gap-1.5 shadow-sm transition-colors"
               >
                 <Save className="w-3.5 h-3.5" />
                 Simpan Ruangan

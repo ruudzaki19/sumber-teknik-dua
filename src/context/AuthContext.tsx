@@ -4,23 +4,16 @@ import { UserProfile } from '../types';
 interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
-  loginWithGoogle: (customEmail?: string, customName?: string) => Promise<void>;
+  loginWithGoogle: (email: string, name?: string) => Promise<boolean>;
+  loginWithEmail: (email: string, password?: string) => Promise<{ success: boolean; message?: string }>;
+  registerUser: (name: string, email: string, password?: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
-  updateProfile: (updated: Partial<UserProfile>) => void;
 }
-
-const DEFAULT_USER: UserProfile = {
-  id: 'usr-google-ayah-01',
-  name: 'Ayah (Teknisi AC)',
-  email: 'ayah.sumbertekhnik@gmail.com',
-  photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-  role: 'teknisi',
-  provider: 'google'
-};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_STORAGE_KEY = 'sumber_tekhnik_auth_user';
+const CURRENT_USER_KEY = 'sumber_tekhnik_current_user';
+const ALL_USERS_KEY = 'sumber_tekhnik_registered_users';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -28,59 +21,117 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     try {
-      const savedUser = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
+      const saved = localStorage.getItem(CURRENT_USER_KEY);
+      if (saved) {
+        setUser(JSON.parse(saved));
       } else {
-        // By default on first visit, set the logged in technician user so the user can test immediately!
-        // But also allow explicit logout/login
-        setUser(DEFAULT_USER);
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(DEFAULT_USER));
+        // Do NOT auto-login as requested: start on login / register screen
+        setUser(null);
       }
     } catch (e) {
-      console.error('Error loading user from localStorage:', e);
-      setUser(DEFAULT_USER);
+      console.error('Error loading user session:', e);
+      setUser(null);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const loginWithGoogle = async (customEmail?: string, customName?: string) => {
-    setLoading(true);
-    // Simulate real Google OAuth handshake delay
-    await new Promise((resolve) => setTimeout(resolve, 600));
+  const getRegisteredUsers = (): UserProfile[] => {
+    try {
+      const list = localStorage.getItem(ALL_USERS_KEY);
+      return list ? JSON.parse(list) : [];
+    } catch {
+      return [];
+    }
+  };
 
-    const email = customEmail?.trim() || 'ayah.sumbertekhnik@gmail.com';
-    const name = customName?.trim() || (email.includes('@') ? email.split('@')[0] : 'Teknisi AC');
+  const saveRegisteredUsers = (users: UserProfile[]) => {
+    localStorage.setItem(ALL_USERS_KEY, JSON.stringify(users));
+  };
+
+  const loginWithGoogle = async (email: string, name?: string): Promise<boolean> => {
+    setLoading(true);
+    await new Promise(r => setTimeout(r, 400));
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = name?.trim() || cleanEmail.split('@')[0];
+
+    const users = getRegisteredUsers();
+    let existingUser = users.find(u => u.email.toLowerCase() === cleanEmail);
+
+    if (!existingUser) {
+      existingUser = {
+        id: 'usr-' + Date.now().toString(36),
+        name: cleanName,
+        email: cleanEmail,
+        role: 'teknisi',
+        provider: 'google'
+      };
+      users.push(existingUser);
+      saveRegisteredUsers(users);
+    }
+
+    setUser(existingUser);
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(existingUser));
+    setLoading(false);
+    return true;
+  };
+
+  const loginWithEmail = async (email: string, password?: string): Promise<{ success: boolean; message?: string }> => {
+    const cleanEmail = email.trim().toLowerCase();
+    const users = getRegisteredUsers();
+    const found = users.find(u => u.email.toLowerCase() === cleanEmail);
+
+    if (!found) {
+      return { success: false, message: 'Akun belum terdaftar. Silakan registrasi terlebih dahulu.' };
+    }
+
+    if (password && found.password && found.password !== password) {
+      return { success: false, message: 'Password salah.' };
+    }
+
+    setUser(found);
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(found));
+    return { success: true };
+  };
+
+  const registerUser = async (name: string, email: string, password?: string): Promise<{ success: boolean; message?: string }> => {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = name.trim();
+
+    if (!cleanName || !cleanEmail) {
+      return { success: false, message: 'Nama dan email wajib diisi.' };
+    }
+
+    const users = getRegisteredUsers();
+    if (users.some(u => u.email.toLowerCase() === cleanEmail)) {
+      return { success: false, message: 'Email Google ini sudah terdaftar. Silakan langsung login.' };
+    }
 
     const newUser: UserProfile = {
-      id: 'usr-google-' + Math.random().toString(36).substring(2, 9),
-      name: name,
-      email: email,
-      photoUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=1e40af`,
+      id: 'usr-' + Date.now().toString(36),
+      name: cleanName,
+      email: cleanEmail,
+      password: password || '',
       role: 'teknisi',
       provider: 'google'
     };
 
+    users.push(newUser);
+    saveRegisteredUsers(users);
+
     setUser(newUser);
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newUser));
-    setLoading(false);
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
+    return { success: true };
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem(AUTH_STORAGE_KEY);
-  };
-
-  const updateProfile = (updated: Partial<UserProfile>) => {
-    if (!user) return;
-    const updatedUser = { ...user, ...updated };
-    setUser(updatedUser);
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updatedUser));
+    localStorage.removeItem(CURRENT_USER_KEY);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginWithGoogle, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, loginWithGoogle, loginWithEmail, registerUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

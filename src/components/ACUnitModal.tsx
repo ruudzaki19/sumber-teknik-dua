@@ -6,81 +6,63 @@ interface ACUnitModalProps {
   isOpen: boolean;
   onClose: () => void;
   unit?: ACUnit | null;
-  defaultRoomId?: string;
-  rooms: Room[];
+  targetRoom: Room;
   onSave: (unitData: Omit<ACUnit, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => void;
   onDelete?: (id: string) => void;
 }
-
-const COMMON_BRANDS = ['POLYTRON', 'DAIKIN', 'PANASONIC', 'GREE', 'SHARP', 'LG', 'MITSUBISHI', 'SAMSUNG', 'TOSHIBA', 'CHANGHONG', 'AUX'];
-const COMMON_TYPES = ['KASET', 'SPLIT WALL', 'STANDING FLOOR', 'CEILING SUSPENDED', 'DUCTING / CENTRAL', 'PORTABLE'];
-const COMMON_CAPACITIES = ['0.5 PK', '0.75 PK', '1 PK', '1.5 PK', '2 PK', '2.5 PK', '3 PK', '4 PK', '5 PK', '10 PK'];
 
 export const ACUnitModal: React.FC<ACUnitModalProps> = ({
   isOpen,
   onClose,
   unit,
-  defaultRoomId,
-  rooms,
+  targetRoom,
   onSave,
   onDelete
 }) => {
-  const [roomId, setRoomId] = useState<string>('');
   const [mitra, setMitra] = useState<string>('');
-  const [jenisAc, setJenisAc] = useState<string>('KASET');
-  const [merk, setMerk] = useState<string>('POLYTRON');
+  const [jenisAc, setJenisAc] = useState<string>('');
+  const [merk, setMerk] = useState<string>('');
   const [typeModel, setTypeModel] = useState<string>('');
-  const [kapasitas, setKapasitas] = useState<string>('5 PK');
+  const [kapasitas, setKapasitas] = useState<string>('');
   const [noSeri, setNoSeri] = useState<string>('');
   const [ruanganLokasi, setRuanganLokasi] = useState<string>('');
   const [qrCodeId, setQrCodeId] = useState<string>('');
 
   useEffect(() => {
     if (unit) {
-      setRoomId(unit.roomId);
       setMitra(unit.mitra || '');
-      setJenisAc(unit.jenisAc || 'KASET');
-      setMerk(unit.merk || 'POLYTRON');
+      setJenisAc(unit.jenisAc || '');
+      setMerk(unit.merk || '');
       setTypeModel(unit.typeModel || '');
-      setKapasitas(unit.kapasitas || '5 PK');
+      setKapasitas(unit.kapasitas || '');
       setNoSeri(unit.noSeri || '');
-      setRuanganLokasi(unit.ruanganLokasi || '');
+      setRuanganLokasi(unit.ruanganLokasi || targetRoom?.namaRuangan?.toUpperCase() || '');
       setQrCodeId(unit.qrCodeId || '');
     } else {
-      const selectedRoom = rooms.find(r => r.id === defaultRoomId) || rooms[0];
-      setRoomId(selectedRoom?.id || '');
+      // Clean empty state as requested by user (no auto-fill defaults!)
       setMitra('');
-      setJenisAc('KASET');
-      setMerk('POLYTRON');
+      setJenisAc('');
+      setMerk('');
       setTypeModel('');
-      setKapasitas('5 PK');
+      setKapasitas('');
       setNoSeri('');
-      setRuanganLokasi(selectedRoom ? selectedRoom.namaRuangan.toUpperCase() : '');
+      setRuanganLokasi(targetRoom ? targetRoom.namaRuangan.toUpperCase() : '');
       setQrCodeId(`AC-QR-${Date.now().toString(36).toUpperCase()}`);
     }
-  }, [unit, defaultRoomId, rooms, isOpen]);
-
-  // When room selection changes, update the default ruanganLokasi
-  const handleRoomChange = (newRoomId: string) => {
-    setRoomId(newRoomId);
-    const found = rooms.find(r => r.id === newRoomId);
-    if (found && (!ruanganLokasi || ruanganLokasi === '')) {
-      setRuanganLokasi(found.namaRuangan.toUpperCase());
-    }
-  };
+  }, [unit, targetRoom, isOpen]);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!merk.trim() || !ruanganLokasi.trim()) {
-      alert('Mohon lengkapi merk dan ruangan/lokasi AC.');
+      alert('Mohon isi merk AC dan nama ruangan/lokasi.');
       return;
     }
 
     onSave({
       id: unit ? unit.id : undefined,
-      roomId: roomId || (rooms[0]?.id ?? 'room-default'),
+      roomId: targetRoom.id,
       mitra: mitra.trim(),
       jenisAc: jenisAc.trim(),
       merk: merk.trim().toUpperCase(),
@@ -97,7 +79,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
     <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto">
       <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-200 my-auto">
         {/* Header */}
-        <div className="bg-brand-800 text-white p-4 flex items-center justify-between">
+        <div className="bg-brand-900 text-white p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
               <Cpu className="w-4 h-4 text-blue-200" />
@@ -106,7 +88,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
               <h3 className="font-bold text-sm">
                 {unit ? 'Edit Data Unit AC' : 'Tambah Unit AC Baru'}
               </h3>
-              <p className="text-blue-100 text-[11px]">Sesuai spesifikasi Kartu Pemeliharaan</p>
+              <p className="text-blue-200 text-[11px]">Sesuai spesifikasi Kartu Pemeliharaan</p>
             </div>
           </div>
           <button
@@ -118,52 +100,42 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-4 space-y-3 max-h-[82vh] overflow-y-auto">
-          {/* Room Assignment */}
+        <form onSubmit={handleSubmit} className="p-5 space-y-3.5 max-h-[82vh] overflow-y-auto">
+          {/* Room Assignment (LOCKED - Fixed to targetRoom) */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-brand-600" />
-              Kelompok Ruangan
+              Ruangan (Terkunci pada ruangan yang dipilih)
             </label>
-            <select
-              value={roomId}
-              onChange={(e) => handleRoomChange(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-medium text-slate-800"
-            >
-              {rooms.map(r => (
-                <option key={r.id} value={r.id}>
-                  {r.namaRuangan} {r.gedungArea ? `(${r.gedungArea})` : ''}
-                </option>
-              ))}
-            </select>
+            <div className="w-full text-xs px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-xl font-bold text-brand-900 select-none">
+              {targetRoom?.namaRuangan}
+            </div>
           </div>
 
           {/* Mitra */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              MITRA / KLIEN (Opsional)
+              Mitra / Klien
             </label>
             <input
               type="text"
-              placeholder="Contoh: Gedung Galeri, PT Sahabat, dll."
               value={mitra}
               onChange={(e) => setMitra(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg"
+              className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
             />
           </div>
 
-          {/* Ruangan / Lokasi */}
+          {/* Ruangan / Lokasi (Tercetak di Kartu) */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              RUANGAN / LOKASI (Tercetak di Kartu)
+              Ruangan / Lokasi (Tercetak di Kartu)
             </label>
             <input
               type="text"
               required
-              placeholder="Contoh: GEDUNG GALERI (TENGAH)"
               value={ruanganLokasi}
               onChange={(e) => setRuanganLokasi(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-bold text-slate-900 uppercase"
+              className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -171,38 +143,28 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                MERK
+                Merk
               </label>
               <input
                 type="text"
-                list="brands-list"
                 required
-                placeholder="Contoh: POLYTRON"
                 value={merk}
                 onChange={(e) => setMerk(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-bold uppercase"
+                className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold uppercase focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
-              <datalist id="brands-list">
-                {COMMON_BRANDS.map(b => <option key={b} value={b} />)}
-              </datalist>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                JENIS AC
+                Jenis AC
               </label>
               <input
                 type="text"
-                list="types-list"
                 required
-                placeholder="Contoh: KASET"
                 value={jenisAc}
                 onChange={(e) => setJenisAc(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold uppercase"
+                className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
-              <datalist id="types-list">
-                {COMMON_TYPES.map(t => <option key={t} value={t} />)}
-              </datalist>
             </div>
           </div>
 
@@ -210,61 +172,54 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                KAPASITAS
+                Kapasitas
               </label>
               <input
                 type="text"
-                list="capacity-list"
                 required
-                placeholder="Contoh: 5 PK, 1 PK, 2 PK"
                 value={kapasitas}
                 onChange={(e) => setKapasitas(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold"
+                className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
-              <datalist id="capacity-list">
-                {COMMON_CAPACITIES.map(c => <option key={c} value={c} />)}
-              </datalist>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                TYPE / MODEL (Opsional)
+                Type / Model (Opsional)
               </label>
               <input
                 type="text"
-                placeholder="Contoh: PAC-50VZ"
                 value={typeModel}
                 onChange={(e) => setTypeModel(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg"
+                className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
 
-          {/* No Seri & QR Code ID */}
+          {/* No Seri & Kode QR */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                NO. SERI (Opsional)
+                No. Seri (Opsional)
               </label>
               <input
                 type="text"
-                placeholder="Nomor seri bodi"
                 value={noSeri}
                 onChange={(e) => setNoSeri(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-mono"
+                className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                KODE QR (ID Unik)
+                Kode QR (ID Unik)
               </label>
               <input
                 type="text"
                 required
                 value={qrCodeId}
                 onChange={(e) => setQrCodeId(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-mono text-brand-800 font-bold"
+                className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-brand-800 font-bold focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
@@ -297,7 +252,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 shadow-sm transition-colors"
+                className="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl inline-flex items-center gap-1.5 shadow-sm transition-colors"
               >
                 <Save className="w-3.5 h-3.5" />
                 Simpan Unit
