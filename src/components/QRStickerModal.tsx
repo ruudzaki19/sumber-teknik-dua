@@ -18,7 +18,9 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
 
   if (!isOpen || !unit) return null;
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://sumber-tekhnik-dua.vercel.app';
+  const origin = typeof window !== 'undefined' && window.location.origin
+    ? window.location.origin
+    : 'https://sumber-tehnik-dua.vercel.app';
   // Link for public scanning: opens public view mode directly without login!
   const publicScanUrl = `${origin}/?view=${encodeURIComponent(unit.id)}`;
 
