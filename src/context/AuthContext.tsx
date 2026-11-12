@@ -180,7 +180,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     if (cleanEmail === 'admin@gmail.com') {
-      return { success: false, message: 'Email ini adalah akun admin resmi. Silakan langsung login dengan password 1234.' };
+      return { success: false, message: 'Email ini sudah terdaftar. Silakan langsung login.' };
     }
 
     const newId = 'usr-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 6);

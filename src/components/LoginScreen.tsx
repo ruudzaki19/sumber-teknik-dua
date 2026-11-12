@@ -178,13 +178,6 @@ export const LoginScreen: React.FC = () => {
                   </button>
                 </p>
               </div>
-
-              {/* Info Akun Admin */}
-              <div className="p-2.5 bg-blue-50/80 border border-blue-200/70 rounded-xl text-center">
-                <p className="text-[11px] text-brand-900 font-medium">
-                  Akun Admin Resmi: <span className="font-bold text-brand-700 font-mono">admin@gmail.com</span> (Sandi: <span className="font-bold text-brand-700 font-mono">1234</span>)
-                </p>
-              </div>
             </form>
           ) : (
             /* =================== FORM REGISTRASI =================== */
