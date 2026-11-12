@@ -163,7 +163,7 @@ export const LoginScreen: React.FC = () => {
               </button>
 
               {/* Link ke Registrasi */}
-              <div className="pt-4 text-center border-t border-slate-100">
+              <div className="pt-3 text-center border-t border-slate-100">
                 <p className="text-xs text-slate-500">
                   Belum punya akun?{' '}
                   <button
@@ -176,6 +176,13 @@ export const LoginScreen: React.FC = () => {
                   >
                     Daftar / Registrasi di sini
                   </button>
+                </p>
+              </div>
+
+              {/* Info Akun Admin */}
+              <div className="p-2.5 bg-blue-50/80 border border-blue-200/70 rounded-xl text-center">
+                <p className="text-[11px] text-brand-900 font-medium">
+                  Akun Admin Resmi: <span className="font-bold text-brand-700 font-mono">admin@gmail.com</span> (Sandi: <span className="font-bold text-brand-700 font-mono">1234</span>)
                 </p>
               </div>
             </form>
@@ -299,8 +306,8 @@ export const LoginScreen: React.FC = () => {
           )}
 
           <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-slate-400 text-[11px]">
-            <ShieldCheck className="w-3.5 h-3.5 text-brand-600" />
-            <span>Akun tersimpan aman di perangkat lokal & siap hosting Vercel</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Terkoneksi aman dengan Cloud PostgreSQL Supabase</span>
           </div>
         </div>
       </div>

@@ -6,11 +6,8 @@ import {
   Search,
   Printer,
   Edit,
-  Trash2,
   LogOut,
-  QrCode,
-  Database,
-  CheckCircle2
+  QrCode
 } from 'lucide-react';
 
 import { ACUnit, MaintenanceRecord, Room } from './types';
@@ -22,9 +19,8 @@ import { RoomModal } from './components/RoomModal';
 import { PdfExportModal } from './components/PdfExportModal';
 import { QRStickerModal } from './components/QRStickerModal';
 import { PublicQRView } from './components/PublicQRView';
-import { DatabaseSettingsModal } from './components/DatabaseSettingsModal';
 import { dataService } from './db/dataService';
-import { isSupabaseConfigured } from './lib/supabase';
+import { supabase } from './lib/supabase';
 import { FIXED_SIGNATURE_PATH } from './db/db';
 
 export const App: React.FC = () => {
@@ -48,8 +44,6 @@ export const App: React.FC = () => {
 
   const [isQRStickerOpen, setIsQRStickerOpen] = useState(false);
   const [activeStickerUnit, setActiveStickerUnit] = useState<ACUnit | null>(null);
-
-  const [isDbModalOpen, setIsDbModalOpen] = useState(false);
 
   // Forms modals
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
@@ -86,9 +80,45 @@ export const App: React.FC = () => {
     setDataLoading(false);
   };
 
+  // Initial load & Supabase Realtime Subscription
   useEffect(() => {
     if (user && !publicUnitId) {
       refreshAllData();
+
+      // Setup Supabase Realtime listener for auto-updates across devices
+      let channel: any = null;
+      if (supabase) {
+        channel = supabase
+          .channel('public:db-changes')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'rooms' },
+            () => {
+              refreshAllData();
+            }
+          )
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'ac_units' },
+            () => {
+              refreshAllData();
+            }
+          )
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'maintenance_records' },
+            () => {
+              refreshAllData();
+            }
+          )
+          .subscribe();
+      }
+
+      return () => {
+        if (channel && supabase) {
+          supabase.removeChannel(channel);
+        }
+      };
     }
   }, [user, publicUnitId]);
 
@@ -98,7 +128,7 @@ export const App: React.FC = () => {
       <PublicQRView
         unitId={publicUnitId}
         onAdminLoginClick={() => {
-          // Remove query param to switch to admin login
+          // Remove query param to switch to dashboard / login
           const url = new URL(window.location.href);
           url.searchParams.delete('view');
           window.history.pushState({}, '', url.toString());
@@ -123,6 +153,9 @@ export const App: React.FC = () => {
   if (!user) {
     return <LoginScreen />;
   }
+
+  // Check role: Admin vs User
+  const isAdmin = user.role === 'admin';
 
   // Handle Room CRUD
   const handleSaveRoom = async (roomData: Omit<Room, 'id' | 'createdAt'> & { id?: string }) => {
@@ -174,7 +207,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col text-slate-800 pb-16">
-      {/* Top Navbar - Sumber Tekhnik Dua (Admin Mode) */}
+      {/* Top Navbar - Sumber Tekhnik Dua */}
       <header className="bg-brand-900 text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -186,8 +219,14 @@ export const App: React.FC = () => {
                 <h1 className="text-base sm:text-lg font-black tracking-tight uppercase">
                   Sumber Tekhnik Dua
                 </h1>
-                <span className="text-[10px] bg-brand-700 text-blue-100 px-2 py-0.5 rounded font-mono font-medium">
-                  Admin
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold ${
+                    isAdmin
+                      ? 'bg-amber-500/25 text-amber-200 border border-amber-400/30'
+                      : 'bg-blue-500/25 text-blue-200 border border-blue-400/30'
+                  }`}
+                >
+                  {isAdmin ? 'Admin' : 'User / Klien'}
                 </span>
               </div>
               <p className="text-[11px] text-blue-200">
@@ -196,31 +235,15 @@ export const App: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Database Cloud Connection Indicator Button */}
-            <button
-              onClick={() => setIsDbModalOpen(true)}
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                isSupabaseConfigured
-                  ? 'bg-emerald-600/30 text-emerald-200 border-emerald-400/30 hover:bg-emerald-600/50'
-                  : 'bg-amber-600/30 text-amber-200 border-amber-400/30 hover:bg-amber-600/50'
-              }`}
-              title="Pengaturan Database PostgreSQL Cloud / DBeaver"
-            >
-              <Database className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">
-                {isSupabaseConfigured ? 'PostgreSQL Online' : 'Konek Database'}
-              </span>
-            </button>
-
+          <div className="flex items-center gap-3">
             {/* User Profile & Logout */}
-            <div className="flex items-center gap-2 pl-2 border-l border-white/20">
+            <div className="flex items-center gap-2.5">
               <span className="hidden sm:inline text-xs font-semibold text-blue-100">
                 {user.name}
               </span>
               <button
                 onClick={logout}
-                className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors inline-flex items-center gap-1 text-xs"
+                className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors inline-flex items-center gap-1.5 text-xs font-medium"
                 title="Keluar Akun"
               >
                 <LogOut className="w-4 h-4 text-blue-200" />
@@ -233,7 +256,7 @@ export const App: React.FC = () => {
 
       {/* Main Container */}
       <main className="max-w-6xl mx-auto px-3 sm:px-4 py-5 flex-1 w-full space-y-4">
-        {/* Top Control Bar: Search & Tambah Ruangan */}
+        {/* Top Control Bar: Search & (Admin) Tambah Ruangan */}
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
           {/* Search Box */}
           <div className="relative w-full sm:w-80">
@@ -255,17 +278,19 @@ export const App: React.FC = () => {
             )}
           </div>
 
-          {/* + Tambah Ruangan */}
-          <button
-            onClick={() => {
-              setEditingRoom(null);
-              setIsRoomModalOpen(true);
-            }}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl shadow-sm transition-colors active:scale-95"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Tambah Ruangan</span>
-          </button>
+          {/* + Tambah Ruangan (Khusus Admin) */}
+          {isAdmin && (
+            <button
+              onClick={() => {
+                setEditingRoom(null);
+                setIsRoomModalOpen(true);
+              }}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl shadow-sm transition-colors active:scale-95"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Tambah Ruangan</span>
+            </button>
+          )}
         </div>
 
         {/* Empty state when no rooms exist yet */}
@@ -274,27 +299,35 @@ export const App: React.FC = () => {
             <div className="w-16 h-16 bg-blue-50 text-brand-700 rounded-full flex items-center justify-center mx-auto mb-3">
               <DoorClosed className="w-8 h-8" />
             </div>
-            <h3 className="text-base font-bold text-slate-800">Belum Ada Ruangan</h3>
+            <h3 className="text-base font-bold text-slate-800">
+              {isAdmin ? 'Belum Ada Ruangan' : 'Belum Ada Data Ruangan'}
+            </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-5">
-              Klik tombol <strong>"Tambah Ruangan"</strong> di atas untuk membuat ruangan baru.
+              {isAdmin
+                ? 'Klik tombol "Tambah Ruangan" di atas untuk membuat ruangan baru.'
+                : 'Saat ini belum ada data ruangan yang didaftarkan oleh admin teknisi.'}
             </p>
-            <button
-              onClick={() => {
-                setEditingRoom(null);
-                setIsRoomModalOpen(true);
-              }}
-              className="px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl inline-flex items-center gap-2 shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              Tambah Ruangan Sekarang
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => {
+                  setEditingRoom(null);
+                  setIsRoomModalOpen(true);
+                }}
+                className="px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl inline-flex items-center gap-2 shadow-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Tambah Ruangan Sekarang
+              </button>
+            )}
           </div>
         )}
 
         {/* Search empty state */}
         {!dataLoading && rooms.length > 0 && filteredRooms.length === 0 && (
           <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400">
-            <p className="text-sm font-semibold text-slate-600">Tidak ada ruangan yang cocok dengan pencarian "{searchQuery}"</p>
+            <p className="text-sm font-semibold text-slate-600">
+              Tidak ada ruangan yang cocok dengan pencarian "{searchQuery}"
+            </p>
             <button
               onClick={() => setSearchQuery('')}
               className="mt-2 text-xs text-brand-700 font-bold"
@@ -314,7 +347,7 @@ export const App: React.FC = () => {
                 key={room.id}
                 className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden"
               >
-                {/* ROOM HEADER: Name on left, [Edit Ruangan] & [+ Tambah Unit AC] on right */}
+                {/* ROOM HEADER: Name on left, Actions on right (Admin Only) */}
                 <div className="bg-slate-50 p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-800 flex items-center justify-center font-bold">
@@ -327,31 +360,33 @@ export const App: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* ACTION BUTTONS */}
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
-                    <button
-                      onClick={() => {
-                        setEditingRoom(room);
-                        setIsRoomModalOpen(true);
-                      }}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-xl transition-colors"
-                    >
-                      <Edit className="w-3.5 h-3.5" />
-                      Edit Ruangan
-                    </button>
+                  {/* ACTION BUTTONS: Admin Only */}
+                  {isAdmin && (
+                    <div className="flex items-center gap-2 self-end sm:self-auto">
+                      <button
+                        onClick={() => {
+                          setEditingRoom(room);
+                          setIsRoomModalOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-xl transition-colors"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                        Edit Ruangan
+                      </button>
 
-                    <button
-                      onClick={() => {
-                        setTargetRoomForUnit(room);
-                        setEditingUnit(null);
-                        setIsUnitModalOpen(true);
-                      }}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 px-3.5 py-1.5 rounded-xl shadow-sm transition-colors active:scale-95"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      + Tambah Unit AC
-                    </button>
-                  </div>
+                      <button
+                        onClick={() => {
+                          setTargetRoomForUnit(room);
+                          setEditingUnit(null);
+                          setIsUnitModalOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 px-3.5 py-1.5 rounded-xl shadow-sm transition-colors active:scale-95"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        + Tambah Unit AC
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* ROOM BODY: List of AC Units inside this room */}
@@ -359,8 +394,12 @@ export const App: React.FC = () => {
                   {roomUnits.length === 0 ? (
                     <div className="text-center py-6 text-slate-400 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
                       Belum ada unit AC di ruangan ini.
-                      <br />
-                      Klik tombol <strong>"+ Tambah Unit AC"</strong> di kanan atas untuk menambahkan.
+                      {isAdmin && (
+                        <>
+                          <br />
+                          Klik tombol <strong>"+ Tambah Unit AC"</strong> di kanan atas untuk menambahkan.
+                        </>
+                      )}
                     </div>
                   ) : (
                     roomUnits.map((unit) => {
@@ -384,33 +423,37 @@ export const App: React.FC = () => {
                               </h3>
                             </div>
 
-                            {/* Direct Action Buttons */}
+                            {/* Action Buttons */}
                             <div className="flex items-center gap-2">
-                              {/* QR Code Sticker Button (Ayah can print & stick on AC!) */}
+                              {/* QR Code Sticker Button (Visible for all: Admin & User) */}
                               <button
                                 onClick={() => {
                                   setActiveStickerUnit(unit);
                                   setIsQRStickerOpen(true);
                                 }}
                                 className="inline-flex items-center gap-1 text-xs font-bold bg-white/15 hover:bg-white/25 text-white px-2.5 py-1.5 rounded-lg transition-colors border border-white/20"
-                                title="Cetak Stiker QR Code untuk AC ini"
+                                title="Lihat & Cetak Stiker QR Code untuk AC ini"
                               >
                                 <QrCode className="w-3.5 h-3.5 text-blue-200" />
                                 <span>Stiker QR</span>
                               </button>
 
-                              <button
-                                onClick={() => {
-                                  setActiveUnitForRecord(unit);
-                                  setEditingRecord(null);
-                                  setIsMaintenanceModalOpen(true);
-                                }}
-                                className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-brand-900 hover:bg-blue-50 px-3 py-1.5 rounded-lg shadow-sm transition-colors"
-                              >
-                                <Plus className="w-3.5 h-3.5" />
-                                + Tambah Catatan Servis
-                              </button>
+                              {/* Tambah Catatan Servis (Admin Only) */}
+                              {isAdmin && (
+                                <button
+                                  onClick={() => {
+                                    setActiveUnitForRecord(unit);
+                                    setEditingRecord(null);
+                                    setIsMaintenanceModalOpen(true);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-brand-900 hover:bg-blue-50 px-3 py-1.5 rounded-lg shadow-sm transition-colors"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                  + Tambah Catatan Servis
+                                </button>
+                              )}
 
+                              {/* Cetak PDF (Visible for all) */}
                               <button
                                 onClick={() => {
                                   setActivePdfUnit(unit);
@@ -422,17 +465,20 @@ export const App: React.FC = () => {
                                 Cetak PDF
                               </button>
 
-                              <button
-                                onClick={() => {
-                                  setTargetRoomForUnit(room);
-                                  setEditingUnit(unit);
-                                  setIsUnitModalOpen(true);
-                                }}
-                                className="p-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg"
-                                title="Edit Spesifikasi Unit"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </button>
+                              {/* Edit Unit (Admin Only) */}
+                              {isAdmin && (
+                                <button
+                                  onClick={() => {
+                                    setTargetRoomForUnit(room);
+                                    setEditingUnit(unit);
+                                    setIsUnitModalOpen(true);
+                                  }}
+                                  className="p-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg"
+                                  title="Edit Spesifikasi Unit"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </button>
+                              )}
                             </div>
                           </div>
 
@@ -465,8 +511,10 @@ export const App: React.FC = () => {
                                     <th className="w-12 py-2 px-3 text-center border-r border-slate-200">NO</th>
                                     <th className="w-32 py-2 px-3 border-r border-slate-200">TANGGAL</th>
                                     <th className="py-2 px-3 border-r border-slate-200">URAIAN PEKERJAAN</th>
-                                    <th className="w-24 py-2 px-2 text-center border-r border-slate-200">PARAF</th>
-                                    <th className="w-16 py-2 px-2 text-center">AKSI</th>
+                                    <th className={`w-24 py-2 px-2 text-center ${isAdmin ? 'border-r border-slate-200' : ''}`}>PARAF</th>
+                                    {isAdmin && (
+                                      <th className="w-16 py-2 px-2 text-center">AKSI</th>
+                                    )}
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-200 bg-white">
@@ -482,31 +530,35 @@ export const App: React.FC = () => {
                                         <td className="py-2 px-3 font-semibold text-slate-900 border-r border-slate-200 whitespace-pre-line leading-relaxed align-top">
                                           {rec.uraianPekerjaan}
                                         </td>
-                                        <td className="py-1 px-2 text-center border-r border-slate-200 align-top">
+                                        <td className={`py-1 px-2 text-center align-top ${isAdmin ? 'border-r border-slate-200' : ''}`}>
                                           <img
                                             src={FIXED_SIGNATURE_PATH}
                                             alt="Paraf"
                                             className="h-6 max-w-[65px] mx-auto object-contain"
                                           />
                                         </td>
-                                        <td className="py-2 px-2 text-center align-top">
-                                          <button
-                                            onClick={() => {
-                                              setActiveUnitForRecord(unit);
-                                              setEditingRecord(rec);
-                                              setIsMaintenanceModalOpen(true);
-                                            }}
-                                            className="text-brand-700 hover:text-brand-900 font-bold text-[11px]"
-                                          >
-                                            Edit
-                                          </button>
-                                        </td>
+                                        {isAdmin && (
+                                          <td className="py-2 px-2 text-center align-top">
+                                            <button
+                                              onClick={() => {
+                                                setActiveUnitForRecord(unit);
+                                                setEditingRecord(rec);
+                                                setIsMaintenanceModalOpen(true);
+                                              }}
+                                              className="text-brand-700 hover:text-brand-900 font-bold text-[11px]"
+                                            >
+                                              Edit
+                                            </button>
+                                          </td>
+                                        )}
                                       </tr>
                                     ))
                                   ) : (
                                     <tr>
-                                      <td colSpan={5} className="py-5 text-center text-slate-400">
-                                        Belum ada catatan servis. Tekan tombol <strong>"+ Tambah Catatan Servis"</strong> di atas.
+                                      <td colSpan={isAdmin ? 5 : 4} className="py-5 text-center text-slate-400">
+                                        {isAdmin
+                                          ? 'Belum ada catatan servis. Tekan tombol "+ Tambah Catatan Servis" di atas.'
+                                          : 'Belum ada catatan servis terdaftar untuk unit ini.'}
                                       </td>
                                     </tr>
                                   )}
@@ -542,7 +594,7 @@ export const App: React.FC = () => {
       </main>
 
       {/* MODALS */}
-      {/* 1. Official PDF Export & Print Modal (Fixed A4 proportions matching Gambar 5) */}
+      {/* 1. Official PDF Export & Print Modal */}
       {activePdfUnit && (
         <PdfExportModal
           isOpen={isPdfModalOpen}
@@ -553,7 +605,7 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 2. QR Sticker Generator Modal (For Ayah to print stickers with link to public scan view!) */}
+      {/* 2. QR Sticker Generator Modal */}
       {activeStickerUnit && (
         <QRStickerModal
           isOpen={isQRStickerOpen}
@@ -565,14 +617,8 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 3. Database Cloud Connection Settings Modal */}
-      <DatabaseSettingsModal
-        isOpen={isDbModalOpen}
-        onClose={() => setIsDbModalOpen(false)}
-      />
-
-      {/* 4. Maintenance Record Form Modal */}
-      {activeUnitForRecord && (
+      {/* 3. Maintenance Record Form Modal (Admin Only) */}
+      {isAdmin && activeUnitForRecord && (
         <MaintenanceModal
           isOpen={isMaintenanceModalOpen}
           onClose={() => setIsMaintenanceModalOpen(false)}
@@ -586,8 +632,8 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 5. AC Unit Form Modal */}
-      {targetRoomForUnit && (
+      {/* 4. AC Unit Form Modal (Admin Only) */}
+      {isAdmin && targetRoomForUnit && (
         <ACUnitModal
           isOpen={isUnitModalOpen}
           onClose={() => setIsUnitModalOpen(false)}
@@ -598,14 +644,16 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 6. Room Form Modal */}
-      <RoomModal
-        isOpen={isRoomModalOpen}
-        onClose={() => setIsRoomModalOpen(false)}
-        room={editingRoom}
-        onSave={handleSaveRoom}
-        onDelete={handleDeleteRoom}
-      />
+      {/* 5. Room Form Modal (Admin Only) */}
+      {isAdmin && (
+        <RoomModal
+          isOpen={isRoomModalOpen}
+          onClose={() => setIsRoomModalOpen(false)}
+          room={editingRoom}
+          onSave={handleSaveRoom}
+          onDelete={handleDeleteRoom}
+        />
+      )}
     </div>
   );
 };

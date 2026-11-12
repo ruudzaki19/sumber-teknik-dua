@@ -4,6 +4,7 @@ import { dataService } from '../db/dataService';
 import { ACUnit, MaintenanceRecord } from '../types';
 import { FIXED_SIGNATURE_PATH } from '../db/db';
 import { PdfExportModal } from './PdfExportModal';
+import { supabase } from '../lib/supabase';
 
 interface PublicQRViewProps {
   unitId: string;
@@ -26,9 +27,37 @@ export const PublicQRView: React.FC<PublicQRViewProps> = ({ unitId, onAdminLogin
 
   useEffect(() => {
     loadData();
-    // Auto refresh data every 10 seconds so clients see live updates
+
+    // Supabase Realtime channel
+    let channel: any = null;
+    if (supabase) {
+      channel = supabase
+        .channel(`public:qr-${unitId}`)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'ac_units' },
+          () => {
+            loadData();
+          }
+        )
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'maintenance_records' },
+          () => {
+            loadData();
+          }
+        )
+        .subscribe();
+    }
+
+    // Auto refresh data backup every 10 seconds
     const interval = setInterval(loadData, 10000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [unitId]);
 
   if (loading && !unit) {

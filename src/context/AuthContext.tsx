@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserProfile } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -25,7 +26,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (saved) {
         setUser(JSON.parse(saved));
       } else {
-        // Do NOT auto-login as requested: start on login / register screen
         setUser(null);
       }
     } catch (e) {
@@ -51,34 +51,109 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithGoogle = async (email: string, name?: string): Promise<boolean> => {
     setLoading(true);
-    await new Promise(r => setTimeout(r, 400));
-
     const cleanEmail = email.trim().toLowerCase();
     const cleanName = name?.trim() || cleanEmail.split('@')[0];
 
-    const users = getRegisteredUsers();
-    let existingUser = users.find(u => u.email.toLowerCase() === cleanEmail);
+    // Special check for admin email
+    const isAdmin = cleanEmail === 'admin@gmail.com';
+    const role: 'admin' | 'user' = isAdmin ? 'admin' : 'user';
 
-    if (!existingUser) {
-      existingUser = {
-        id: 'usr-' + Date.now().toString(36),
-        name: cleanName,
-        email: cleanEmail,
-        role: 'teknisi',
-        provider: 'google'
-      };
-      users.push(existingUser);
-      saveRegisteredUsers(users);
+    const googleUser: UserProfile = {
+      id: isAdmin ? 'admin-01' : 'usr-' + Date.now().toString(36),
+      name: isAdmin ? 'Admin Sumber Tehnik' : cleanName,
+      email: cleanEmail,
+      role,
+      provider: 'google'
+    };
+
+    if (supabase) {
+      try {
+        await supabase.from('users').upsert({
+          id: googleUser.id,
+          nama: googleUser.name,
+          email: cleanEmail,
+          password: isAdmin ? '1234' : 'google-auth',
+          role,
+          created_at: Date.now()
+        }, { onConflict: 'email' });
+      } catch (err) {
+        console.warn('Upsert google user to Supabase error:', err);
+      }
     }
 
-    setUser(existingUser);
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(existingUser));
+    setUser(googleUser);
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(googleUser));
     setLoading(false);
     return true;
   };
 
   const loginWithEmail = async (email: string, password?: string): Promise<{ success: boolean; message?: string }> => {
     const cleanEmail = email.trim().toLowerCase();
+    const cleanPass = password?.trim() || '';
+
+    // 1. Cek Akun Resmi Admin (admin@gmail.com / 1234)
+    if (cleanEmail === 'admin@gmail.com' && cleanPass === '1234') {
+      const adminUser: UserProfile = {
+        id: 'admin-01',
+        name: 'Admin Sumber Tehnik',
+        email: 'admin@gmail.com',
+        role: 'admin',
+        provider: 'local'
+      };
+
+      // Pastikan tercatat juga di tabel Supabase
+      if (supabase) {
+        try {
+          await supabase.from('users').upsert({
+            id: 'admin-01',
+            nama: 'Admin Sumber Tehnik',
+            email: 'admin@gmail.com',
+            password: '1234',
+            role: 'admin',
+            created_at: 1794489000000
+          }, { onConflict: 'email' });
+        } catch (e) {
+          console.warn('Sync admin to Supabase:', e);
+        }
+      }
+
+      setUser(adminUser);
+      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(adminUser));
+      return { success: true };
+    }
+
+    // 2. Cek Akun Pengguna / User di Tabel Supabase
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', cleanEmail)
+          .maybeSingle();
+
+        if (!error && data) {
+          if (data.password !== cleanPass) {
+            return { success: false, message: 'Password salah.' };
+          }
+
+          const loggedInUser: UserProfile = {
+            id: data.id,
+            name: data.nama,
+            email: data.email,
+            role: data.role === 'admin' ? 'admin' : 'user',
+            provider: 'local'
+          };
+
+          setUser(loggedInUser);
+          localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(loggedInUser));
+          return { success: true };
+        }
+      } catch (err) {
+        console.warn('Error query user from Supabase:', err);
+      }
+    }
+
+    // 3. Fallback Local Storage
     const users = getRegisteredUsers();
     const found = users.find(u => u.email.toLowerCase() === cleanEmail);
 
@@ -86,7 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, message: 'Akun belum terdaftar. Silakan registrasi terlebih dahulu.' };
     }
 
-    if (password && found.password && found.password !== password) {
+    if (cleanPass && found.password && found.password !== cleanPass) {
       return { success: false, message: 'Password salah.' };
     }
 
@@ -98,27 +173,70 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const registerUser = async (name: string, email: string, password?: string): Promise<{ success: boolean; message?: string }> => {
     const cleanEmail = email.trim().toLowerCase();
     const cleanName = name.trim();
+    const cleanPass = password?.trim() || '';
 
     if (!cleanName || !cleanEmail) {
       return { success: false, message: 'Nama dan email wajib diisi.' };
     }
 
-    const users = getRegisteredUsers();
-    if (users.some(u => u.email.toLowerCase() === cleanEmail)) {
-      return { success: false, message: 'Email Google ini sudah terdaftar. Silakan langsung login.' };
+    if (cleanEmail === 'admin@gmail.com') {
+      return { success: false, message: 'Email ini adalah akun admin resmi. Silakan langsung login dengan password 1234.' };
+    }
+
+    const newId = 'usr-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 6);
+    const now = Date.now();
+
+    // 1. Simpan ke Supabase tabel `users`
+    if (supabase) {
+      try {
+        // Cek duplikasi email
+        const { data: existing } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', cleanEmail)
+          .maybeSingle();
+
+        if (existing) {
+          return { success: false, message: 'Email ini sudah terdaftar. Silakan langsung login.' };
+        }
+
+        const { error: insertError } = await supabase.from('users').insert({
+          id: newId,
+          nama: cleanName,
+          email: cleanEmail,
+          password: cleanPass,
+          role: 'user',
+          created_at: now
+        });
+
+        if (insertError) {
+          console.error('Supabase register error:', insertError);
+          if (insertError.message.includes('unique') || insertError.code === '23505') {
+            return { success: false, message: 'Email ini sudah terdaftar. Silakan langsung login.' };
+          }
+        }
+      } catch (err) {
+        console.warn('Register to Supabase error:', err);
+      }
+    }
+
+    // 2. Simpan juga ke cache lokal
+    const localUsers = getRegisteredUsers();
+    if (localUsers.some(u => u.email.toLowerCase() === cleanEmail)) {
+      return { success: false, message: 'Email ini sudah terdaftar. Silakan langsung login.' };
     }
 
     const newUser: UserProfile = {
-      id: 'usr-' + Date.now().toString(36),
+      id: newId,
       name: cleanName,
       email: cleanEmail,
-      password: password || '',
-      role: 'teknisi',
-      provider: 'google'
+      password: cleanPass,
+      role: 'user',
+      provider: 'local'
     };
 
-    users.push(newUser);
-    saveRegisteredUsers(users);
+    localUsers.push(newUser);
+    saveRegisteredUsers(localUsers);
 
     setUser(newUser);
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));

@@ -4,7 +4,7 @@ export interface UserProfile {
   email: string;
   password?: string;
   photoUrl?: string;
-  role: 'teknisi' | 'admin';
+  role: 'admin' | 'user' | 'teknisi';
   provider: 'google' | 'local';
 }
 

@@ -1,16 +1,34 @@
 -- ============================================================
 -- SQL SCHEMA UNTUK POSTGRESQL (DBeaver / Supabase)
--- SISTEM PEMELIHARAAN AC - SUMBER TEKHNIK DUA
+-- SISTEM PEMELIHARAAN AC - SUMBER TEHNIK DUA
 -- ============================================================
 
--- 1. Buat Tabel Ruangan (rooms)
+-- 1. Buat Tabel Pengguna / Autentikasi (users)
+CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY,
+  nama TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'user',
+  created_at BIGINT NOT NULL
+);
+
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public access users" ON users FOR ALL USING (true) WITH CHECK (true);
+
+-- Akun Default Admin
+INSERT INTO users (id, nama, email, password, role, created_at)
+VALUES ('admin-01', 'Admin Sumber Tehnik', 'admin@gmail.com', '1234', 'admin', 1794489000000)
+ON CONFLICT (email) DO NOTHING;
+
+-- 2. Buat Tabel Ruangan (rooms)
 CREATE TABLE IF NOT EXISTS rooms (
     id TEXT PRIMARY KEY,
     nama_ruangan TEXT NOT NULL,
     created_at BIGINT NOT NULL
 );
 
--- 2. Buat Tabel Unit AC (ac_units)
+-- 3. Buat Tabel Unit AC (ac_units)
 CREATE TABLE IF NOT EXISTS ac_units (
     id TEXT PRIMARY KEY,
     room_id TEXT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
@@ -26,7 +44,7 @@ CREATE TABLE IF NOT EXISTS ac_units (
     updated_at BIGINT NOT NULL
 );
 
--- 3. Buat Tabel Catatan Pemeliharaan (maintenance_records)
+-- 4. Buat Tabel Catatan Pemeliharaan (maintenance_records)
 CREATE TABLE IF NOT EXISTS maintenance_records (
     id TEXT PRIMARY KEY,
     unit_id TEXT NOT NULL REFERENCES ac_units(id) ON DELETE CASCADE,
@@ -40,7 +58,7 @@ CREATE TABLE IF NOT EXISTS maintenance_records (
 -- ============================================================
 -- PENGATURAN HAK AKSES (Row Level Security / RLS)
 -- Agar siapa saja yang scan QR bisa melihat (Public Read),
--- namun hanya Admin yang bisa menambah / mengedit data.
+-- serta sinkronisasi realtime berfungsi lancar.
 -- ============================================================
 
 ALTER TABLE rooms ENABLE ROW LEVEL SECURITY;
