@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
 import {
   Wrench,
   Plus,
@@ -9,10 +8,11 @@ import {
   Edit,
   Trash2,
   LogOut,
-  Calendar
+  QrCode,
+  Database,
+  CheckCircle2
 } from 'lucide-react';
 
-import { db, seedInitialDataIfNeeded, FIXED_SIGNATURE_PATH } from './db/db';
 import { ACUnit, MaintenanceRecord, Room } from './types';
 import { useAuth } from './context/AuthContext';
 import { LoginScreen } from './components/LoginScreen';
@@ -20,21 +20,36 @@ import { MaintenanceModal } from './components/MaintenanceModal';
 import { ACUnitModal } from './components/ACUnitModal';
 import { RoomModal } from './components/RoomModal';
 import { PdfExportModal } from './components/PdfExportModal';
+import { QRStickerModal } from './components/QRStickerModal';
+import { PublicQRView } from './components/PublicQRView';
+import { DatabaseSettingsModal } from './components/DatabaseSettingsModal';
+import { dataService } from './db/dataService';
+import { isSupabaseConfigured } from './lib/supabase';
+import { FIXED_SIGNATURE_PATH } from './db/db';
 
 export const App: React.FC = () => {
   const { user, loading: authLoading, logout } = useAuth();
 
-  // Database live queries
-  const rooms = useLiveQuery(() => db.rooms.orderBy('createdAt').reverse().toArray()) || [];
-  const acUnits = useLiveQuery(() => db.acUnits.orderBy('createdAt').reverse().toArray()) || [];
-  const maintenanceRecords = useLiveQuery(() => db.maintenanceRecords.toArray()) || [];
+  // Public View check from URL: e.g. ?view=unit-xxx
+  const [publicUnitId, setPublicUnitId] = useState<string | null>(null);
 
-  // Search & filter
+  // Data states
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [acUnits, setAcUnits] = useState<ACUnit[]>([]);
+  const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecord[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  // Search filter
   const [searchQuery, setSearchQuery] = useState('');
 
   // Modals state
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [activePdfUnit, setActivePdfUnit] = useState<ACUnit | null>(null);
+
+  const [isQRStickerOpen, setIsQRStickerOpen] = useState(false);
+  const [activeStickerUnit, setActiveStickerUnit] = useState<ACUnit | null>(null);
+
+  const [isDbModalOpen, setIsDbModalOpen] = useState(false);
 
   // Forms modals
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
@@ -48,10 +63,50 @@ export const App: React.FC = () => {
   const [activeUnitForRecord, setActiveUnitForRecord] = useState<ACUnit | null>(null);
   const [editingRecord, setEditingRecord] = useState<MaintenanceRecord | null>(null);
 
-  // Initialize
+  // Check URL on load for ?view=...
   useEffect(() => {
-    seedInitialDataIfNeeded();
+    const params = new URLSearchParams(window.location.search);
+    const viewId = params.get('view');
+    if (viewId) {
+      setPublicUnitId(viewId);
+    }
   }, []);
+
+  // Load all data
+  const refreshAllData = async () => {
+    setDataLoading(true);
+    const [fetchedRooms, fetchedUnits, fetchedRecords] = await Promise.all([
+      dataService.getRooms(),
+      dataService.getUnits(),
+      dataService.getRecords()
+    ]);
+    setRooms(fetchedRooms);
+    setAcUnits(fetchedUnits);
+    setMaintenanceRecords(fetchedRecords);
+    setDataLoading(false);
+  };
+
+  useEffect(() => {
+    if (user && !publicUnitId) {
+      refreshAllData();
+    }
+  }, [user, publicUnitId]);
+
+  // If visiting via QR code scan (?view=unit-xxx) -> Render Public Read-Only View!
+  if (publicUnitId) {
+    return (
+      <PublicQRView
+        unitId={publicUnitId}
+        onAdminLoginClick={() => {
+          // Remove query param to switch to admin login
+          const url = new URL(window.location.href);
+          url.searchParams.delete('view');
+          window.history.pushState({}, '', url.toString());
+          setPublicUnitId(null);
+        }}
+      />
+    );
+  }
 
   if (authLoading) {
     return (
@@ -64,72 +119,42 @@ export const App: React.FC = () => {
     );
   }
 
+  // If not logged in -> Show Login/Register
   if (!user) {
     return <LoginScreen />;
   }
 
   // Handle Room CRUD
   const handleSaveRoom = async (roomData: Omit<Room, 'id' | 'createdAt'> & { id?: string }) => {
-    if (roomData.id) {
-      await db.rooms.update(roomData.id, roomData);
-    } else {
-      const newId = `room-${Date.now().toString(36)}`;
-      await db.rooms.add({
-        ...roomData,
-        id: newId,
-        createdAt: Date.now()
-      });
-    }
+    await dataService.saveRoom(roomData);
+    await refreshAllData();
   };
 
   const handleDeleteRoom = async (roomId: string) => {
-    await db.rooms.delete(roomId);
-    const relatedUnits = await db.acUnits.where('roomId').equals(roomId).toArray();
-    for (const u of relatedUnits) {
-      await db.maintenanceRecords.where('unitId').equals(u.id).delete();
-    }
-    await db.acUnits.where('roomId').equals(roomId).delete();
+    await dataService.deleteRoom(roomId);
+    await refreshAllData();
   };
 
   // Handle Unit CRUD
   const handleSaveUnit = async (unitData: Omit<ACUnit, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => {
-    if (unitData.id) {
-      await db.acUnits.update(unitData.id, {
-        ...unitData,
-        updatedAt: Date.now()
-      });
-    } else {
-      const newId = `unit-${Date.now().toString(36)}`;
-      await db.acUnits.add({
-        ...unitData,
-        id: newId,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-      });
-    }
+    await dataService.saveUnit(unitData);
+    await refreshAllData();
   };
 
   const handleDeleteUnit = async (unitId: string) => {
-    await db.acUnits.delete(unitId);
-    await db.maintenanceRecords.where('unitId').equals(unitId).delete();
+    await dataService.deleteUnit(unitId);
+    await refreshAllData();
   };
 
   // Handle Record CRUD
   const handleSaveRecord = async (recordData: Omit<MaintenanceRecord, 'id' | 'createdAt'> & { id?: string }) => {
-    if (recordData.id) {
-      await db.maintenanceRecords.update(recordData.id, recordData);
-    } else {
-      const newId = `rec-${Date.now().toString(36)}`;
-      await db.maintenanceRecords.add({
-        ...recordData,
-        id: newId,
-        createdAt: Date.now()
-      });
-    }
+    await dataService.saveRecord(recordData);
+    await refreshAllData();
   };
 
   const handleDeleteRecord = async (recordId: string) => {
-    await db.maintenanceRecords.delete(recordId);
+    await dataService.deleteRecord(recordId);
+    await refreshAllData();
   };
 
   // Search filter
@@ -149,7 +174,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col text-slate-800 pb-16">
-      {/* Top Navbar - Sumber Tekhnik Dua (Tanpa Scan QR) */}
+      {/* Top Navbar - Sumber Tekhnik Dua (Admin Mode) */}
       <header className="bg-brand-900 text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -162,7 +187,7 @@ export const App: React.FC = () => {
                   Sumber Tekhnik Dua
                 </h1>
                 <span className="text-[10px] bg-brand-700 text-blue-100 px-2 py-0.5 rounded font-mono font-medium">
-                  Tahun 2026
+                  Admin
                 </span>
               </div>
               <p className="text-[11px] text-blue-200">
@@ -172,15 +197,31 @@ export const App: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Database Cloud Connection Indicator Button */}
+            <button
+              onClick={() => setIsDbModalOpen(true)}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                isSupabaseConfigured
+                  ? 'bg-emerald-600/30 text-emerald-200 border-emerald-400/30 hover:bg-emerald-600/50'
+                  : 'bg-amber-600/30 text-amber-200 border-amber-400/30 hover:bg-amber-600/50'
+              }`}
+              title="Pengaturan Database PostgreSQL Cloud / DBeaver"
+            >
+              <Database className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">
+                {isSupabaseConfigured ? 'PostgreSQL Online' : 'Konek Database'}
+              </span>
+            </button>
+
             {/* User Profile & Logout */}
-            <div className="flex items-center gap-2 pl-2">
+            <div className="flex items-center gap-2 pl-2 border-l border-white/20">
               <span className="hidden sm:inline text-xs font-semibold text-blue-100">
                 {user.name}
               </span>
               <button
                 onClick={logout}
                 className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors inline-flex items-center gap-1 text-xs"
-                title="Keluar / Ganti Akun"
+                title="Keluar Akun"
               >
                 <LogOut className="w-4 h-4 text-blue-200" />
                 <span className="hidden xs:inline">Keluar</span>
@@ -228,7 +269,7 @@ export const App: React.FC = () => {
         </div>
 
         {/* Empty state when no rooms exist yet */}
-        {rooms.length === 0 && (
+        {!dataLoading && rooms.length === 0 && (
           <div className="bg-white rounded-2xl border-2 border-dashed border-slate-300 p-12 text-center">
             <div className="w-16 h-16 bg-blue-50 text-brand-700 rounded-full flex items-center justify-center mx-auto mb-3">
               <DoorClosed className="w-8 h-8" />
@@ -250,8 +291,8 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* If rooms exist, list them */}
-        {rooms.length > 0 && filteredRooms.length === 0 && (
+        {/* Search empty state */}
+        {!dataLoading && rooms.length > 0 && filteredRooms.length === 0 && (
           <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400">
             <p className="text-sm font-semibold text-slate-600">Tidak ada ruangan yang cocok dengan pencarian "{searchQuery}"</p>
             <button
@@ -273,7 +314,7 @@ export const App: React.FC = () => {
                 key={room.id}
                 className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden"
               >
-                {/* ROOM HEADER: Name on left (tanpa QR ID), [Edit Ruangan] & [+ Tambah Unit AC] on right */}
+                {/* ROOM HEADER: Name on left, [Edit Ruangan] & [+ Tambah Unit AC] on right */}
                 <div className="bg-slate-50 p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-800 flex items-center justify-center font-bold">
@@ -286,7 +327,7 @@ export const App: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* ACTION BUTTONS: [Edit Ruangan] and [+ Tambah Unit AC] right next to it */}
+                  {/* ACTION BUTTONS */}
                   <div className="flex items-center gap-2 self-end sm:self-auto">
                     <button
                       onClick={() => {
@@ -343,8 +384,21 @@ export const App: React.FC = () => {
                               </h3>
                             </div>
 
-                            {/* Direct Action Buttons: [+ Tambah Catatan Servis] & [Cetak PDF] */}
+                            {/* Direct Action Buttons */}
                             <div className="flex items-center gap-2">
+                              {/* QR Code Sticker Button (Ayah can print & stick on AC!) */}
+                              <button
+                                onClick={() => {
+                                  setActiveStickerUnit(unit);
+                                  setIsQRStickerOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1 text-xs font-bold bg-white/15 hover:bg-white/25 text-white px-2.5 py-1.5 rounded-lg transition-colors border border-white/20"
+                                title="Cetak Stiker QR Code untuk AC ini"
+                              >
+                                <QrCode className="w-3.5 h-3.5 text-blue-200" />
+                                <span>Stiker QR</span>
+                              </button>
+
                               <button
                                 onClick={() => {
                                   setActiveUnitForRecord(unit);
@@ -499,7 +553,25 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 2. Maintenance Record Form Modal (Multiline Textarea & Fixed Paraf) */}
+      {/* 2. QR Sticker Generator Modal (For Ayah to print stickers with link to public scan view!) */}
+      {activeStickerUnit && (
+        <QRStickerModal
+          isOpen={isQRStickerOpen}
+          onClose={() => {
+            setIsQRStickerOpen(false);
+            setActiveStickerUnit(null);
+          }}
+          unit={activeStickerUnit}
+        />
+      )}
+
+      {/* 3. Database Cloud Connection Settings Modal */}
+      <DatabaseSettingsModal
+        isOpen={isDbModalOpen}
+        onClose={() => setIsDbModalOpen(false)}
+      />
+
+      {/* 4. Maintenance Record Form Modal */}
       {activeUnitForRecord && (
         <MaintenanceModal
           isOpen={isMaintenanceModalOpen}
@@ -514,7 +586,7 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 3. AC Unit Form Modal (Locked room, clean fields) */}
+      {/* 5. AC Unit Form Modal */}
       {targetRoomForUnit && (
         <ACUnitModal
           isOpen={isUnitModalOpen}
@@ -526,7 +598,7 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* 4. Room Form Modal (Clean name only) */}
+      {/* 6. Room Form Modal */}
       <RoomModal
         isOpen={isRoomModalOpen}
         onClose={() => setIsRoomModalOpen(false)}

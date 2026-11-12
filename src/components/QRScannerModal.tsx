@@ -83,17 +83,20 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
   const handleScanSuccess = async (rawCode: string) => {
     // If it's a URL, extract search params or pathname
     let code = rawCode.trim();
-    if (code.includes('unit=')) {
-      const match = code.match(/unit=([^&]+)/);
+    if (code.includes('view=')) {
+      const match = code.match(/view=([^&#]+)/);
+      if (match) code = match[1];
+    } else if (code.includes('unit=')) {
+      const match = code.match(/unit=([^&#]+)/);
       if (match) code = match[1];
     } else if (code.includes('room=')) {
-      const match = code.match(/room=([^&]+)/);
+      const match = code.match(/room=([^&#]+)/);
       if (match) code = match[1];
     }
 
     // Try finding AC Unit by qrCodeId or ID
-    const matchedUnit = await db.acUnits.where('qrCodeId').equals(code).first() 
-      || await db.acUnits.get(code);
+    const matchedUnit = await db.acUnits.get(code)
+      || await db.acUnits.filter(u => u.qrCodeId === code).first();
 
     if (matchedUnit) {
       if (scannerRef.current && scannerRef.current.isScanning) {
@@ -105,8 +108,8 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
     }
 
     // Try finding Room by qrCodeId or ID
-    const matchedRoom = await db.rooms.where('qrCodeId').equals(code).first()
-      || await db.rooms.get(code);
+    const matchedRoom = await db.rooms.get(code)
+      || await db.rooms.filter(r => r.qrCodeId === code).first();
 
     if (matchedRoom) {
       if (scannerRef.current && scannerRef.current.isScanning) {
@@ -125,7 +128,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
   const filteredUnits = units.filter(u => 
     u.ruanganLokasi.toLowerCase().includes(quickSearch.toLowerCase()) ||
     u.merk.toLowerCase().includes(quickSearch.toLowerCase()) ||
-    u.qrCodeId.toLowerCase().includes(quickSearch.toLowerCase())
+    (u.qrCodeId && u.qrCodeId.toLowerCase().includes(quickSearch.toLowerCase()))
   );
 
   return (

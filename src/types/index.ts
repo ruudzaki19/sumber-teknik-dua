@@ -11,7 +11,7 @@ export interface UserProfile {
 export interface Room {
   id: string;
   namaRuangan: string; // e.g. "Ruang Admin", "Ruang BKAL"
-  qrCodeId: string;    // Room-level QR identifier
+  qrCodeId?: string;   // Room-level QR identifier
   createdAt: number;
 }
 
@@ -26,7 +26,7 @@ export interface ACUnit {
   noSeri: string;             // Nomor Seri Unit
   ruanganLokasi: string;      // Ruangan / Lokasi tercetak di kartu
   tahunPemasangan?: string;
-  qrCodeId: string;           // AC-level QR identifier
+  qrCodeId?: string;          // AC-level QR identifier
   createdAt: number;
   updatedAt: number;
 }
@@ -42,6 +42,6 @@ export interface MaintenanceRecord {
 }
 
 export interface CompanySettings {
-  namaAplikasi: string;       // "Sumber Tekhnik 2"
+  namaAplikasi: string;       // "Sumber Tekhnik Dua"
   tahunDefault: string;       // "2026"
 }
