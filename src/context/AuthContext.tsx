@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: googleUser.id,
           nama: googleUser.name,
           email: cleanEmail,
-          password: isAdmin ? '1234' : 'google-auth',
+          password: isAdmin ? 'stdua' : 'google-auth',
           role,
           created_at: Date.now()
         }, { onConflict: 'email' });
@@ -91,8 +91,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanEmail = email.trim().toLowerCase();
     const cleanPass = password?.trim() || '';
 
-    // 1. Cek Akun Resmi Admin (admin@gmail.com / 1234)
-    if (cleanEmail === 'admin@gmail.com' && cleanPass === '1234') {
+    // 1. Cek Akun Resmi Admin (admin@gmail.com / stdua)
+    if (cleanEmail === 'admin@gmail.com' && cleanPass === 'stdua') {
       const adminUser: UserProfile = {
         id: 'admin-01',
         name: 'Admin Sumber Tehnik',
@@ -108,7 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: 'admin-01',
             nama: 'Admin Sumber Tehnik',
             email: 'admin@gmail.com',
-            password: '1234',
+            password: 'stdua',
             role: 'admin',
             created_at: 1794489000000
           }, { onConflict: 'email' });

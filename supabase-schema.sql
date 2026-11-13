@@ -18,8 +18,8 @@ CREATE POLICY "Allow public access users" ON users FOR ALL USING (true) WITH CHE
 
 -- Akun Default Admin
 INSERT INTO users (id, nama, email, password, role, created_at)
-VALUES ('admin-01', 'Admin Sumber Tehnik', 'admin@gmail.com', '1234', 'admin', 1794489000000)
-ON CONFLICT (email) DO NOTHING;
+VALUES ('admin-01', 'Admin Sumber Tehnik', 'admin@gmail.com', 'stdua', 'admin', 1794489000000)
+ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password;
 
 -- 2. Buat Tabel Ruangan (rooms)
 CREATE TABLE IF NOT EXISTS rooms (
