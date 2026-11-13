@@ -453,18 +453,6 @@ export const App: React.FC = () => {
                                 </button>
                               )}
 
-                              {/* Cetak PDF (Visible for all) */}
-                              <button
-                                onClick={() => {
-                                  setActivePdfUnit(unit);
-                                  setIsPdfModalOpen(true);
-                                }}
-                                className="inline-flex items-center gap-1.5 text-xs font-bold bg-brand-700 hover:bg-brand-600 text-white px-3 py-1.5 rounded-lg transition-colors border border-white/20"
-                              >
-                                <Printer className="w-3.5 h-3.5" />
-                                Cetak PDF
-                              </button>
-
                               {/* Edit Unit (Admin Only) */}
                               {isAdmin && (
                                 <button
@@ -567,20 +555,18 @@ export const App: React.FC = () => {
                             </div>
 
                             {/* Direct Cetak PDF button at bottom of table */}
-                            {unitRecords.length > 0 && (
-                              <div className="mt-3 flex justify-end">
-                                <button
-                                  onClick={() => {
-                                    setActivePdfUnit(unit);
-                                    setIsPdfModalOpen(true);
-                                  }}
-                                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl shadow-sm transition-colors"
-                                >
-                                  <Printer className="w-3.5 h-3.5" />
-                                  Cetak / Download PDF Kartu Pemeliharaan
-                                </button>
-                              </div>
-                            )}
+                            <div className="mt-3 flex justify-end">
+                              <button
+                                onClick={() => {
+                                  setActivePdfUnit(unit);
+                                  setIsPdfModalOpen(true);
+                                }}
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl shadow-sm transition-colors active:scale-95"
+                              >
+                                <Printer className="w-3.5 h-3.5" />
+                                <span>Cetak / Download PDF Kartu Pemeliharaan</span>
+                              </button>
+                            </div>
                           </div>
                         </div>
                       );
