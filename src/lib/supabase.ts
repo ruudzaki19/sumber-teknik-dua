@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Kredensial default Supabase proyek Sumber Teknik Dua
-export const DEFAULT_SUPABASE_URL = 'https://qdmpvbdriavzhitxwxvm.supabase.co';
-export const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_Rn8r228kkoSA5sTDyy6shg_N6itSC7F';
+// Kredensial default Supabase proyek Sumber Teknik Dua (ID: mmljpflyrqlzcoghguvu)
+export const DEFAULT_SUPABASE_URL = 'https://mmljpflyrqlzcoghguvu.supabase.co';
+export const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_sY6aCXwOP3H0-jXsv-XdnA_Kns47NQd';
 
 const getSavedConfig = () => {
   try {
