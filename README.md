@@ -1,97 +1,76 @@
-# Sistem Kartu Pemeliharaan AC Digital (QR-Maintenance)
-### CV. SARANA REKATAMA BUANA • Tangerang (Sumber Tekhnik)
-
-Aplikasi manajemen dan kartu pemeliharaan AC digital berbasis web (Mobile-First) yang dirancang khusus untuk teknisi AC di lapangan. Menggantikan proses manual (scan QR statis -> edit di WPS Office -> unduh PDF -> upload ulang) menjadi **CRUD interaktif serba cepat langsung dari smartphone**.
-
----
-
-## 🌟 Solusi & Fitur Utama
-
-1. **Tema Bersih & Elegan (Putih - Biru Profesional)**:
-   - Dirancang tanpa tampilan "AI website" yang berlebihan/norak.
-   - Bersih, kontras tinggi, tombol jari besar, responsif di layar HP.
-2. **Scan QR Code Ruangan & Unit AC**:
-   - Teknisi cukup membuka kamera langsung dari aplikasi untuk scan QR code di unit AC / pintu ruangan.
-   - Otomatis membuka **Kartu Pemeliharaan AC** untuk ruangan/unit yang bersangkutan.
-   - Dilengkapi fallback pencarian cepat tanpa kamera jika di ruangan gelap.
-3. **CRUD Data Lengkap**:
-   - **Kelola Ruangan**: Ruang Admin, Gedung Galeri (Tengah), Ruang Lobby, Ruang Pak Andi, dll.
-   - **Kelola Unit AC**: Mitra, Jenis AC (Kaset, Split, Standing, dll), Merk (Polytron, Daikin, Panasonic, dll), Tipe, Kapasitas (PK), Nomor Seri, Lokasi.
-   - **Catatan Pemeliharaan**: Tanggal, Uraian Pekerjaan (dengan rekomendasi tombol cepat: *Cleaning*, *Ganti dinamo drain*, *Isi freon*, dll).
-4. **Hitung Harga & Total Otomatis**:
-   - Input harga satuan perbaikan dan jumlah unit (Qty).
-   - Sistem langsung menghitung total biaya perbaikan dan estimasi tagihan servis secara otomatis.
-5. **Paraf / Tanda Tangan Digital**:
-   - Dilengkapi kanvas tanda tangan langsung menggunakan goresan jari di layar HP (*touch-screen*).
-   - Tersedia tombol cepat "Gunakan Paraf Otomatis".
-6. **Download & Cetak PDF Persis 1:1 Kartu Fisik**:
-   - **Kop Surat Resmi**: CV. SARANA REKATAMA BUANA (Supplier - Contractor), Jl. Mustang No. 8 Sindangsana, Kec. Neglasari, Kota Tangerang.
-   - **Tabel 12 Baris Lengkap**: Nomor 1 sampai 12 sesuai format blanko fisik resmi.
-   - Pilihan mode: **Format Blanko Fisik** atau **Format Rekap Biaya & Total**.
-   - 1-Klik **Download PDF** atau **Cetak Langsung**.
-7. **Cetak Stiker QR Code**:
-   - Buat & cetak stiker label QR siap tempel di unit indoor/outdoor atau pintu ruangan.
-8. **Penyimpanan Lokal (IndexedDB) & Siap Vercel**:
-   - Data otomatis tersimpan permanen di memori lokal HP/laptop via IndexedDB (Dexie.js).
-   - **Bekerja 100% Offline** (tidak hilang meski di basement atau area tanpa sinyal).
-   - Fitur **Download Backup (JSON)** dan **Pulihkan Data** jika berganti HP.
-   - Otomatis kompatibel untuk di-hosting ke **Vercel** (`vercel.json` sudah tersedia).
-9. **Masuk dengan Akun Google**:
-   - Akses cepat akun teknisi Google dengan profil tersimpan.
+# SUMBER TEKNIK DUA
+### Sistem Manajemen Pemeliharaan AC & Pencatatan Bon Transaksi
+**Service, Jual-Beli AC Rumah, AC Mobil, Kulkas, Freezer, Water Heater, Mesin Cuci, Dispenser**  
+*Komp. Griya Serpong Blok H4/2, Telp. 0813 8895 9081, Serpong - Tangerang*
 
 ---
 
-## 🚀 Cara Menjalankan Secara Lokal
+## 🌟 Ringkasan Pembaruan Sistem (Tema Hijau & Putih)
 
+Aplikasi web terpadu **SUMBER TEKNIK DUA** berbasis **React, TypeScript, Vite, Tailwind CSS, dan Supabase PostgreSQL** yang menggabungkan dua modul utama ke dalam satu sistem dengan antarmuka profesional bertema **Hijau dan Putih**:
+
+1. **Navigasi Utama (3 Menu Navbar)**:
+   - **Beranda**: Dashboard ringkasan berisi statistik real-time (total ruangan, total unit AC, total bon tercatat, dan total omset transaksi), profil resmi usaha Sumber Teknik Dua lengkap dengan layanan & kontak WhatsApp/telepon, serta tombol pintas akses cepat.
+   - **Kartu Pemeliharaan**: Modul pemeliharaan unit AC per ruangan dengan alur CRUD lengkap, paraf otomatis teknisi (`/paraf-fixed.png`), stiker QR Code AC siap unduh JPG, dan cetak PDF kartu pemeliharaan ber-kop surat resmi baru Sumber Teknik Dua.
+   - **Pencatatan Bon**: Modul pembuatan dan pencatatan nota/bon transaksi baru dengan rincian item dinamis (Banyaknya, Keterangan, Harga Satuan, Jumlah otomatis), cetak/unduh PDF berformat nota fisik resmi (border hijau, paraf teknisi & tanda tangan penerima), serta link/QR nota digital untuk pelanggan.
+
+2. **Sistem Autentikasi & Role Akses**:
+   - **Admin (`admin`)**:
+     - Login langsung menggunakan email: `admin@gmail.com` dan password: `stdua` (tanpa perlu registrasi).
+     - Hak akses penuh (**Full CRUD**) pada Kartu Pemeliharaan dan Pencatatan Bon (tambah, edit, hapus data, download stiker QR JPG, cetak PDF).
+   - **User / Klien (`user`)**:
+     - Pengunjung / klien baru mendaftar melalui form **Registrasi** (Nama Lengkap, Email, Password).
+     - Masuk dalam **Mode Read-Only**: dapat melihat daftar ruangan, riwayat pemeliharaan AC, scan QR Code, serta melihat dan mengunduh PDF kartu pemeliharaan atau bon transaksi miliknya tanpa tombol edit/hapus.
+
+3. **Database Supabase PostgreSQL & Realtime Sync**:
+   - Skema tabel SQL lengkap tersedia pada `supabase-schema.sql`:
+     1. `users` (id, nama, email, password, role, created_at)
+     2. `rooms` (id, nama_ruangan, created_at)
+     3. `ac_units` (id, room_id, mitra, jenis_ac, merk, type_model, kapasitas, no_seri, ruangan_lokasi, tahun_pemasangan, created_at, updated_at)
+     4. `maintenance_records` (id, unit_id, nomor_urut, tanggal, uraian_pekerjaan, paraf_url, created_at)
+     5. `bons` (id, nomor_bon, tanggal, kepada_yth, telp_pelanggan, total_jumlah, nama_teknisi, nama_penerima, paraf_url, created_at, updated_at)
+     6. `bon_items` (id, bon_id, banyaknya, keterangan, harga_satuan, jumlah, created_at)
+   - Sinkronisasi realtime otomatis (`supabase.channel`) sehingga data yang ditambah/diubah oleh teknisi di HP langsung muncul pada layar klien/admin tanpa perlu refresh halaman.
+   - Dilengkapi penyimpanan lokal Dexie (IndexedDB) sebagai fallback andal saat offline.
+
+---
+
+## 🚀 Cara Menjalankan Aplikasi
+
+### 1. Menjalankan di Komputer Lokal (Development)
 ```bash
-# 1. Masuk ke folder proyek
-cd "c:\Users\rudja\OneDrive\Desktop\Sumber Tekhnik 2"
+# Pastikan berada di folder proyek
+cd "c:\Users\rudja\OneDrive\Desktop\sumber teknik dua"
 
-# 2. Jalankan server dev
+# Jalankan server lokal
 npm run dev
 ```
+Buka browser pada URL yang tampil (contoh: `http://localhost:5173`).
 
-Buka URL yang ditampilkan di browser (misal: `http://localhost:3000` atau buka melalui IP lokal untuk dicoba langsung di HP yang satu jaringan Wi-Fi).
-
----
-
-## 🌐 Cara Hosting ke Vercel
-
-Aplikasi ini sudah dilengkapi file konfigurasi `vercel.json` dan siap dideploy langsung ke Vercel:
-
-### Metode 1: Menggunakan Vercel Dashboard (Rekomendasi)
-1. Buat repositori baru di GitHub (misal: `sumber-tekhnik-ac`).
-2. Push folder proyek ini ke GitHub:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit - Sistem Kartu Pemeliharaan AC"
-   git branch -M main
-   git remote add origin https://github.com/USERNAME/sumber-tekhnik-ac.git
-   git push -u origin main
-   ```
-3. Buka [https://vercel.com](https://vercel.com) dan login.
-4. Klik **"Add New Project"** -> Pilih repositori GitHub Anda.
-5. Biarkan pengaturan default (Framework Preset: **Vite**, Build Command: `npm run build`, Output Directory: `dist`).
-6. Klik **Deploy**! Website Anda akan langsung online (contoh: `https://sumber-tekhnik-ac.vercel.app`).
-
-### Metode 2: Menggunakan Vercel CLI
+### 2. Membangun untuk Produksi (Build)
 ```bash
-npm i -g vercel
-vercel
+npm run build
 ```
+File build siap saji akan dibuat di folder `dist/`.
 
 ---
 
-## 📱 Cara Ayah Menggunakan di HP Lapangan
+## 🔐 Kredensial Akun
 
-1. **Jadikan Aplikasi di Layar Utama HP (Add to Home Screen)**:
-   - Buka link Vercel di Google Chrome (Android) atau Safari (iPhone).
-   - Tekan menu titik tiga / tombol bagikan -> Pilih **"Tambahkan ke Layar Utama" (Add to Home Screen)**.
-   - Aplikasi akan memiliki ikon sendiri seperti aplikasi asli di HP ayah!
-2. **Saat di Lokasi AC**:
-   - Buka aplikasi -> Tekan tombol bundar **Kamera (Scan QR)** di tengah bawah.
-   - Arahkan ke stiker QR AC di ruangan tersebut.
-   - Halaman kartu pemeliharaan AC ruangan langsung terbuka otomatis.
-   - Tekan **"+ Tambah Catatan Servis"** -> Isi tanggal, pilih perbaikan (cth: *Cleaning*, *Isi freon*), ketik biaya, bubuhkan paraf dengan jari -> Tekan **Simpan**.
-   - Jika mitra/klien meminta arsip fisik: Tekan **"Cetak / Download PDF"** -> Download file PDF ber-kop surat resmi CV. SAREBU.
+| Peran (Role) | Email | Password | Hak Akses |
+|---|---|---|---|
+| **Admin** | `admin@gmail.com` | `stdua` | Akses Penuh (CRUD Ruangan, AC, Riwayat Servis, Bon & Nota) |
+| **User / Klien** | Terdaftar via Registrasi | Password Pribadi | Mode Lihat (Read-Only), Unduh PDF & Scan QR |
+
+---
+
+## 📄 Format Cetak & PDF Resmi
+
+1. **PDF Kartu Pemeliharaan AC**:
+   - Kop Surat: Logo Roda Gigi Hijau "ST", SUMBER TEKNIK DUA, Service & Jual-Beli, alamat dan telepon resmi.
+   - Metadata lengkap unit AC & tabel riwayat 12 baris dengan paraf teknisi.
+2. **PDF Bon / Nota Transaksi**:
+   - Header kiri: Logo ST + Identitas lengkap Sumber Teknik Dua.
+   - Header kanan: Tanggal nota, Kepada Yth, Nomor Telepon.
+   - Tabel item berborder hijau: Banyaknya, Keterangan, Harga Satuan, Jumlah, dan Total Otomatis.
+   - Footer: Tanda tangan Teknisi resmi (paraf otomatis) dan tanda tangan/cap Penerima.

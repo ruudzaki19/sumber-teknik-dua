@@ -64,94 +64,104 @@ export const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto">
-      <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200 my-auto">
+      <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-emerald-100 my-auto">
         {/* Header */}
         <div className="bg-brand-900 text-white p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-              <FileText className="w-4 h-4 text-blue-200" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
+              <FileText className="w-4 h-4 text-emerald-300" />
             </div>
             <div>
               <h3 className="font-bold text-sm">
                 {record ? 'Edit Catatan Pemeliharaan' : 'Catat Pemeliharaan / Servis Baru'}
               </h3>
-              <p className="text-blue-200 text-[11px]">Baris #{nomorUrut} Kartu Pemeliharaan</p>
+              <p className="text-emerald-200 text-[11px]">Baris #{nomorUrut} Kartu Pemeliharaan</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          {/* Row 1: Baris No & Tanggal */}
-          <div className="grid grid-cols-3 gap-3">
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Nomor Urut */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Baris No.
+              <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                Nomor Baris (1-12)
               </label>
               <input
                 type="number"
-                min={1}
-                max={50}
+                min="1"
+                max="24"
                 value={nomorUrut}
                 onChange={(e) => setNomorUrut(parseInt(e.target.value) || 1)}
-                className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-center font-bold"
+                className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold"
               />
             </div>
-            <div className="col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+
+            {/* Tanggal */}
+            <div>
+              <label className="block text-[11px] font-bold text-slate-700 mb-1">
                 Tanggal Pekerjaan
               </label>
               <div className="relative">
                 <input
                   type="text"
                   required
+                  placeholder="DD-MM-YYYY"
                   value={tanggal}
                   onChange={(e) => setTanggal(e.target.value)}
-                  className="w-full text-xs pl-8 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                  className="w-full p-2.5 pr-8 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
                 />
-                <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                <Calendar className="w-4 h-4 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" />
               </div>
             </div>
           </div>
 
-          {/* Uraian Pekerjaan: MULTILINE TEXTAREA (Bisa di-enter ke bawah) */}
+          {/* Uraian Pekerjaan */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Uraian Pekerjaan / Sparepart
+            <label className="block text-[11px] font-bold text-slate-700 mb-1">
+              Uraian Pekerjaan / Servis / Sparepart *
             </label>
             <textarea
               required
               rows={4}
-              placeholder="Tulis uraian pekerjaan (tekan Enter untuk baris baru)"
+              placeholder="Contoh: CUCI STEAM INDOOR/OUTDOOR, CEK TEKANAN FREON R32 (140 PSI), PERBAIKAN DRAINASE AIR"
               value={uraianPekerjaan}
               onChange={(e) => setUraianPekerjaan(e.target.value)}
-              className="w-full text-xs px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium text-slate-900 leading-relaxed"
+              className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold uppercase leading-relaxed"
             />
           </div>
 
-          {/* Fixed Paraf Preview (Image 3) */}
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
-            <div>
-              <span className="text-xs font-bold text-slate-700 block">Paraf Teknisi</span>
-              <span className="text-[11px] text-slate-400">Otomatis terisi paraf resmi</span>
-            </div>
-            <div className="bg-white p-1 px-3 rounded-lg border border-slate-300">
-              <img
-                src={FIXED_SIGNATURE_PATH}
-                alt="Paraf"
-                className="h-8 max-w-[80px] object-contain"
-              />
+          {/* Paraf Teknisi Otomatis */}
+          <div>
+            <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
+              Paraf Teknisi Resmi (Otomatis Terisi)
+            </label>
+            <div className="p-3 bg-emerald-50/60 border border-emerald-200 rounded-xl flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <img
+                  src={FIXED_SIGNATURE_PATH}
+                  alt="Paraf Resmi Teknisi"
+                  className="h-9 max-w-[100px] object-contain"
+                />
+                <span className="text-[11px] text-emerald-800 font-bold">
+                  Tanda Tangan / Paraf Resmi Teknisi
+                </span>
+              </div>
+              <span className="text-[10px] text-emerald-600 bg-white border border-emerald-300 px-2 py-0.5 rounded font-mono font-bold">
+                VALID
+              </span>
             </div>
           </div>
 
-          {/* Footer Actions */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+          {/* Action Buttons */}
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-2">
             {record && onDelete ? (
               <button
                 type="button"
@@ -161,27 +171,29 @@ export const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
                     onClose();
                   }
                 }}
-                className="text-xs text-red-600 hover:text-red-700 font-semibold px-2 py-1.5 inline-flex items-center gap-1 hover:bg-red-50 rounded-lg"
+                className="px-3.5 py-2.5 bg-red-50 text-red-700 hover:bg-red-100 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
               >
-                <Trash2 className="w-3.5 h-3.5" />
-                Hapus
+                <Trash2 className="w-4 h-4" />
+                <span>Hapus</span>
               </button>
-            ) : <div />}
+            ) : (
+              <div></div>
+            )}
 
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800"
+                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl inline-flex items-center gap-1.5 shadow-sm transition-colors"
+                className="px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition-all"
               >
-                <Save className="w-3.5 h-3.5" />
-                Simpan Catatan
+                <Save className="w-4 h-4" />
+                <span>Simpan Catatan</span>
               </button>
             </div>
           </div>

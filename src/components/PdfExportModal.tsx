@@ -3,7 +3,7 @@ import { X, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ACUnit, MaintenanceRecord } from '../types';
-import { FIXED_KOP_PATH, FIXED_SIGNATURE_PATH } from '../db/db';
+import { FIXED_SIGNATURE_PATH } from '../db/db';
 
 interface PdfExportModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [previewScale, setPreviewScale] = useState<number>(0.45);
 
-  // Responsive scaling ONLY for the visual modal view on mobile
+  // Responsive scaling ONLY for visual modal view on mobile
   useEffect(() => {
     const updateScale = () => {
       if (containerRef.current) {
@@ -56,7 +56,6 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
     if (!printAreaRef.current) return null;
     const element = printAreaRef.current;
 
-    // Use onclone to STRIP OUT any CSS scaling transforms during capture so the PDF is ALWAYS 100% FULL-SCREEN A4!
     const canvas = await html2canvas(element, {
       scale: 2.5, // Ultra-sharp 2.5x High-DPI
       useCORS: true,
@@ -65,7 +64,6 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
       onclone: (clonedDoc) => {
         const clonedElement = clonedDoc.getElementById('printable-document');
         if (clonedElement) {
-          // Remove preview scale completely in the capture clone
           clonedElement.style.transform = 'none';
           clonedElement.style.webkitTransform = 'none';
           clonedElement.style.position = 'static';
@@ -75,7 +73,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
           clonedElement.style.height = 'auto';
           clonedElement.style.minHeight = '1120px';
           clonedElement.style.margin = '0 auto';
-          clonedElement.style.padding = '36px 44px';
+          clonedElement.style.padding = '32px 42px';
           clonedElement.style.boxSizing = 'border-box';
         }
       }
@@ -88,12 +86,10 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
       format: 'a4'
     });
 
-    // Standard A4 dimensions: 210mm x 297mm
-    // Fill the page properly with clean 8mm margins
     const pageWidth = 210;
     const pageHeight = 297;
-    const margin = 8; // 8mm margin
-    const targetWidth = pageWidth - (margin * 2); // 194mm width
+    const margin = 8;
+    const targetWidth = pageWidth - (margin * 2);
     const targetHeight = (canvas.height * targetWidth) / canvas.width;
 
     pdf.addImage(
@@ -144,19 +140,20 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
         <div className="bg-brand-900 text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0">
           <div>
             <h3 className="font-bold text-sm sm:text-base">Pratinjau Kartu Pemeliharaan AC</h3>
-            <p className="text-blue-200 text-xs">
+            <p className="text-emerald-200 text-xs">
               Lokasi: <span className="text-white font-bold">{unit.ruanganLokasi}</span>
             </p>
           </div>
+
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Toolbar: ONLY ONE BIG DOWNLOAD PDF BUTTON */}
+        {/* Toolbar: DOWNLOAD PDF BUTTON */}
         <div className="bg-slate-100 p-3 px-4 border-b border-slate-200 flex items-center justify-end shrink-0">
           <button
             onClick={handleDownloadPDF}
@@ -164,11 +161,11 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md disabled:opacity-50 transition-all active:scale-95"
           >
             <Download className="w-4 h-4" />
-            <span>{isGenerating ? 'Membuat PDF Full-Page...' : 'Download PDF'}</span>
+            <span>{isGenerating ? 'Membuat PDF Full-Page...' : 'Download PDF Kartu Pemeliharaan'}</span>
           </button>
         </div>
 
-        {/* Document Viewport - Auto scaled cleanly so the preview fits on mobile */}
+        {/* Document Viewport */}
         <div
           ref={containerRef}
           className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-6 bg-slate-200/90 flex justify-center items-start"
@@ -191,7 +188,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                 maxWidth: '794px',
                 minHeight: '1120px',
                 backgroundColor: '#ffffff',
-                padding: '36px 44px',
+                padding: '32px 42px',
                 boxSizing: 'border-box',
                 fontFamily: 'Arial, sans-serif',
                 transform: `scale(${previewScale})`,
@@ -203,14 +200,22 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
               className="shadow-2xl text-black select-text flex flex-col justify-between"
             >
               <div>
-                {/* KOP SURAT (Image 7 Exact Crop) */}
-                <div className="w-full mb-3">
+                {/* ================= KOP SURAT GAMBAR KEDUA (GAMBAR 2) ================= */}
+                <div style={{ width: '100%', marginBottom: '16px' }}>
                   <img
-                    src={FIXED_KOP_PATH}
-                    alt="Kop Surat CV. SARANA REKATAMA BUANA"
-                    className="w-full h-auto object-contain block"
-                    style={{ maxHeight: '115px' }}
+                    src="/kop-surat-white.png"
+                    alt="Kop Surat SUMBER TEKNIK DUA"
+                    style={{
+                      width: '100%',
+                      maxHeight: '130px',
+                      objectFit: 'contain',
+                      display: 'block',
+                      margin: '0 auto'
+                    }}
                   />
+                  {/* Decorative divider line */}
+                  <div style={{ marginTop: '8px', borderBottom: '2.5px solid #14532d' }}></div>
+                  <div style={{ marginTop: '2px', borderBottom: '1px solid #16a34a' }}></div>
                 </div>
 
                 {/* Title Box */}
@@ -224,7 +229,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                 >
                   <h3
                     style={{
-                      fontSize: '19px',
+                      fontSize: '18px',
                       fontWeight: 'bold',
                       letterSpacing: '1px',
                       textTransform: 'uppercase',
@@ -236,7 +241,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                   </h3>
                 </div>
 
-                {/* Metadata Table - SINKRON & BESAR (15.5px bold) */}
+                {/* Metadata Table - SINKRON & BESAR (15px bold) */}
                 <div
                   style={{
                     border: '1.5px solid #000000',
@@ -247,7 +252,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                     style={{
                       width: '100%',
                       borderCollapse: 'collapse',
-                      fontSize: '15.5px'
+                      fontSize: '15px'
                     }}
                   >
                     <tbody>
@@ -293,7 +298,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                     style={{
                       width: '100%',
                       borderCollapse: 'collapse',
-                      fontSize: '15px'
+                      fontSize: '14.5px'
                     }}
                   >
                     <thead>
@@ -302,11 +307,11 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                           borderBottom: '1.5px solid #000000',
                           fontWeight: 'bold',
                           textAlign: 'center',
-                          backgroundColor: '#ffffff'
+                          backgroundColor: '#f8fafc'
                         }}
                       >
                         <th style={{ width: '50px', padding: '9px 4px', borderRight: '1px solid #000000' }}>NO</th>
-                        <th style={{ width: '140px', padding: '9px 6px', borderRight: '1px solid #000000' }}>TANGGAL</th>
+                        <th style={{ width: '135px', padding: '9px 6px', borderRight: '1px solid #000000' }}>TANGGAL</th>
                         <th style={{ padding: '9px 12px', textAlign: 'center', borderRight: '1px solid #000000' }}>URAIAN PEKERJAAN</th>
                         <th style={{ width: '125px', padding: '9px 6px' }}>PARAF</th>
                       </tr>
@@ -365,7 +370,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                             {record ? (
                               <img
                                 src={FIXED_SIGNATURE_PATH}
-                                alt="Paraf"
+                                alt="Paraf Teknisi"
                                 style={{
                                   maxHeight: '34px',
                                   maxWidth: '95px',

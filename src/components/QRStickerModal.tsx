@@ -22,7 +22,7 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
 
   const origin = typeof window !== 'undefined' && window.location.origin
     ? window.location.origin
-    : 'https://sumber-tehnik-dua.vercel.app';
+    : 'https://sumber-teknik-dua.vercel.app';
 
   // Link for public scanning: opens public view mode directly without login!
   const publicScanUrl = `${origin}/?view=${encodeURIComponent(unit.id)}`;
@@ -34,7 +34,7 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
     try {
       setIsDownloading(true);
       const canvas = await html2canvas(stickerElement, {
-        scale: 3, // Resolusi tinggi agar hasil cetak sangat tajam
+        scale: 3, // High DPI resolution
         backgroundColor: '#ffffff',
         useCORS: true,
         logging: false
@@ -57,16 +57,16 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto">
-      <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200">
+      <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-emerald-100">
         {/* Header */}
         <div className="bg-brand-900 text-white p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <QrCode className="w-5 h-5 text-blue-200" />
+            <QrCode className="w-5 h-5 text-emerald-300" />
             <h3 className="font-bold text-sm">Stiker QR Code AC</h3>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -77,19 +77,25 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
           <div
             ref={printAreaRef}
             id="printable-qr-sticker"
-            className="w-full max-w-[320px] bg-white border-2 border-brand-900 rounded-2xl p-5 shadow-md flex flex-col items-center text-center text-slate-800"
+            className="w-full max-w-[320px] bg-white border-2 border-emerald-800 rounded-2xl p-5 shadow-md flex flex-col items-center text-center text-slate-800"
           >
-            {/* Header */}
-            <div className="border-b-2 border-brand-800 pb-2 mb-3 w-full">
-              <h4 className="text-xs font-black tracking-wider text-slate-900 uppercase">
-                KARTU PEMELIHARAAN AC
-              </h4>
+            {/* Header with ST Logo */}
+            <div className="border-b-2 border-emerald-800 pb-2 mb-3 w-full flex items-center justify-center gap-2">
+              <img src="/logo-st.svg" alt="ST Logo" className="w-7 h-7 object-contain" />
+              <div>
+                <h4 className="text-xs font-black tracking-wider text-emerald-950 uppercase">
+                  SUMBER TEKNIK DUA
+                </h4>
+                <p className="text-[9px] text-emerald-700 font-bold uppercase tracking-tight">
+                  KARTU PEMELIHARAAN AC
+                </p>
+              </div>
             </div>
 
             {/* Room & Unit Info */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 w-full mb-3">
-              <div className="text-[10px] text-blue-700 font-bold uppercase">LOKASI / RUANGAN</div>
-              <div className="text-sm font-black text-brand-950 uppercase leading-tight">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 w-full mb-3">
+              <div className="text-[10px] text-emerald-700 font-bold uppercase">LOKASI / RUANGAN</div>
+              <div className="text-sm font-black text-emerald-950 uppercase leading-tight">
                 {unit.ruanganLokasi}
               </div>
               <div className="text-[11px] text-slate-600 font-semibold mt-0.5">
@@ -107,6 +113,10 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
                 includeMargin={true}
               />
             </div>
+
+            <p className="text-[10px] text-slate-400 mt-3 font-medium">
+              Scan untuk melihat riwayat servis berkala AC
+            </p>
           </div>
         </div>
 

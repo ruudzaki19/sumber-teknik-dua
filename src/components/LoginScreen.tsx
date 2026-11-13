@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Wrench, Eye, EyeOff, Lock, Mail, User, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, ShieldCheck, KeyRound, Sparkles } from 'lucide-react';
 
 export const LoginScreen: React.FC = () => {
   const { loginWithEmail, registerUser } = useAuth();
@@ -21,7 +21,7 @@ export const LoginScreen: React.FC = () => {
     setErrorMsg(null);
 
     if (!email.trim()) {
-      setErrorMsg('Masukkan alamat email Gmail Anda');
+      setErrorMsg('Masukkan alamat email Anda');
       return;
     }
     if (!password) {
@@ -47,7 +47,7 @@ export const LoginScreen: React.FC = () => {
       return;
     }
     if (!email.trim()) {
-      setErrorMsg('Email Gmail wajib diisi');
+      setErrorMsg('Alamat email wajib diisi');
       return;
     }
     if (!password) {
@@ -72,37 +72,72 @@ export const LoginScreen: React.FC = () => {
     }
   };
 
+  const fillAdminCredentials = () => {
+    setEmail('admin@gmail.com');
+    setPassword('stdua');
+    setIsRegisterMode(false);
+    setErrorMsg(null);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-        {/* Header Banner */}
-        <div className="bg-brand-900 text-white p-6 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 text-white mb-2 border border-white/20">
-            <Wrench className="w-6 h-6 text-blue-300" />
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-slate-100 to-green-100/50 flex flex-col justify-center items-center px-4 py-8">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden transition-all">
+        {/* Header Banner - Hijau Tua & Putih Bersih */}
+        <div className="bg-brand-900 text-white p-7 text-center relative overflow-hidden">
+          <div className="absolute -right-8 -top-8 w-28 h-28 bg-emerald-500/10 rounded-full blur-xl pointer-events-none"></div>
+          <div className="absolute -left-8 -bottom-8 w-28 h-28 bg-emerald-400/10 rounded-full blur-xl pointer-events-none"></div>
+
+          <div className="relative z-10 flex flex-col items-center">
+            {/* Logo Roda Gigi Hijau ST */}
+            <div className="w-16 h-16 rounded-2xl bg-white p-2 shadow-lg mb-3 flex items-center justify-center border-2 border-emerald-400/30">
+              <img src="/logo-st.svg" alt="Logo Sumber Teknik Dua" className="w-full h-full object-contain" />
+            </div>
+
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight uppercase text-white drop-shadow-sm">
+              SUMBER TEKNIK DUA
+            </h1>
+            <p className="text-emerald-200 text-xs font-medium mt-1">
+              Pemeliharaan AC Ruangan & Pencatatan Bon
+            </p>
           </div>
-          <h1 className="text-xl font-black tracking-tight uppercase">Sumber Tekhnik Dua</h1>
-          <p className="text-blue-200 text-xs mt-0.5">
-            Sistem Pemeliharaan AC Ruangan
-          </p>
         </div>
 
         {/* Content Box */}
-        <div className="p-6">
+        <div className="p-6 sm:p-7">
           <div className="mb-5 text-center">
             <h2 className="text-base font-bold text-slate-900">
-              {isRegisterMode ? 'Buat Akun Baru' : 'Masuk ke Akun Anda'}
+              {isRegisterMode ? 'Registrasi Akun Klien Baru' : 'Masuk ke Sistem'}
             </h2>
             <p className="text-xs text-slate-500 mt-1">
               {isRegisterMode
-                ? 'Daftarkan akun Gmail dan buat password Anda sendiri'
-                : 'Silakan login menggunakan akun Gmail dan password Anda'}
+                ? 'Daftarkan nama dan email Anda untuk akses laporan servis & bon'
+                : 'Silakan masuk menggunakan akun terdaftar atau login Admin'}
             </p>
           </div>
 
+          {/* Quick Admin Helper Badge */}
+          {!isRegisterMode && (
+            <button
+              type="button"
+              onClick={fillAdminCredentials}
+              className="w-full mb-4 py-2 px-3 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-800 transition-colors group cursor-pointer"
+              title="Klik untuk otomatis mengisi akun admin resmi"
+            >
+              <div className="flex items-center gap-2 font-medium">
+                <KeyRound className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+                <span>Akun Khusus Admin: <strong>admin@gmail.com</strong></span>
+              </div>
+              <span className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200">
+                Isi Otomatis
+              </span>
+            </button>
+          )}
+
           {/* Error Message */}
           {errorMsg && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-medium">
-              {errorMsg}
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-medium flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
+              <span>{errorMsg}</span>
             </div>
           )}
 
@@ -112,13 +147,13 @@ export const LoginScreen: React.FC = () => {
               {/* Email Field */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Email Gmail (@gmail.com)
+                  Email
                 </label>
                 <div className="relative">
                   <input
                     type="email"
                     required
-                    placeholder="nama@gmail.com"
+                    placeholder="nama@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full text-xs pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
@@ -157,15 +192,15 @@ export const LoginScreen: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-2.5 bg-brand-700 hover:bg-brand-800 active:scale-[0.99] text-white text-xs font-bold rounded-xl shadow-md transition-all disabled:opacity-50 mt-2"
+                className="w-full py-3 bg-brand-700 hover:bg-brand-800 active:scale-[0.99] text-white text-xs font-bold rounded-xl shadow-md transition-all disabled:opacity-50 mt-2 flex items-center justify-center gap-1.5"
               >
-                {isSubmitting ? 'Memeriksa Akun...' : 'Masuk'}
+                {isSubmitting ? 'Memverifikasi Akun...' : 'Masuk ke Sistem'}
               </button>
 
               {/* Link ke Registrasi */}
               <div className="pt-3 text-center border-t border-slate-100">
                 <p className="text-xs text-slate-500">
-                  Belum punya akun?{' '}
+                  Klien baru belum punya akun?{' '}
                   <button
                     type="button"
                     onClick={() => {
@@ -185,13 +220,13 @@ export const LoginScreen: React.FC = () => {
               {/* Nama Lengkap */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Nama Lengkap
+                  Nama Lengkap / Instansi
                 </label>
                 <div className="relative">
                   <input
                     type="text"
                     required
-                    placeholder="Masukkan nama lengkap Anda"
+                    placeholder="Contoh: Bpk. Bambang / CV Mandiri"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full text-xs pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
@@ -200,16 +235,16 @@ export const LoginScreen: React.FC = () => {
                 </div>
               </div>
 
-              {/* Email Gmail */}
+              {/* Email */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Email Gmail (@gmail.com)
+                  Alamat Email
                 </label>
                 <div className="relative">
                   <input
                     type="email"
                     required
-                    placeholder="nama@gmail.com"
+                    placeholder="nama@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full text-xs pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
@@ -274,9 +309,10 @@ export const LoginScreen: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-2.5 bg-brand-700 hover:bg-brand-800 active:scale-[0.99] text-white text-xs font-bold rounded-xl shadow-md transition-all disabled:opacity-50 mt-2"
+                className="w-full py-3 bg-brand-700 hover:bg-brand-800 active:scale-[0.99] text-white text-xs font-bold rounded-xl shadow-md transition-all disabled:opacity-50 mt-2 flex items-center justify-center gap-1.5"
               >
-                {isSubmitting ? 'Mendaftarkan Akun...' : 'Daftar & Masuk'}
+                <Sparkles className="w-4 h-4" />
+                <span>{isSubmitting ? 'Mendaftarkan Akun...' : 'Daftar Sekarang'}</span>
               </button>
 
               {/* Link ke Login */}

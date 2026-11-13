@@ -26,7 +26,7 @@
   background: #94a3b8;
 }
 
-/* High fidelity Print styles for physical paper card */
+/* High fidelity Print styles for physical paper card and invoices */
 @media print {
   body * {
     visibility: hidden;
@@ -34,11 +34,14 @@
   #printable-document,
   #printable-document *,
   #printable-qr-sticker,
-  #printable-qr-sticker * {
+  #printable-qr-sticker *,
+  #printable-bon,
+  #printable-bon * {
     visibility: visible;
   }
   #printable-document,
-  #printable-qr-sticker {
+  #printable-qr-sticker,
+  #printable-bon {
     position: absolute;
     left: 0;
     top: 0;

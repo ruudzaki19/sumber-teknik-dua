@@ -13,8 +13,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const CURRENT_USER_KEY = 'sumber_tekhnik_current_user';
-const ALL_USERS_KEY = 'sumber_tekhnik_registered_users';
+const CURRENT_USER_KEY = 'sumber_teknik_current_user';
+const ALL_USERS_KEY = 'sumber_teknik_registered_users';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(CURRENT_USER_KEY);
+      const saved = localStorage.getItem(CURRENT_USER_KEY) || localStorage.getItem('sumber_tekhnik_current_user');
       if (saved) {
         setUser(JSON.parse(saved));
       } else {
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getRegisteredUsers = (): UserProfile[] => {
     try {
-      const list = localStorage.getItem(ALL_USERS_KEY);
+      const list = localStorage.getItem(ALL_USERS_KEY) || localStorage.getItem('sumber_tekhnik_registered_users');
       return list ? JSON.parse(list) : [];
     } catch {
       return [];
@@ -54,13 +54,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanEmail = email.trim().toLowerCase();
     const cleanName = name?.trim() || cleanEmail.split('@')[0];
 
-    // Special check for admin email
     const isAdmin = cleanEmail === 'admin@gmail.com';
     const role: 'admin' | 'user' = isAdmin ? 'admin' : 'user';
 
     const googleUser: UserProfile = {
       id: isAdmin ? 'admin-01' : 'usr-' + Date.now().toString(36),
-      name: isAdmin ? 'Admin Sumber Tehnik' : cleanName,
+      name: isAdmin ? 'Admin Sumber Teknik' : cleanName,
       email: cleanEmail,
       role,
       provider: 'google'
@@ -77,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           created_at: Date.now()
         }, { onConflict: 'email' });
       } catch (err) {
-        console.warn('Upsert google user to Supabase error:', err);
+        console.warn('Upsert user to Supabase error:', err);
       }
     }
 
@@ -95,18 +94,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (cleanEmail === 'admin@gmail.com' && cleanPass === 'stdua') {
       const adminUser: UserProfile = {
         id: 'admin-01',
-        name: 'Admin Sumber Tehnik',
+        name: 'Admin Sumber Teknik',
         email: 'admin@gmail.com',
         role: 'admin',
         provider: 'local'
       };
 
-      // Pastikan tercatat juga di tabel Supabase
       if (supabase) {
         try {
           await supabase.from('users').upsert({
             id: 'admin-01',
-            nama: 'Admin Sumber Tehnik',
+            nama: 'Admin Sumber Teknik',
             email: 'admin@gmail.com',
             password: 'stdua',
             role: 'admin',
@@ -180,7 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     if (cleanEmail === 'admin@gmail.com') {
-      return { success: false, message: 'Email ini sudah terdaftar. Silakan langsung login.' };
+      return { success: false, message: 'Email admin ini sudah terdaftar. Silakan langsung login.' };
     }
 
     const newId = 'usr-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 6);
@@ -189,7 +187,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // 1. Simpan ke Supabase tabel `users`
     if (supabase) {
       try {
-        // Cek duplikasi email
         const { data: existing } = await supabase
           .from('users')
           .select('id')

@@ -1,10 +1,12 @@
+export type AppTab = 'beranda' | 'pemeliharaan' | 'bon';
+
 export interface UserProfile {
   id: string;
   name: string;
   email: string;
   password?: string;
   photoUrl?: string;
-  role: 'admin' | 'user' | 'teknisi';
+  role: 'admin' | 'user';
   provider: 'google' | 'local';
 }
 
@@ -37,11 +39,40 @@ export interface MaintenanceRecord {
   nomorUrut?: number;         // 1 - 12 (seperti di kartu fisik)
   tanggal: string;            // Format DD-MM-YYYY
   uraianPekerjaan: string;    // Uraian pekerjaan / servis
-  parafUrl?: string;          // Gambar paraf tetap (Image 8)
+  parafUrl?: string;          // Gambar paraf tetap (/paraf-fixed.png)
   createdAt: number;
 }
 
 export interface CompanySettings {
-  namaAplikasi: string;       // "Sumber Tekhnik Dua"
+  namaAplikasi: string;       // "SUMBER TEKNIK DUA"
   tahunDefault: string;       // "2026"
+  telepon: string;            // "0813 8895 9081"
+  alamat: string;             // "Komp. Griya Serpong Blok H4/2, Serpong - Tangerang"
+}
+
+// ================= MODUL PENCATATAN BON =================
+
+export interface BonItem {
+  id: string;
+  bonId: string;
+  banyaknya: number;          // Qty / Jumlah
+  keterangan: string;         // Deskripsi item / servis / sparepart
+  hargaSatuan: number;        // Nominal harga satuan (Rp)
+  jumlah: number;             // Banyaknya * HargaSatuan (Rp)
+  createdAt?: number;
+}
+
+export interface Bon {
+  id: string;
+  nomorBon: string;           // Nomor nota fisik/digital e.g. "STD-202611-001"
+  tanggal: string;            // Format "DD-MM-YYYY" atau "DD MMMM YYYY"
+  kepadaYth: string;          // Nama Pelanggan / Instansi
+  telpPelanggan: string;      // Nomor telepon pelanggan
+  totalJumlah: number;        // Total keseluruhan (Rp)
+  namaTeknisi: string;        // Nama teknisi penanggung jawab
+  namaPenerima: string;       // Nama pelanggan / penerima
+  parafUrl?: string;          // Gambar paraf resmi (/paraf-fixed.png)
+  items?: BonItem[];          // Daftar baris item pekerjaan / sparepart
+  createdAt: number;
+  updatedAt: number;
 }
