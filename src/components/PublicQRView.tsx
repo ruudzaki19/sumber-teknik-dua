@@ -84,7 +84,7 @@ export const PublicQRView: React.FC<PublicQRViewProps> = ({ unitId, onAdminLogin
             onClick={onAdminLoginClick}
             className="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl"
           >
-            Masuk sebagai Admin
+            Masuk ke Akun
           </button>
         </div>
       </div>
@@ -123,7 +123,7 @@ export const PublicQRView: React.FC<PublicQRViewProps> = ({ unitId, onAdminLogin
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-brand-900 hover:bg-blue-50 text-xs font-bold rounded-xl shadow-sm transition-colors"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Login Admin</span>
+              <span>Login Akun</span>
             </button>
           </div>
         </div>
@@ -142,24 +142,13 @@ export const PublicQRView: React.FC<PublicQRViewProps> = ({ unitId, onAdminLogin
         {/* Unit Card */}
         <div className="bg-white rounded-2xl border border-slate-300 overflow-hidden shadow-sm">
           {/* Header */}
-          <div className="bg-brand-900 text-white p-4 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <span className="text-[10px] text-blue-200 uppercase tracking-widest font-bold block">
-                KARTU PEMELIHARAAN AC TAHUN 2026
-              </span>
-              <h2 className="text-base sm:text-lg font-black uppercase">
-                {unit.ruanganLokasi} — {unit.merk} {unit.jenisAc} ({unit.kapasitas})
-              </h2>
-            </div>
-
-            {/* Public Action: Download PDF */}
-            <button
-              onClick={() => setIsPdfModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-700 hover:bg-brand-600 text-white text-xs font-bold rounded-xl shadow-md transition-colors border border-white/20 active:scale-95"
-            >
-              <Printer className="w-4 h-4" />
-              <span>Download PDF Kartu Pemeliharaan</span>
-            </button>
+          <div className="bg-brand-900 text-white p-4">
+            <span className="text-[10px] text-blue-200 uppercase tracking-widest font-bold block">
+              KARTU PEMELIHARAAN AC TAHUN 2026
+            </span>
+            <h2 className="text-base sm:text-lg font-black uppercase">
+              {unit.ruanganLokasi} — {unit.merk} {unit.jenisAc} ({unit.kapasitas})
+            </h2>
           </div>
 
           {/* Unit Metadata Grid */}
