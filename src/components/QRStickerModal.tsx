@@ -1,6 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { X, Printer, Download, QrCode } from 'lucide-react';
+import { X, Download, QrCode } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import { ACUnit } from '../types';
 
 interface QRStickerModalProps {
@@ -15,33 +16,43 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
   unit
 }) => {
   const printAreaRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   if (!isOpen || !unit) return null;
 
   const origin = typeof window !== 'undefined' && window.location.origin
     ? window.location.origin
     : 'https://sumber-tehnik-dua.vercel.app';
+
   // Link for public scanning: opens public view mode directly without login!
   const publicScanUrl = `${origin}/?view=${encodeURIComponent(unit.id)}`;
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handleDownloadJPG = async () => {
+    const stickerElement = document.getElementById('printable-qr-sticker');
+    if (!stickerElement) return;
 
-  const handleDownloadSVG = () => {
-    const svgElement = document.getElementById('sticker-qrcode-svg');
-    if (!svgElement) return;
+    try {
+      setIsDownloading(true);
+      const canvas = await html2canvas(stickerElement, {
+        scale: 3, // Resolusi tinggi agar hasil cetak sangat tajam
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false
+      });
 
-    const svgData = new XMLSerializer().serializeToString(svgElement);
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-    const svgUrl = URL.createObjectURL(svgBlob);
-
-    const downloadLink = document.createElement('a');
-    downloadLink.href = svgUrl;
-    downloadLink.download = `QR-AC-${unit.ruanganLokasi.replace(/\s+/g, '_')}.svg`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+      const jpgUrl = canvas.toDataURL('image/jpeg', 0.95);
+      const downloadLink = document.createElement('a');
+      const safeRoomName = unit.ruanganLokasi.replace(/[^a-zA-Z0-9_-]/g, '_');
+      downloadLink.href = jpgUrl;
+      downloadLink.download = `QR-AC-${safeRoomName}.jpg`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    } catch (err) {
+      console.error('Gagal mengunduh gambar JPG:', err);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -51,7 +62,7 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
         <div className="bg-brand-900 text-white p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <QrCode className="w-5 h-5 text-blue-200" />
-            <h3 className="font-bold text-sm">Cetak Stiker QR Code AC</h3>
+            <h3 className="font-bold text-sm">Stiker QR Code AC</h3>
           </div>
           <button
             onClick={onClose}
@@ -70,9 +81,6 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
           >
             {/* Header */}
             <div className="border-b-2 border-brand-800 pb-2 mb-3 w-full">
-              <span className="text-[10px] tracking-widest uppercase font-bold text-brand-800 block">
-                CV. SARANA REKATAMA BUANA
-              </span>
               <h4 className="text-xs font-black tracking-wider text-slate-900 uppercase">
                 KARTU PEMELIHARAAN AC
               </h4>
@@ -90,42 +98,27 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
             </div>
 
             {/* QR Code Container */}
-            <div className="p-3 bg-white border border-slate-300 rounded-xl shadow-sm mb-3">
+            <div className="p-3 bg-white border border-slate-300 rounded-xl shadow-sm">
               <QRCodeSVG
                 id="sticker-qrcode-svg"
                 value={publicScanUrl}
-                size={175}
+                size={185}
                 level="H"
                 includeMargin={true}
               />
             </div>
-
-            {/* Instruction */}
-            <p className="text-[10px] font-medium text-slate-600 leading-snug">
-              Arahkan kamera smartphone ke QR Code ini untuk melihat riwayat servis & pemeliharaan resmi.
-            </p>
           </div>
-
-          <p className="text-xs text-slate-400 mt-4 text-center">
-            Tempelkan stiker ini pada bodi AC indoor/outdoor atau pintu ruangan.
-          </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2.5">
+        <div className="p-4 bg-slate-50 border-t border-slate-200">
           <button
-            onClick={handleDownloadSVG}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-300 shadow-sm transition-colors"
+            onClick={handleDownloadJPG}
+            disabled={isDownloading}
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition-all disabled:opacity-50"
           >
-            <Download className="w-3.5 h-3.5 text-slate-600" />
-            Download Gambar
-          </button>
-          <button
-            onClick={handlePrint}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl shadow-sm transition-colors"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            Cetak Stiker
+            <Download className="w-4 h-4 text-white" />
+            <span>{isDownloading ? 'Menyiapkan Gambar JPG...' : 'Download Gambar (JPG)'}</span>
           </button>
         </div>
       </div>

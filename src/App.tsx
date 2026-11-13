@@ -383,7 +383,7 @@ export const App: React.FC = () => {
                         className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 px-3.5 py-1.5 rounded-xl shadow-sm transition-colors active:scale-95"
                       >
                         <Plus className="w-3.5 h-3.5" />
-                        + Tambah Unit AC
+                        Tambah Unit AC
                       </button>
                     </div>
                   )}
@@ -397,7 +397,7 @@ export const App: React.FC = () => {
                       {isAdmin && (
                         <>
                           <br />
-                          Klik tombol <strong>"+ Tambah Unit AC"</strong> di kanan atas untuk menambahkan.
+                          Klik tombol <strong>"Tambah Unit AC"</strong> di kanan atas untuk menambahkan.
                         </>
                       )}
                     </div>
@@ -449,7 +449,7 @@ export const App: React.FC = () => {
                                   className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-brand-900 hover:bg-blue-50 px-3 py-1.5 rounded-lg shadow-sm transition-colors"
                                 >
                                   <Plus className="w-3.5 h-3.5" />
-                                  + Tambah Catatan Servis
+                                  Tambah Catatan Servis
                                 </button>
                               )}
 
@@ -545,7 +545,7 @@ export const App: React.FC = () => {
                                     <tr>
                                       <td colSpan={isAdmin ? 5 : 4} className="py-5 text-center text-slate-400">
                                         {isAdmin
-                                          ? 'Belum ada catatan servis. Tekan tombol "+ Tambah Catatan Servis" di atas.'
+                                          ? 'Belum ada catatan servis. Tekan tombol "Tambah Catatan Servis" di atas.'
                                           : 'Belum ada catatan servis terdaftar untuk unit ini.'}
                                       </td>
                                     </tr>
