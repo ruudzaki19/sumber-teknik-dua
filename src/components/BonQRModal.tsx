@@ -87,7 +87,7 @@ export const BonQRModal: React.FC<BonQRModalProps> = ({
           >
             {/* Header with ST Logo */}
             <div className="border-b-2 border-emerald-800 pb-2 mb-3 w-full flex items-center justify-center gap-2">
-              <img src="/logo-st.svg" alt="ST Logo" className="w-7 h-7 object-contain" />
+              <img src="/logo-resmi.png" alt="ST Logo" className="w-7 h-7 object-contain" />
               <div>
                 <h4 className="text-xs font-black tracking-wider text-emerald-950 uppercase">
                   SUMBER TEKNIK DUA
@@ -98,16 +98,21 @@ export const BonQRModal: React.FC<BonQRModalProps> = ({
               </div>
             </div>
 
-            {/* Bon Info */}
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 w-full mb-3">
-              <div className="text-[10px] text-emerald-700 font-bold uppercase">KEPADA YTH.</div>
-              <div className="text-sm font-black text-emerald-950 uppercase leading-tight">
-                {bon.kepadaYth}
+            {/* Customer / Date Info (Tanpa label KEPADA YTH & Tanpa nomor STD) */}
+            {(bon.kepadaYth || bon.tanggal) && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 w-full mb-3 text-center">
+                {bon.kepadaYth && (
+                  <div className="text-sm font-black text-emerald-950 uppercase leading-tight">
+                    {bon.kepadaYth}
+                  </div>
+                )}
+                {bon.tanggal && (
+                  <div className="text-[11px] text-slate-600 font-medium mt-0.5">
+                    {bon.tanggal}
+                  </div>
+                )}
               </div>
-              <div className="text-[11px] text-slate-600 font-mono font-bold mt-0.5">
-                {bon.nomorBon} • {bon.tanggal}
-              </div>
-            </div>
+            )}
 
             {/* QR Code Container */}
             <div className="p-3 bg-white border border-slate-300 rounded-xl shadow-sm">
@@ -122,23 +127,6 @@ export const BonQRModal: React.FC<BonQRModalProps> = ({
             <p className="text-[10px] text-slate-400 mt-3 font-medium">
               Scan untuk melihat nota digital &amp; download PDF
             </p>
-          </div>
-
-          {/* Direct Link Copy Box */}
-          <div className="w-full mt-4 flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl">
-            <input
-              type="text"
-              readOnly
-              value={publicBonUrl}
-              className="text-xs bg-transparent border-none text-slate-600 flex-1 outline-none font-mono truncate"
-            />
-            <button
-              onClick={handleCopyLink}
-              className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg flex items-center gap-1 transition-colors"
-            >
-              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Tersalin' : 'Salin'}</span>
-            </button>
           </div>
         </div>
 

@@ -57,7 +57,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
     const element = printAreaRef.current;
 
     const canvas = await html2canvas(element, {
-      scale: 2.5, // Ultra-sharp 2.5x High-DPI
+      scale: 3, // Ultra HD 300 DPI capture
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',

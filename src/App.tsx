@@ -284,7 +284,7 @@ export const App: React.FC = () => {
           <div className="flex items-center justify-between sm:justify-start gap-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-400/30 shrink-0">
-                <img src="/logo-st.svg" alt="ST" className="w-full h-full object-contain" />
+                <img src="/logo-resmi.png" alt="ST" className="w-full h-full object-contain" />
               </div>
               <div>
                 <div className="flex items-center gap-2">

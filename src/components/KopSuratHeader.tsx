@@ -8,10 +8,10 @@ export const KopSuratHeader: React.FC<KopSuratHeaderProps> = ({ compact = false 
   return (
     <div className="w-full pb-3 border-b-2 border-emerald-800 mb-4">
       <div className="flex items-center justify-between gap-4">
-        {/* Logo Roda Gigi Hijau ST */}
+        {/* Logo Roda Gigi Hijau ST Resmi */}
         <div className="shrink-0 flex items-center justify-center">
           <img
-            src="/logo-st.svg"
+            src="/logo-resmi.png"
             alt="Logo ST"
             style={{
               width: compact ? '68px' : '88px',

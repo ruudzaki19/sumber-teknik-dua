@@ -88,9 +88,9 @@ export const LoginScreen: React.FC = () => {
           <div className="absolute -left-8 -bottom-8 w-28 h-28 bg-emerald-400/10 rounded-full blur-xl pointer-events-none"></div>
 
           <div className="relative z-10 flex flex-col items-center">
-            {/* Logo Roda Gigi Hijau ST */}
+            {/* Logo Roda Gigi Hijau ST Resmi */}
             <div className="w-16 h-16 rounded-2xl bg-white p-2 shadow-lg mb-3 flex items-center justify-center border-2 border-emerald-400/30">
-              <img src="/logo-st.svg" alt="Logo Sumber Teknik Dua" className="w-full h-full object-contain" />
+              <img src="/logo-resmi.png" alt="Logo Sumber Teknik Dua" className="w-full h-full object-contain" />
             </div>
 
             <h1 className="text-xl sm:text-2xl font-black tracking-tight uppercase text-white drop-shadow-sm">

@@ -79,9 +79,9 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
             id="printable-qr-sticker"
             className="w-full max-w-[320px] bg-white border-2 border-emerald-800 rounded-2xl p-5 shadow-md flex flex-col items-center text-center text-slate-800"
           >
-            {/* Header with ST Logo */}
+            {/* Header with Official ST Logo */}
             <div className="border-b-2 border-emerald-800 pb-2 mb-3 w-full flex items-center justify-center gap-2">
-              <img src="/logo-st.svg" alt="ST Logo" className="w-7 h-7 object-contain" />
+              <img src="/logo-resmi.png" alt="ST Logo" className="w-7 h-7 object-contain" />
               <div>
                 <h4 className="text-xs font-black tracking-wider text-emerald-950 uppercase">
                   SUMBER TEKNIK DUA

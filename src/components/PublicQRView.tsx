@@ -97,7 +97,7 @@ export const PublicQRView: React.FC<PublicQRViewProps> = ({ unitId, onAdminLogin
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-400/30">
-              <img src="/logo-st.svg" alt="ST" className="w-full h-full object-contain" />
+              <img src="/logo-resmi.png" alt="ST" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="text-sm sm:text-base font-black tracking-tight uppercase">
