@@ -94,8 +94,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
     }
   };
 
-  // Garis solid tebal 2px konsisten di seluruh tabel (tidak ada yang tipis / tebal sebelah)
-  const solidBorder = '2px solid #1b6837';
+  // Garis solid 1.2px rapi & pas (tidak terlalu tebal dan konsisten)
+  const solidBorder = '1.2px solid #1b6837';
   const greenText = '#1b6837';
 
   return (

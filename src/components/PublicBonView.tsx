@@ -96,7 +96,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
   const TOTAL_ROWS = 13;
   const displayRows = Array.from({ length: TOTAL_ROWS }, (_, i) => items[i] || null);
 
-  const solidBorder = '2px solid #1b6837';
+  const solidBorder = '1.2px solid #1b6837';
   const greenText = '#1b6837';
 
   return (
@@ -214,22 +214,22 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
             </div>
           </div>
 
-          {/* Table 13 Baris Line Solid Konsisten 2px */}
-          <div className="overflow-x-auto border-2 border-emerald-800 rounded-none">
-            <table className="w-full text-xs sm:text-sm text-left border-collapse border-2 border-emerald-800">
+          {/* Table 13 Baris Line Solid Konsisten 1.2px */}
+          <div className="overflow-x-auto border-[1.2px] border-emerald-800 rounded-none">
+            <table className="w-full text-xs sm:text-sm text-left border-collapse border-[1.2px] border-emerald-800">
               <thead>
-                <tr className="bg-white border-b-2 border-emerald-800 text-emerald-800 font-black text-center text-xs sm:text-sm h-10">
-                  <th className="w-24 sm:w-28 border-r-2 border-emerald-800 p-0 text-center align-middle">
+                <tr className="bg-white border-b-[1.2px] border-emerald-800 text-emerald-800 font-black text-center text-xs sm:text-sm h-10">
+                  <th className="w-24 sm:w-28 border-r-[1.2px] border-emerald-800 p-0 text-center align-middle">
                     <div className="flex items-center justify-center h-full w-full pb-0.5 font-black text-emerald-800 text-xs sm:text-sm">
                       BANYAKNYA
                     </div>
                   </th>
-                  <th className="border-r-2 border-emerald-800 p-0 text-center align-middle">
+                  <th className="border-r-[1.2px] border-emerald-800 p-0 text-center align-middle">
                     <div className="flex items-center justify-center h-full w-full pb-0.5 font-black text-emerald-800 text-xs sm:text-sm">
                       KETERANGAN
                     </div>
                   </th>
-                  <th className="w-32 sm:w-36 border-r-2 border-emerald-800 p-0 text-center align-middle">
+                  <th className="w-32 sm:w-36 border-r-[1.2px] border-emerald-800 p-0 text-center align-middle">
                     <div className="flex items-center justify-center h-full w-full pb-0.5 font-black text-emerald-800 text-xs sm:text-sm">
                       HARGA SATUAN
                     </div>
@@ -243,19 +243,19 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
               </thead>
               <tbody>
                 {displayRows.map((it, idx) => (
-                  <tr key={idx} className="border-b-2 border-emerald-800 h-9">
+                  <tr key={idx} className="border-b-[1.2px] border-emerald-800 h-9">
                     {/* Banyaknya (Bisa Huruf atau Angka) */}
-                    <td className="py-2 px-2 text-center font-bold text-slate-900 border-r-2 border-emerald-800">
+                    <td className="py-2 px-2 text-center font-bold text-slate-900 border-r-[1.2px] border-emerald-800">
                       {it ? it.banyaknya : ''}
                     </td>
 
                     {/* Keterangan (TANPA AUTO CAPSLOCK) */}
-                    <td className="py-2 px-3 font-bold text-slate-900 border-r-2 border-emerald-800">
+                    <td className="py-2 px-3 font-bold text-slate-900 border-r-[1.2px] border-emerald-800">
                       {it ? it.keterangan : ''}
                     </td>
 
                     {/* Harga Satuan (Auto Ada Rp.) */}
-                    <td className="py-2 px-2.5 border-r-2 border-emerald-800 text-slate-900">
+                    <td className="py-2 px-2.5 border-r-[1.2px] border-emerald-800 text-slate-900">
                       {it && (it.hargaSatuan || it.hargaSatuan === 0) ? (
                         <div className="flex items-center justify-between w-full">
                           <span className="text-emerald-800 font-bold text-[11px] sm:text-xs">Rp.</span>
@@ -280,10 +280,10 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
 
             {/* JUMLAH & RP Bottom Line Solid */}
             <div className="flex justify-end">
-              <div className="w-32 sm:w-36 py-2 px-3 text-center font-black text-xs sm:text-sm text-emerald-800 border-r-2 border-emerald-800 uppercase">
+              <div className="w-32 sm:w-36 py-2 px-3 text-center font-black text-xs sm:text-sm text-emerald-800 border-r-[1.2px] border-emerald-800 uppercase">
                 JUMLAH
               </div>
-              <div className="w-36 sm:w-40 py-2 px-3 flex items-center justify-between font-mono font-black text-xs sm:text-sm text-slate-900 border-l-2 border-r-2 border-b-2 border-emerald-800">
+              <div className="w-36 sm:w-40 py-2 px-3 flex items-center justify-between font-mono font-black text-xs sm:text-sm text-slate-900 border-l-[1.2px] border-r-[1.2px] border-b-[1.2px] border-emerald-800">
                 <span className="text-emerald-800">Rp.</span>
                 <span>{formatNumber(bon.totalJumlah)}</span>
               </div>
