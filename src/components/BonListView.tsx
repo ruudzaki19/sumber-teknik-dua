@@ -49,7 +49,7 @@ export const BonListView: React.FC<BonListViewProps> = ({
     if (!q) return true;
     return (
       b.nomorBon.toLowerCase().includes(q) ||
-      b.kepadaYth.toLowerCase().includes(q) ||
+      (b.kepadaYth && b.kepadaYth.toLowerCase().includes(q)) ||
       b.tanggal.toLowerCase().includes(q) ||
       (b.telpPelanggan && b.telpPelanggan.toLowerCase().includes(q))
     );
@@ -155,7 +155,7 @@ export const BonListView: React.FC<BonListViewProps> = ({
                     </span>
                   </div>
                   <h3 className="text-sm sm:text-base font-black uppercase text-white mt-1.5 truncate max-w-[280px]">
-                    {bon.kepadaYth}
+                    {bon.kepadaYth || '-'}
                   </h3>
                 </div>
 

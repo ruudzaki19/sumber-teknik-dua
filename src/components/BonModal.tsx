@@ -143,11 +143,6 @@ export const BonModal: React.FC<BonModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!kepadaYth.trim()) {
-      alert('Mohon isi nama pelanggan / instansi (Kepada Yth.)');
-      return;
-    }
-
     const validItems = items.filter(it => it.keterangan.trim().length > 0);
     if (validItems.length === 0) {
       alert('Mohon isi minimal 1 baris keterangan pekerjaan / item bon.');
@@ -218,7 +213,7 @@ export const BonModal: React.FC<BonModalProps> = ({
               </div>
             </div>
 
-            {/* Kepada Yth */}
+            {/* Kepada Yth (Opsional) */}
             <div>
               <label className="block text-[11px] font-bold text-slate-700 mb-1">
                 Kepada Yth.
@@ -226,7 +221,6 @@ export const BonModal: React.FC<BonModalProps> = ({
               <div className="relative">
                 <input
                   type="text"
-                  required
                   placeholder=""
                   value={kepadaYth}
                   onChange={(e) => setKepadaYth(e.target.value)}
