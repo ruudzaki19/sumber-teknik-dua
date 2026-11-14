@@ -35,7 +35,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
       setTypeModel(unit.typeModel || '');
       setKapasitas(unit.kapasitas || '');
       setNoSeri(unit.noSeri || '');
-      setRuanganLokasi(unit.ruanganLokasi || targetRoom?.namaRuangan?.toUpperCase() || '');
+      setRuanganLokasi(unit.ruanganLokasi || targetRoom?.namaRuangan || '');
     } else {
       setMitra('');
       setJenisAc('');
@@ -43,7 +43,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
       setTypeModel('');
       setKapasitas('');
       setNoSeri('');
-      setRuanganLokasi(targetRoom ? targetRoom.namaRuangan.toUpperCase() : '');
+      setRuanganLokasi(targetRoom ? targetRoom.namaRuangan : '');
     }
   }, [unit, targetRoom, isOpen]);
 
@@ -61,11 +61,11 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
       roomId: targetRoom.id,
       mitra: mitra.trim(),
       jenisAc: jenisAc.trim(),
-      merk: merk.trim().toUpperCase(),
+      merk: merk.trim(),
       typeModel: typeModel.trim(),
       kapasitas: kapasitas.trim(),
       noSeri: noSeri.trim(),
-      ruanganLokasi: ruanganLokasi.trim().toUpperCase(),
+      ruanganLokasi: ruanganLokasi.trim(),
       qrCodeId: unit?.qrCodeId || `AC-UNIT-${Date.now().toString(36).toUpperCase()}`
     });
     onClose();
@@ -136,7 +136,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
                 placeholder="Contoh: RUANG ADMIN / LT. 2"
                 value={ruanganLokasi}
                 onChange={(e) => setRuanganLokasi(e.target.value)}
-                className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold uppercase"
+                className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold"
               />
             </div>
           </div>
@@ -153,7 +153,7 @@ export const ACUnitModal: React.FC<ACUnitModalProps> = ({
                 placeholder="Daikin, Panasonic, Sharp, dll"
                 value={merk}
                 onChange={(e) => setMerk(e.target.value)}
-                className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold uppercase"
+                className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold"
               />
             </div>
 

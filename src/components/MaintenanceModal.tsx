@@ -134,7 +134,7 @@ export const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
               placeholder=""
               value={uraianPekerjaan}
               onChange={(e) => setUraianPekerjaan(e.target.value)}
-              className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold uppercase leading-relaxed"
+              className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold leading-relaxed"
             />
           </div>
 

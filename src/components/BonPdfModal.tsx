@@ -38,7 +38,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
   if (!isOpen) return null;
 
   const items = bon.items || [];
-  // Tepat 13 baris data di dalam tabel bon sesuai permintaan terbaru
+  // Tepat 13 baris data di dalam tabel bon sesuai format fisik resmi
   const TOTAL_ROWS = 13;
   const displayRows = Array.from({ length: TOTAL_ROWS }, (_, i) => items[i] || null);
 
@@ -143,7 +143,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
           <div
             style={{
               width: `${794 * previewScale}px`,
-              height: `${1100 * previewScale}px`,
+              height: `${1120 * previewScale}px`,
               position: 'relative'
             }}
           >
@@ -155,7 +155,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                 width: '794px',
                 minWidth: '794px',
                 maxWidth: '794px',
-                minHeight: '1080px',
+                minHeight: '1090px',
                 backgroundColor: '#ffffff',
                 padding: '36px 42px',
                 boxSizing: 'border-box',
@@ -169,19 +169,19 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
               className="shadow-2xl text-black select-text flex flex-col justify-between"
             >
               <div>
-                {/* ================= HEADER KOP SURAT BON HD & BIDANG KEPADA YTH ================= */}
+                {/* ================= HEADER KOP SURAT BON HD & BIDANG KEPADA YTH (UKURAN BESAR & HIJAU) ================= */}
                 <div
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'flex-start',
                     width: '100%',
-                    marginBottom: '16px',
-                    gap: '20px'
+                    marginBottom: '20px',
+                    gap: '24px'
                   }}
                 >
-                  {/* Kiri: Kop Surat HD SUMBER TEKNIK DUA */}
-                  <div style={{ flex: '1 1 54%', maxWidth: '390px' }}>
+                  {/* Kiri: Kop Surat HD SUMBER TEKNIK DUA (Besar & Tulisan Hijau) */}
+                  <div style={{ flex: '1 1 56%', maxWidth: '425px' }}>
                     <img
                       src="/kop-card-hd.png"
                       alt="SUMBER TEKNIK DUA"
@@ -193,14 +193,14 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     />
                   </div>
 
-                  {/* Kanan: Field Pelanggan Rapi dengan Garis Titik-Titik Hijau (Bebas Terpotong) */}
+                  {/* Kanan: Field Pelanggan Rapi dengan Garis Titik-Titik Hijau (Ukuran Lebih Besar) */}
                   <div
                     style={{
-                      flex: '1 1 44%',
+                      flex: '1 1 42%',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
-                      paddingTop: '6px'
+                      paddingTop: '4px'
                     }}
                   >
                     {/* Baris 1: Tangerang, [Tanggal] */}
@@ -208,15 +208,15 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       style={{
                         display: 'flex',
                         alignItems: 'flex-end',
-                        minHeight: '27px',
-                        marginBottom: '6px'
+                        minHeight: '29px',
+                        marginBottom: '7px'
                       }}
                     >
                       <span
                         style={{
                           color: greenText,
                           fontWeight: 700,
-                          fontSize: '13.5px',
+                          fontSize: '14.5px',
                           whiteSpace: 'nowrap',
                           marginRight: '6px'
                         }}
@@ -226,33 +226,33 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       <span
                         style={{
                           flex: 1,
-                          borderBottom: '1.2px dotted #1b6837',
+                          borderBottom: '1.4px dotted #1b6837',
                           color: '#111827',
                           fontWeight: 'bold',
-                          fontSize: '13.5px',
+                          fontSize: '14.5px',
                           paddingBottom: '2px',
                           paddingLeft: '4px',
-                          minHeight: '20px'
+                          minHeight: '22px'
                         }}
                       >
                         {bon.tanggal || ''}
                       </span>
                     </div>
 
-                    {/* Baris 2: Kepada Yth, [Nama Pelanggan] */}
+                    {/* Baris 2: Kepada Yth, [Nama Pelanggan] (TANPA AUTO CAPSLOCK) */}
                     <div
                       style={{
                         display: 'flex',
                         alignItems: 'flex-end',
-                        minHeight: '27px',
-                        marginBottom: '6px'
+                        minHeight: '29px',
+                        marginBottom: '7px'
                       }}
                     >
                       <span
                         style={{
                           color: greenText,
                           fontWeight: 700,
-                          fontSize: '13.5px',
+                          fontSize: '14.5px',
                           whiteSpace: 'nowrap',
                           marginRight: '6px'
                         }}
@@ -262,14 +262,13 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       <span
                         style={{
                           flex: 1,
-                          borderBottom: '1.2px dotted #1b6837',
+                          borderBottom: '1.4px dotted #1b6837',
                           color: '#111827',
                           fontWeight: 'bold',
-                          fontSize: '13.5px',
-                          textTransform: 'uppercase',
+                          fontSize: '14.5px',
                           paddingBottom: '2px',
                           paddingLeft: '4px',
-                          minHeight: '20px'
+                          minHeight: '22px'
                         }}
                       >
                         {bon.kepadaYth || ''}
@@ -279,18 +278,18 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     {/* Baris 3: Garis Titik-Titik Kosong */}
                     <div
                       style={{
-                        minHeight: '24px',
-                        borderBottom: '1.2px dotted #1b6837',
-                        marginBottom: '6px'
+                        minHeight: '26px',
+                        borderBottom: '1.4px dotted #1b6837',
+                        marginBottom: '7px'
                       }}
                     />
 
                     {/* Baris 4: Garis Titik-Titik Kosong */}
                     <div
                       style={{
-                        minHeight: '24px',
-                        borderBottom: '1.2px dotted #1b6837',
-                        marginBottom: '6px'
+                        minHeight: '26px',
+                        borderBottom: '1.4px dotted #1b6837',
+                        marginBottom: '7px'
                       }}
                     />
 
@@ -299,14 +298,14 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       style={{
                         display: 'flex',
                         alignItems: 'flex-end',
-                        minHeight: '27px'
+                        minHeight: '29px'
                       }}
                     >
                       <span
                         style={{
                           color: greenText,
                           fontWeight: 700,
-                          fontSize: '13.5px',
+                          fontSize: '14.5px',
                           whiteSpace: 'nowrap',
                           marginRight: '6px'
                         }}
@@ -316,13 +315,13 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       <span
                         style={{
                           flex: 1,
-                          borderBottom: '1.2px dotted #1b6837',
+                          borderBottom: '1.4px dotted #1b6837',
                           color: '#111827',
                           fontWeight: 'bold',
-                          fontSize: '13.5px',
+                          fontSize: '14.5px',
                           paddingBottom: '2px',
                           paddingLeft: '4px',
-                          minHeight: '20px'
+                          minHeight: '22px'
                         }}
                       >
                         {bon.telpPelanggan || ''}
@@ -393,7 +392,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             {item ? item.banyaknya : ''}
                           </td>
 
-                          {/* Kolom 2: Keterangan */}
+                          {/* Kolom 2: Keterangan (TANPA AUTO CAPSLOCK) */}
                           <td
                             style={{
                               padding: '4px 14px',
@@ -401,7 +400,6 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                               verticalAlign: 'middle',
                               fontWeight: 'bold',
                               fontSize: '14.5px',
-                              textTransform: 'uppercase',
                               color: '#111827'
                             }}
                           >
@@ -518,19 +516,19 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                   </div>
                 </div>
 
-                {/* ================= FOOTER & TANDA TANGAN (YULIANTO + STEMPEL DEKAT) ================= */}
+                {/* ================= FOOTER & TANDA TANGAN (YULIANTO + STEMPEL MENIMPA SEDIKIT) ================= */}
                 <div
                   style={{
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     justifyContent: 'flex-start',
-                    gap: '40px',
                     marginTop: '28px',
-                    padding: '0 10px'
+                    padding: '0 10px',
+                    position: 'relative'
                   }}
                 >
                   {/* KIRI BAWAH: TEKNISI + Paraf Resmi + Nama Bapak Yulianto */}
-                  <div style={{ textAlign: 'center', width: '200px' }}>
+                  <div style={{ textAlign: 'center', width: '220px', position: 'relative', zIndex: 1 }}>
                     <div
                       style={{
                         fontSize: '13.5px',
@@ -538,7 +536,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         color: greenText,
                         letterSpacing: '1px',
                         textTransform: 'uppercase',
-                        marginBottom: '4px'
+                        marginBottom: '3px'
                       }}
                     >
                       TEKNISI
@@ -547,7 +545,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     {/* Paraf Resmi Teknisi */}
                     <div
                       style={{
-                        height: '70px',
+                        height: '75px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
@@ -557,33 +555,37 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         src={FIXED_SIGNATURE_PATH}
                         alt="Paraf Teknisi Resmi"
                         style={{
-                          maxHeight: '68px',
-                          maxWidth: '150px',
+                          maxHeight: '74px',
+                          maxWidth: '165px',
                           objectFit: 'contain'
                         }}
                       />
                     </div>
 
                     {/* Garis Nama Teknisi Permanen Yulianto */}
-                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#111827', marginTop: '2px' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#111827', marginTop: '3px' }}>
                       ( Yulianto )
                     </div>
                   </div>
 
-                  {/* KANAN: Stempel Biru Resmi Mepet ke Kiri Dekat Tanda Tangan (Tanpa Teks di Bawahnya) */}
+                  {/* KANAN: Stempel Biru Resmi Menempel & Sedikit Menimpa Tanda Tangan */}
                   <div
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      marginTop: '10px'
+                      marginLeft: '-45px', // Menimpa sedikit ujung kanan tanda tangan secara alami
+                      marginTop: '16px',
+                      position: 'relative',
+                      zIndex: 2,
+                      mixBlendMode: 'multiply'
                     }}
                   >
                     <img
                       src="/stamp-clean.png"
                       alt="SUMBER TEKNIK DUA Telp. 0813 8895 9081"
                       style={{
-                        maxHeight: '64px',
+                        maxHeight: '66px',
                         maxWidth: '290px',
                         objectFit: 'contain'
                       }}

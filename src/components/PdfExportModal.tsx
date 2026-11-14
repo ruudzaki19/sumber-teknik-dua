@@ -200,22 +200,23 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
               className="shadow-2xl text-black select-text flex flex-col justify-between"
             >
               <div>
-                {/* ================= KOP SURAT HD SUMBER TEKNIK DUA (GAMBAR 4) ================= */}
-                <div style={{ width: '100%', marginBottom: '16px' }}>
+                {/* ================= KOP SURAT HD SUMBER TEKNIK DUA (LEBIH BESAR & JELAS) ================= */}
+                <div style={{ width: '100%', marginBottom: '18px' }}>
                   <img
                     src="/kop-card-hd.png"
                     alt="Kop Surat SUMBER TEKNIK DUA"
                     style={{
-                      maxHeight: '125px',
-                      maxWidth: '100%',
+                      maxHeight: '155px',
+                      maxWidth: '560px',
+                      width: '100%',
                       objectFit: 'contain',
                       display: 'block',
                       margin: '0 auto'
                     }}
                   />
                   {/* Decorative divider line */}
-                  <div style={{ marginTop: '10px', borderBottom: '2.5px solid #14532d' }}></div>
-                  <div style={{ marginTop: '2px', borderBottom: '1px solid #16a34a' }}></div>
+                  <div style={{ marginTop: '12px', borderBottom: '3px solid #14532d' }}></div>
+                  <div style={{ marginTop: '2px', borderBottom: '1.2px solid #16a34a' }}></div>
                 </div>
 
                 {/* Title Box */}
@@ -262,11 +263,11 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                       </tr>
                       <tr style={{ borderBottom: '1px solid #000000' }}>
                         <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>JENIS AC</td>
-                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.jenisAc || ''}</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold' }}>: {unit.jenisAc || ''}</td>
                       </tr>
                       <tr style={{ borderBottom: '1px solid #000000' }}>
                         <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>MERK</td>
-                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.merk || ''}</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold' }}>: {unit.merk || ''}</td>
                       </tr>
                       <tr style={{ borderBottom: '1px solid #000000' }}>
                         <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>TYPE</td>
@@ -282,7 +283,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                       </tr>
                       <tr>
                         <td style={{ padding: '6px 12px', fontWeight: 'bold' }}>RUANGAN / LOKASI</td>
-                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold', textTransform: 'uppercase' }}>: {unit.ruanganLokasi || ''}</td>
+                        <td style={{ padding: '6px 12px', borderLeft: '1px solid #000000', fontWeight: 'bold' }}>: {unit.ruanganLokasi || ''}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -354,8 +355,7 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
                               padding: '5px 12px',
                               fontWeight: 'bold',
                               whiteSpace: 'pre-line',
-                              lineHeight: '1.35',
-                              textTransform: 'uppercase'
+                              lineHeight: '1.35'
                             }}
                           >
                             {record?.uraianPekerjaan || ''}

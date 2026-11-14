@@ -163,10 +163,10 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
 
         {/* Paper Receipt Simulation */}
         <div className="bg-white rounded-3xl border border-slate-300 p-4 sm:p-8 shadow-md">
-          {/* Header Kop Surat Rapi Dua Kolom (Bebas Potong) */}
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-5">
+          {/* Header Kop Surat Rapi Dua Kolom (Ukuran Lebih Besar & Tulisan Hijau) */}
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-5 mb-5">
             {/* Kiri: Kop Surat HD SUMBER TEKNIK DUA */}
-            <div className="w-full sm:w-[54%] max-w-[390px]">
+            <div className="w-full sm:w-[56%] max-w-[425px]">
               <img
                 src="/kop-card-hd.png"
                 alt="SUMBER TEKNIK DUA"
@@ -175,39 +175,39 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
             </div>
 
             {/* Kanan: Field Pelanggan Rapi dengan Garis Titik-Titik Hijau */}
-            <div className="w-full sm:w-[44%] flex flex-col justify-between pt-1">
+            <div className="w-full sm:w-[42%] flex flex-col justify-between pt-1">
               {/* Baris 1: Tangerang, [Tanggal] */}
-              <div className="flex items-end min-h-[26px] mb-1.5">
-                <span className="text-[#1b6837] font-bold text-xs sm:text-[13px] whitespace-nowrap mr-1.5">
+              <div className="flex items-end min-h-[28px] mb-2">
+                <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Tangerang,
                 </span>
-                <span className="flex-1 border-b-[1.2px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[13px] pb-0.5 pl-1 min-h-[18px]">
+                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[14px] pb-0.5 pl-1 min-h-[20px]">
                   {bon.tanggal || ''}
                 </span>
               </div>
 
-              {/* Baris 2: Kepada Yth, [Nama Pelanggan] */}
-              <div className="flex items-end min-h-[26px] mb-1.5">
-                <span className="text-[#1b6837] font-bold text-xs sm:text-[13px] whitespace-nowrap mr-1.5">
+              {/* Baris 2: Kepada Yth, [Nama Pelanggan] (TANPA AUTO CAPSLOCK) */}
+              <div className="flex items-end min-h-[28px] mb-2">
+                <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Kepada Yth,
                 </span>
-                <span className="flex-1 border-b-[1.2px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[13px] uppercase pb-0.5 pl-1 min-h-[18px]">
+                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[14px] pb-0.5 pl-1 min-h-[20px]">
                   {bon.kepadaYth || ''}
                 </span>
               </div>
 
               {/* Baris 3: Garis Titik-Titik Kosong */}
-              <div className="min-h-[22px] border-b-[1.2px] border-dotted border-[#1b6837] mb-1.5" />
+              <div className="min-h-[24px] border-b-[1.3px] border-dotted border-[#1b6837] mb-2" />
 
               {/* Baris 4: Garis Titik-Titik Kosong */}
-              <div className="min-h-[22px] border-b-[1.2px] border-dotted border-[#1b6837] mb-1.5" />
+              <div className="min-h-[24px] border-b-[1.3px] border-dotted border-[#1b6837] mb-2" />
 
               {/* Baris 5: Telp. [No. HP Pelanggan] */}
-              <div className="flex items-end min-h-[26px]">
-                <span className="text-[#1b6837] font-bold text-xs sm:text-[13px] whitespace-nowrap mr-1.5">
+              <div className="flex items-end min-h-[28px]">
+                <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Telp.
                 </span>
-                <span className="flex-1 border-b-[1.2px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[13px] pb-0.5 pl-1 min-h-[18px]">
+                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[14px] pb-0.5 pl-1 min-h-[20px]">
                   {bon.telpPelanggan || ''}
                 </span>
               </div>
@@ -241,8 +241,8 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                       {it ? it.banyaknya : ''}
                     </td>
 
-                    {/* Keterangan */}
-                    <td className="py-2 px-3 font-bold text-slate-900 uppercase border-r-[1.8px] border-emerald-800">
+                    {/* Keterangan (TANPA AUTO CAPSLOCK) */}
+                    <td className="py-2 px-3 font-bold text-slate-900 border-r-[1.8px] border-emerald-800">
                       {it ? it.keterangan : ''}
                     </td>
 
@@ -282,10 +282,10 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
             </div>
           </div>
 
-          {/* Footer Tanda Tangan Yulianto & Stempel Dekat */}
-          <div className="mt-8 flex flex-row items-center justify-start gap-8 sm:gap-12 px-2 sm:px-4">
+          {/* Footer Tanda Tangan Yulianto & Stempel Sedikit Menimpa */}
+          <div className="mt-8 flex flex-row items-start justify-start px-2 sm:px-4 relative">
             {/* Teknisi */}
-            <div className="text-center w-44 sm:w-52">
+            <div className="text-center w-48 sm:w-56 relative z-10">
               <div className="text-xs sm:text-sm font-black text-emerald-800 uppercase tracking-wider mb-1">
                 TEKNISI
               </div>
@@ -293,7 +293,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                 <img
                   src={FIXED_SIGNATURE_PATH}
                   alt="Paraf Teknisi"
-                  className="max-h-14 max-w-[130px] object-contain"
+                  className="max-h-16 max-w-[140px] sm:max-w-[160px] object-contain"
                 />
               </div>
               <div className="text-xs sm:text-sm font-bold text-slate-900 mt-1">
@@ -301,12 +301,18 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
               </div>
             </div>
 
-            {/* Cap Stamp Biru Resmi Dekat Tanda Tangan (Tanpa Teks di Bawahnya) */}
-            <div className="flex items-center justify-center pt-3">
+            {/* Cap Stamp Biru Resmi Menempel & Sedikit Menimpa Tanda Tangan */}
+            <div
+              className="flex items-center justify-center pt-2 sm:pt-3 relative z-20"
+              style={{
+                marginLeft: '-45px', // Menimpa sedikit ujung kanan tanda tangan secara alami
+                mixBlendMode: 'multiply'
+              }}
+            >
               <img
                 src="/stamp-clean.png"
                 alt="SUMBER TEKNIK DUA"
-                className="max-h-14 max-w-[240px] sm:max-w-[280px] object-contain"
+                className="max-h-14 sm:max-h-16 max-w-[240px] sm:max-w-[290px] object-contain"
               />
             </div>
           </div>

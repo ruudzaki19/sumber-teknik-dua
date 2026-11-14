@@ -296,7 +296,7 @@ export const BonModal: React.FC<BonModalProps> = ({
                           placeholder=""
                           value={row.keterangan}
                           onChange={(e) => handleItemChange(idx, 'keterangan', e.target.value)}
-                          className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold uppercase focus:ring-1 focus:ring-brand-500 focus:outline-none"
+                          className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold focus:ring-1 focus:ring-brand-500 focus:outline-none"
                         />
                       </td>
 
