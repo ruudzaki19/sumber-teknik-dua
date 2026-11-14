@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Eye, EyeOff, Lock, Mail, User, ShieldCheck, KeyRound, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, ShieldCheck, Sparkles } from 'lucide-react';
 
 export const LoginScreen: React.FC = () => {
   const { loginWithEmail, registerUser } = useAuth();
@@ -72,13 +72,6 @@ export const LoginScreen: React.FC = () => {
     }
   };
 
-  const fillAdminCredentials = () => {
-    setEmail('admin@gmail.com');
-    setPassword('stdua');
-    setIsRegisterMode(false);
-    setErrorMsg(null);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-slate-100 to-green-100/50 flex flex-col justify-center items-center px-4 py-8">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden transition-all">
@@ -108,30 +101,12 @@ export const LoginScreen: React.FC = () => {
             <h2 className="text-base font-bold text-slate-900">
               {isRegisterMode ? 'Registrasi Akun Klien Baru' : 'Masuk ke Sistem'}
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              {isRegisterMode
-                ? 'Daftarkan nama dan email Anda untuk akses laporan servis & bon'
-                : 'Silakan masuk menggunakan akun terdaftar atau login Admin'}
-            </p>
+            {isRegisterMode && (
+              <p className="text-xs text-slate-500 mt-1">
+                Daftarkan nama dan email Anda untuk akses laporan servis &amp; bon
+              </p>
+            )}
           </div>
-
-          {/* Quick Admin Helper Badge */}
-          {!isRegisterMode && (
-            <button
-              type="button"
-              onClick={fillAdminCredentials}
-              className="w-full mb-4 py-2 px-3 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-800 transition-colors group cursor-pointer"
-              title="Klik untuk otomatis mengisi akun admin resmi"
-            >
-              <div className="flex items-center gap-2 font-medium">
-                <KeyRound className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
-                <span>Akun Khusus Admin: <strong>admin@gmail.com</strong></span>
-              </div>
-              <span className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200">
-                Isi Otomatis
-              </span>
-            </button>
-          )}
 
           {/* Error Message */}
           {errorMsg && (
