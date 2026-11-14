@@ -4,6 +4,7 @@ import {
   Plus,
   DoorClosed,
   Search,
+  Download,
   Printer,
   Edit,
   LogOut,
@@ -703,7 +704,7 @@ export const App: React.FC = () => {
                                   </table>
                                 </div>
 
-                                {/* Direct Cetak PDF button at bottom of table */}
+                                {/* Direct Download JPG button at bottom of table */}
                                 <div className="mt-3 flex justify-end">
                                   <button
                                     onClick={() => {
@@ -712,8 +713,8 @@ export const App: React.FC = () => {
                                     }}
                                     className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl shadow-sm transition-colors active:scale-95"
                                   >
-                                    <Printer className="w-3.5 h-3.5" />
-                                    <span>Cetak / Download PDF Kartu Pemeliharaan</span>
+                                    <Download className="w-3.5 h-3.5" />
+                                    <span>Download Gambar Kartu Pemeliharaan (JPG)</span>
                                   </button>
                                 </div>
                               </div>

@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { X, Download } from 'lucide-react';
-import jsPDF from 'jspdf';
+import { X, Download, Image as ImageIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { ACUnit, MaintenanceRecord } from '../types';
 import { FIXED_SIGNATURE_PATH } from '../db/db';
@@ -52,82 +51,48 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
     };
   });
 
-  const generatePdfBlob = async (): Promise<{ blob: Blob; filename: string } | null> => {
-    if (!printAreaRef.current) return null;
-    const element = printAreaRef.current;
-
-    const canvas = await html2canvas(element, {
-      scale: 3, // Ultra HD 300 DPI capture
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      onclone: (clonedDoc) => {
-        const clonedElement = clonedDoc.getElementById('printable-document');
-        if (clonedElement) {
-          clonedElement.style.transform = 'none';
-          clonedElement.style.webkitTransform = 'none';
-          clonedElement.style.position = 'static';
-          clonedElement.style.width = '794px';
-          clonedElement.style.minWidth = '794px';
-          clonedElement.style.maxWidth = '794px';
-          clonedElement.style.height = 'auto';
-          clonedElement.style.minHeight = '1120px';
-          clonedElement.style.margin = '0 auto';
-          clonedElement.style.padding = '32px 42px';
-          clonedElement.style.boxSizing = 'border-box';
-        }
-      }
-    });
-
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const pageWidth = 210;
-    const pageHeight = 297;
-    const margin = 8;
-    const targetWidth = pageWidth - (margin * 2);
-    const targetHeight = (canvas.height * targetWidth) / canvas.width;
-
-    pdf.addImage(
-      imgData,
-      'PNG',
-      margin,
-      margin,
-      targetWidth,
-      Math.min(targetHeight, pageHeight - (margin * 2)),
-      undefined,
-      'FAST'
-    );
-
-    const filename = `Kartu_Pemeliharaan_AC_${unit.ruanganLokasi.replace(/[^a-zA-Z0-9]/g, '_')}_${year}.pdf`;
-    const blob = pdf.output('blob');
-    return { blob, filename };
-  };
-
-  const handleDownloadPDF = async () => {
+  const handleDownloadJPG = async () => {
+    if (!printAreaRef.current) return;
     setIsGenerating(true);
     try {
-      const res = await generatePdfBlob();
-      if (!res) return;
+      const element = printAreaRef.current;
 
-      const url = URL.createObjectURL(res.blob);
+      const canvas = await html2canvas(element, {
+        scale: 3, // Ultra HD 300 DPI capture
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById('printable-document');
+          if (clonedElement) {
+            clonedElement.style.transform = 'none';
+            clonedElement.style.webkitTransform = 'none';
+            clonedElement.style.position = 'static';
+            clonedElement.style.width = '794px';
+            clonedElement.style.minWidth = '794px';
+            clonedElement.style.maxWidth = '794px';
+            clonedElement.style.height = 'auto';
+            clonedElement.style.minHeight = '1120px';
+            clonedElement.style.margin = '0 auto';
+            clonedElement.style.padding = '32px 42px';
+            clonedElement.style.boxSizing = 'border-box';
+          }
+        }
+      });
+
+      const jpgUrl = canvas.toDataURL('image/jpeg', 0.98);
+      const safeRuangan = (unit.ruanganLokasi || 'Unit').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `Kartu_Pemeliharaan_AC_${safeRuangan}_${year}.jpg`;
+
       const link = document.createElement('a');
-      link.href = url;
-      link.download = res.filename;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
+      link.href = jpgUrl;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
     } catch (err) {
-      console.error('Error generating PDF:', err);
-      alert('Gagal mendownload PDF.');
+      console.error('Error generating JPG Kartu Pemeliharaan:', err);
+      alert('Gagal mendownload Gambar Kartu Pemeliharaan (JPG).');
     } finally {
       setIsGenerating(false);
     }
@@ -138,11 +103,16 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
       <div className="bg-white rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[96vh]">
         {/* Header Bar */}
         <div className="bg-brand-900 text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0">
-          <div>
-            <h3 className="font-bold text-sm sm:text-base">Pratinjau Kartu Pemeliharaan AC</h3>
-            <p className="text-emerald-200 text-xs">
-              Lokasi: <span className="text-white font-bold">{unit.ruanganLokasi}</span>
-            </p>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+              <ImageIcon className="w-4 h-4 text-emerald-300" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base">Pratinjau Kartu Pemeliharaan AC</h3>
+              <p className="text-emerald-200 text-xs">
+                Lokasi: <span className="text-white font-bold">{unit.ruanganLokasi}</span> • Siap Simpan ke Galeri (JPG)
+              </p>
+            </div>
           </div>
 
           <button
@@ -153,15 +123,15 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
           </button>
         </div>
 
-        {/* Toolbar: DOWNLOAD PDF BUTTON */}
+        {/* Toolbar: DOWNLOAD JPG BUTTON */}
         <div className="bg-slate-100 p-3 px-4 border-b border-slate-200 flex items-center justify-end shrink-0">
           <button
-            onClick={handleDownloadPDF}
+            onClick={handleDownloadJPG}
             disabled={isGenerating}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md disabled:opacity-50 transition-all active:scale-95"
           >
             <Download className="w-4 h-4" />
-            <span>{isGenerating ? 'Membuat PDF Full-Page...' : 'Download PDF Kartu Pemeliharaan'}</span>
+            <span>{isGenerating ? 'Membuat Gambar HD...' : 'Download Gambar Kartu (JPG)'}</span>
           </button>
         </div>
 
@@ -200,23 +170,23 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
               className="shadow-2xl text-black select-text flex flex-col justify-between"
             >
               <div>
-                {/* ================= KOP SURAT HD SUMBER TEKNIK DUA (LEBIH BESAR & JELAS) ================= */}
+                {/* ================= KOP SURAT HD RESMI (PROPORSI ASLI, TIDAK GEPENG) ================= */}
                 <div style={{ width: '100%', marginBottom: '18px' }}>
-                  <img
-                    src="/kop-card-hd.png"
-                    alt="Kop Surat SUMBER TEKNIK DUA"
-                    style={{
-                      maxHeight: '155px',
-                      maxWidth: '560px',
-                      width: '100%',
-                      objectFit: 'contain',
-                      display: 'block',
-                      margin: '0 auto'
-                    }}
-                  />
+                  <div style={{ width: '390px', height: '174px', margin: '0 auto' }}>
+                    <img
+                      src="/kop-card-hd.png"
+                      alt="Kop Surat SUMBER TEKNIK DUA"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'block',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  </div>
                   {/* Decorative divider line */}
-                  <div style={{ marginTop: '12px', borderBottom: '3px solid #14532d' }}></div>
-                  <div style={{ marginTop: '2px', borderBottom: '1.2px solid #16a34a' }}></div>
+                  <div style={{ marginTop: '14px', borderBottom: '2.5px solid #14532d' }}></div>
+                  <div style={{ marginTop: '2px', borderBottom: '1px solid #16a34a' }}></div>
                 </div>
 
                 {/* Title Box */}
