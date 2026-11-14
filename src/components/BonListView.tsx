@@ -3,6 +3,7 @@ import {
   Receipt,
   Plus,
   Search,
+  Download,
   Printer,
   Edit,
   Trash2,
@@ -222,14 +223,14 @@ export const BonListView: React.FC<BonListViewProps> = ({
                     <span className="hidden xs:inline">QR Link</span>
                   </button>
 
-                  {/* Print / Download PDF */}
+                  {/* Download / Pratinjau Bon (JPG) */}
                   <button
                     onClick={() => onOpenPdf(bon)}
                     className="p-2 bg-white hover:bg-emerald-50 text-emerald-800 border border-slate-200 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1 shadow-xs"
-                    title="Cetak & Download PDF Nota"
+                    title="Pratinjau & Download Gambar Bon (JPG)"
                   >
-                    <Printer className="w-3.5 h-3.5 text-emerald-700" />
-                    <span>Cetak PDF</span>
+                    <Download className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Unduh Bon</span>
                   </button>
                 </div>
 

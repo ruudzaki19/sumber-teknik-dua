@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Download, LogIn, RefreshCw, AlertCircle, Printer, ArrowLeft } from 'lucide-react';
+import { Download, RefreshCw, AlertCircle, ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import { dataService } from '../db/dataService';
 import { Bon } from '../types';
 import { BonPdfModal } from './BonPdfModal';
@@ -92,8 +92,12 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
   }
 
   const items = bon.items || [];
-  const TOTAL_ROWS = 11;
+  // 13 baris persis format fisik resmi
+  const TOTAL_ROWS = 13;
   const displayRows = Array.from({ length: TOTAL_ROWS }, (_, i) => items[i] || null);
+
+  const greenBorder = '1.8px solid #1b6837';
+  const greenText = '#1b6837';
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col text-slate-800 pb-16">
@@ -142,116 +146,124 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
               🧾 Nota Resmi: <span className="font-mono text-emerald-900">{bon.nomorBon}</span>
             </span>
             <p className="text-slate-600 text-xs mt-0.5">
-              Ditujukan kepada <strong>{bon.kepadaYth}</strong> • Tanggal: {bon.tanggal}
+              {bon.kepadaYth ? (
+                <>Ditujukan kepada <strong>{bon.kepadaYth}</strong> • </>
+              ) : null}
+              Tanggal: {bon.tanggal}
             </p>
           </div>
           <button
             onClick={() => setIsPdfModalOpen(true)}
             className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl shadow-md transition-all text-xs active:scale-95"
           >
-            <Printer className="w-4 h-4" />
-            <span>Cetak / Download PDF Nota</span>
+            <Download className="w-4 h-4" />
+            <span>Download Gambar Bon (JPG)</span>
           </button>
         </div>
 
         {/* Paper Receipt Simulation */}
         <div className="bg-white rounded-3xl border border-slate-300 p-4 sm:p-8 shadow-md">
-          {/* Header Persis Gambar 4 HD */}
-          <div className="relative w-full mb-5">
-            <img
-              src="/kop-surat-hd.jpg"
-              alt="Kop Surat SUMBER TEKNIK DUA"
-              className="w-full h-auto block"
-            />
-            {/* Dynamic overlays for customer fields */}
-            {bon.tanggal && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '10%',
-                  left: '71.5%',
-                  right: '1.5%',
-                  backgroundColor: '#ffffff',
-                  padding: '0 4px',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  color: '#111827',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {bon.tanggal}
+          {/* Header Kop Surat Rapi Dua Kolom (Bebas Potong) */}
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-5">
+            {/* Kiri: Kop Surat HD SUMBER TEKNIK DUA */}
+            <div className="w-full sm:w-[54%] max-w-[390px]">
+              <img
+                src="/kop-card-hd.png"
+                alt="SUMBER TEKNIK DUA"
+                className="w-full h-auto block"
+              />
+            </div>
+
+            {/* Kanan: Field Pelanggan Rapi dengan Garis Titik-Titik Hijau */}
+            <div className="w-full sm:w-[44%] flex flex-col justify-between pt-1">
+              {/* Baris 1: Tangerang, [Tanggal] */}
+              <div className="flex items-end min-h-[26px] mb-1.5">
+                <span className="text-[#1b6837] font-bold text-xs sm:text-[13px] whitespace-nowrap mr-1.5">
+                  Tangerang,
+                </span>
+                <span className="flex-1 border-b-[1.2px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[13px] pb-0.5 pl-1 min-h-[18px]">
+                  {bon.tanggal || ''}
+                </span>
               </div>
-            )}
-            {bon.kepadaYth && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '28%',
-                  left: '72.5%',
-                  right: '1.5%',
-                  backgroundColor: '#ffffff',
-                  padding: '0 4px',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  color: '#111827',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {bon.kepadaYth}
+
+              {/* Baris 2: Kepada Yth, [Nama Pelanggan] */}
+              <div className="flex items-end min-h-[26px] mb-1.5">
+                <span className="text-[#1b6837] font-bold text-xs sm:text-[13px] whitespace-nowrap mr-1.5">
+                  Kepada Yth,
+                </span>
+                <span className="flex-1 border-b-[1.2px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[13px] uppercase pb-0.5 pl-1 min-h-[18px]">
+                  {bon.kepadaYth || ''}
+                </span>
               </div>
-            )}
-            {bon.telpPelanggan && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '79.5%',
-                  left: '66%',
-                  right: '1.5%',
-                  backgroundColor: '#ffffff',
-                  padding: '0 4px',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  color: '#111827',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {bon.telpPelanggan}
+
+              {/* Baris 3: Garis Titik-Titik Kosong */}
+              <div className="min-h-[22px] border-b-[1.2px] border-dotted border-[#1b6837] mb-1.5" />
+
+              {/* Baris 4: Garis Titik-Titik Kosong */}
+              <div className="min-h-[22px] border-b-[1.2px] border-dotted border-[#1b6837] mb-1.5" />
+
+              {/* Baris 5: Telp. [No. HP Pelanggan] */}
+              <div className="flex items-end min-h-[26px]">
+                <span className="text-[#1b6837] font-bold text-xs sm:text-[13px] whitespace-nowrap mr-1.5">
+                  Telp.
+                </span>
+                <span className="flex-1 border-b-[1.2px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[13px] pb-0.5 pl-1 min-h-[18px]">
+                  {bon.telpPelanggan || ''}
+                </span>
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Table Persis Gambar 1 */}
+          {/* Table 13 Baris Border Hijau */}
           <div className="overflow-x-auto border-[1.8px] border-emerald-800 rounded-none">
-            <table className="w-full text-xs text-left border-collapse">
+            <table className="w-full text-xs sm:text-sm text-left border-collapse">
               <thead>
-                <tr className="bg-white border-b-[1.8px] border-emerald-800 text-emerald-800 font-black text-center">
-                  <th className="w-24 py-2.5 px-2 border-r-[1.8px] border-emerald-800">BANYAKNYA</th>
-                  <th className="py-2.5 px-3 border-r-[1.8px] border-emerald-800">KETERANGAN</th>
-                  <th className="w-32 py-2.5 px-3 border-r-[1.8px] border-emerald-800">HARGA SATUAN</th>
-                  <th className="w-36 py-2.5 px-3">JUMLAH</th>
+                <tr className="bg-white border-b-[1.8px] border-emerald-800 text-emerald-800 font-black text-center text-xs sm:text-sm">
+                  <th className="w-24 sm:w-28 py-2.5 px-2 border-r-[1.8px] border-emerald-800 text-center">
+                    BANYAKNYA
+                  </th>
+                  <th className="py-2.5 px-3 border-r-[1.8px] border-emerald-800 text-center">
+                    KETERANGAN
+                  </th>
+                  <th className="w-32 sm:w-36 py-2.5 px-3 border-r-[1.8px] border-emerald-800 text-center">
+                    HARGA SATUAN
+                  </th>
+                  <th className="w-36 sm:w-40 py-2.5 px-3 text-center">
+                    JUMLAH
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {displayRows.map((it, idx) => (
                   <tr key={idx} className="border-b-[1.8px] border-emerald-800 h-9">
+                    {/* Banyaknya */}
                     <td className="py-2 px-2 text-center font-bold text-slate-900 border-r-[1.8px] border-emerald-800">
                       {it ? it.banyaknya : ''}
                     </td>
+
+                    {/* Keterangan */}
                     <td className="py-2 px-3 font-bold text-slate-900 uppercase border-r-[1.8px] border-emerald-800">
                       {it ? it.keterangan : ''}
                     </td>
-                    <td className="py-2 px-3 text-right font-mono font-bold text-slate-900 border-r-[1.8px] border-emerald-800">
-                      {it && it.hargaSatuan ? formatNumber(it.hargaSatuan) : ''}
+
+                    {/* Harga Satuan (Auto Ada Rp.) */}
+                    <td className="py-2 px-2.5 border-r-[1.8px] border-emerald-800 text-slate-900">
+                      {it && (it.hargaSatuan || it.hargaSatuan === 0) ? (
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-emerald-800 font-bold text-[11px] sm:text-xs">Rp.</span>
+                          <span className="font-mono font-bold">{formatNumber(it.hargaSatuan)}</span>
+                        </div>
+                      ) : ''}
                     </td>
-                    <td className="py-2 px-3 text-right font-mono font-black text-slate-900">
-                      {it && it.jumlah ? formatNumber(it.jumlah) : ''}
+
+                    {/* Jumlah (Auto Ada Rp.) */}
+                    <td className="py-2 px-2.5 text-slate-900">
+                      {it && (it.jumlah || it.jumlah === 0) ? (
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-emerald-800 font-bold text-[11px] sm:text-xs">Rp.</span>
+                          <span className="font-mono font-black">{formatNumber(it.jumlah)}</span>
+                        </div>
+                      ) : ''}
                     </td>
                   </tr>
                 ))}
@@ -260,21 +272,21 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
 
             {/* JUMLAH & RP Bottom Line */}
             <div className="flex justify-end">
-              <div className="w-32 py-2 px-3 text-center font-black text-xs text-emerald-800 border-r-[1.8px] border-emerald-800 uppercase">
+              <div className="w-32 sm:w-36 py-2 px-3 text-center font-black text-xs sm:text-sm text-emerald-800 border-r-[1.8px] border-emerald-800 uppercase">
                 JUMLAH
               </div>
-              <div className="w-36 py-2 px-3 flex items-center justify-between font-mono font-black text-xs text-slate-900 border-l-[1.8px] border-r-[1.8px] border-b-[1.8px] border-emerald-800">
+              <div className="w-36 sm:w-40 py-2 px-3 flex items-center justify-between font-mono font-black text-xs sm:text-sm text-slate-900 border-l-[1.8px] border-r-[1.8px] border-b-[1.8px] border-emerald-800">
                 <span className="text-emerald-800">Rp.</span>
                 <span>{formatNumber(bon.totalJumlah)}</span>
               </div>
             </div>
           </div>
 
-          {/* Footer Persis Gambar 1 */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 px-4">
+          {/* Footer Tanda Tangan Yulianto & Stempel Dekat */}
+          <div className="mt-8 flex flex-row items-center justify-start gap-8 sm:gap-12 px-2 sm:px-4">
             {/* Teknisi */}
-            <div className="text-center w-52">
-              <div className="text-xs font-black text-emerald-800 uppercase tracking-wider mb-1">
+            <div className="text-center w-44 sm:w-52">
+              <div className="text-xs sm:text-sm font-black text-emerald-800 uppercase tracking-wider mb-1">
                 TEKNISI
               </div>
               <div className="h-16 flex items-center justify-center">
@@ -284,29 +296,24 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                   className="max-h-14 max-w-[130px] object-contain"
                 />
               </div>
-              <div className="text-xs font-bold text-slate-900 mt-1">
-                ( {bon.namaTeknisi || 'Sumber Teknik Dua'} )
+              <div className="text-xs sm:text-sm font-bold text-slate-900 mt-1">
+                ( Yulianto )
               </div>
             </div>
 
-            {/* Cap Stamp Resmi & Penerima */}
-            <div className="text-center w-64">
-              <div className="h-16 flex items-center justify-center">
-                <img
-                  src="/stamp-clean.png"
-                  alt="SUMBER TEKNIK DUA"
-                  className="max-h-14 max-w-[240px] object-contain"
-                />
-              </div>
-              <div className="text-xs font-bold text-slate-900 mt-1">
-                ( {bon.namaPenerima || '........................................'} )
-              </div>
+            {/* Cap Stamp Biru Resmi Dekat Tanda Tangan (Tanpa Teks di Bawahnya) */}
+            <div className="flex items-center justify-center pt-3">
+              <img
+                src="/stamp-clean.png"
+                alt="SUMBER TEKNIK DUA"
+                className="max-h-14 max-w-[240px] sm:max-w-[280px] object-contain"
+              />
             </div>
           </div>
         </div>
       </main>
 
-      {/* Bon PDF Modal */}
+      {/* Bon PDF / JPG Modal */}
       {bon && (
         <BonPdfModal
           isOpen={isPdfModalOpen}

@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { X, Download, Printer } from 'lucide-react';
-import jsPDF from 'jspdf';
+import { X, Download, Image as ImageIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { Bon } from '../types';
 import { FIXED_SIGNATURE_PATH } from '../db/db';
@@ -39,8 +38,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
   if (!isOpen) return null;
 
   const items = bon.items || [];
-  // Gambar 1 memiliki tepat 11 baris data di dalam tabel bon
-  const TOTAL_ROWS = 11;
+  // Tepat 13 baris data di dalam tabel bon sesuai permintaan terbaru
+  const TOTAL_ROWS = 13;
   const displayRows = Array.from({ length: TOTAL_ROWS }, (_, i) => items[i] || null);
 
   const formatNumber = (val: number) => {
@@ -48,89 +47,51 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
     return new Intl.NumberFormat('id-ID').format(val);
   };
 
-  const generatePdfBlob = async (): Promise<{ blob: Blob; filename: string } | null> => {
-    if (!printAreaRef.current) return null;
-    const element = printAreaRef.current;
-
-    const canvas = await html2canvas(element, {
-      scale: 3, // Ultra HD 300 DPI capture
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      onclone: (clonedDoc) => {
-        const clonedElement = clonedDoc.getElementById('printable-bon');
-        if (clonedElement) {
-          clonedElement.style.transform = 'none';
-          clonedElement.style.webkitTransform = 'none';
-          clonedElement.style.position = 'static';
-          clonedElement.style.width = '794px';
-          clonedElement.style.minWidth = '794px';
-          clonedElement.style.maxWidth = '794px';
-          clonedElement.style.height = 'auto';
-          clonedElement.style.margin = '0 auto';
-          clonedElement.style.padding = '36px 42px';
-          clonedElement.style.boxSizing = 'border-box';
-        }
-      }
-    });
-
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const pageWidth = 210;
-    const pageHeight = 297;
-    const margin = 8;
-    const targetWidth = pageWidth - (margin * 2);
-    const targetHeight = (canvas.height * targetWidth) / canvas.width;
-
-    pdf.addImage(
-      imgData,
-      'PNG',
-      margin,
-      margin,
-      targetWidth,
-      Math.min(targetHeight, pageHeight - (margin * 2)),
-      undefined,
-      'FAST'
-    );
-
-    const safeNum = (bon.nomorBon || 'STD').replace(/[^a-zA-Z0-9_-]/g, '_');
-    const filename = `Nota_Bon_${safeNum}.pdf`;
-    const blob = pdf.output('blob');
-    return { blob, filename };
-  };
-
-  const handleDownloadPDF = async () => {
+  const handleDownloadJPG = async () => {
+    if (!printAreaRef.current) return;
     setIsGenerating(true);
     try {
-      const res = await generatePdfBlob();
-      if (!res) return;
+      const element = printAreaRef.current;
 
-      const url = URL.createObjectURL(res.blob);
+      const canvas = await html2canvas(element, {
+        scale: 3, // Ultra HD 300 DPI capture
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById('printable-bon');
+          if (clonedElement) {
+            clonedElement.style.transform = 'none';
+            clonedElement.style.webkitTransform = 'none';
+            clonedElement.style.position = 'static';
+            clonedElement.style.width = '794px';
+            clonedElement.style.minWidth = '794px';
+            clonedElement.style.maxWidth = '794px';
+            clonedElement.style.height = 'auto';
+            clonedElement.style.margin = '0 auto';
+            clonedElement.style.padding = '36px 42px';
+            clonedElement.style.boxSizing = 'border-box';
+          }
+        }
+      });
+
+      const jpgUrl = canvas.toDataURL('image/jpeg', 0.98);
+      const safeNum = (bon.nomorBon || 'STD').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const safeName = (bon.kepadaYth || 'Pelanggan').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `Nota_Bon_${safeNum}_${safeName}.jpg`;
+
       const link = document.createElement('a');
-      link.href = url;
-      link.download = res.filename;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
+      link.href = jpgUrl;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
     } catch (err) {
-      console.error('Error generating PDF:', err);
-      alert('Gagal mendownload PDF Bon.');
+      console.error('Error generating JPG Bon:', err);
+      alert('Gagal mendownload Gambar Bon (JPG).');
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const handlePrint = () => {
-    window.print();
   };
 
   const greenBorder = '1.8px solid #1b6837';
@@ -141,11 +102,16 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
       <div className="bg-white rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[96vh]">
         {/* Header Bar Modal */}
         <div className="bg-brand-900 text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0">
-          <div>
-            <h3 className="font-bold text-sm sm:text-base">Pratinjau Nota / Bon Transaksi</h3>
-            <p className="text-emerald-200 text-xs">
-              Sesuai Format Fisik SUMBER TEKNIK DUA
-            </p>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+              <ImageIcon className="w-4 h-4 text-emerald-300" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base">Pratinjau Nota / Bon Transaksi</h3>
+              <p className="text-emerald-200 text-xs">
+                Format Resmi SUMBER TEKNIK DUA (Siap Simpan ke Galeri / Unduh JPG)
+              </p>
+            </div>
           </div>
 
           <button
@@ -159,12 +125,12 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
         {/* Toolbar */}
         <div className="bg-slate-100 p-3 px-4 border-b border-slate-200 flex items-center justify-end shrink-0">
           <button
-            onClick={handleDownloadPDF}
+            onClick={handleDownloadJPG}
             disabled={isGenerating}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md disabled:opacity-50 transition-all active:scale-95"
           >
             <Download className="w-4 h-4" />
-            <span>{isGenerating ? 'Membuat PDF HD...' : 'Download PDF Bon'}</span>
+            <span>{isGenerating ? 'Membuat Gambar HD...' : 'Download Gambar Bon (JPG)'}</span>
           </button>
         </div>
 
@@ -177,11 +143,11 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
           <div
             style={{
               width: `${794 * previewScale}px`,
-              height: `${1080 * previewScale}px`,
+              height: `${1100 * previewScale}px`,
               position: 'relative'
             }}
           >
-            {/* The exact Bon Document (A4 format matching Gambar 1) */}
+            {/* The exact Bon Document (A4 format matching Format Resmi) */}
             <div
               ref={printAreaRef}
               id="printable-bon"
@@ -189,7 +155,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                 width: '794px',
                 minWidth: '794px',
                 maxWidth: '794px',
-                minHeight: '1060px',
+                minHeight: '1080px',
                 backgroundColor: '#ffffff',
                 padding: '36px 42px',
                 boxSizing: 'border-box',
@@ -203,97 +169,175 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
               className="shadow-2xl text-black select-text flex flex-col justify-between"
             >
               <div>
-                {/* ================= HEADER KOP SURAT BON (PERSIS GAMBAR 4 HD) ================= */}
+                {/* ================= HEADER KOP SURAT BON HD & BIDANG KEPADA YTH ================= */}
                 <div
                   style={{
-                    position: 'relative',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
                     width: '100%',
-                    marginBottom: '16px'
+                    marginBottom: '16px',
+                    gap: '20px'
                   }}
                 >
-                  <img
-                    src="/kop-surat-hd.jpg"
-                    alt="Kop Surat SUMBER TEKNIK DUA"
+                  {/* Kiri: Kop Surat HD SUMBER TEKNIK DUA */}
+                  <div style={{ flex: '1 1 54%', maxWidth: '390px' }}>
+                    <img
+                      src="/kop-card-hd.png"
+                      alt="SUMBER TEKNIK DUA"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        display: 'block'
+                      }}
+                    />
+                  </div>
+
+                  {/* Kanan: Field Pelanggan Rapi dengan Garis Titik-Titik Hijau (Bebas Terpotong) */}
+                  <div
                     style={{
-                      width: '100%',
-                      height: 'auto',
-                      display: 'block'
+                      flex: '1 1 44%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      paddingTop: '6px'
                     }}
-                  />
-
-                  {/* Dynamic overlays for customer fields over dotted lines */}
-                  {bon.tanggal && (
+                  >
+                    {/* Baris 1: Tangerang, [Tanggal] */}
                     <div
                       style={{
-                        position: 'absolute',
-                        top: '10%',
-                        left: '71.5%',
-                        right: '1.5%',
-                        backgroundColor: '#ffffff',
-                        padding: '0 4px',
-                        fontSize: '13px',
-                        fontWeight: 'bold',
-                        color: '#111827',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        minHeight: '27px',
+                        marginBottom: '6px'
                       }}
                     >
-                      {bon.tanggal}
+                      <span
+                        style={{
+                          color: greenText,
+                          fontWeight: 700,
+                          fontSize: '13.5px',
+                          whiteSpace: 'nowrap',
+                          marginRight: '6px'
+                        }}
+                      >
+                        Tangerang,
+                      </span>
+                      <span
+                        style={{
+                          flex: 1,
+                          borderBottom: '1.2px dotted #1b6837',
+                          color: '#111827',
+                          fontWeight: 'bold',
+                          fontSize: '13.5px',
+                          paddingBottom: '2px',
+                          paddingLeft: '4px',
+                          minHeight: '20px'
+                        }}
+                      >
+                        {bon.tanggal || ''}
+                      </span>
                     </div>
-                  )}
 
-                  {bon.kepadaYth && (
+                    {/* Baris 2: Kepada Yth, [Nama Pelanggan] */}
                     <div
                       style={{
-                        position: 'absolute',
-                        top: '28%',
-                        left: '72.5%',
-                        right: '1.5%',
-                        backgroundColor: '#ffffff',
-                        padding: '0 4px',
-                        fontSize: '13px',
-                        fontWeight: 'bold',
-                        color: '#111827',
-                        textTransform: 'uppercase',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        minHeight: '27px',
+                        marginBottom: '6px'
                       }}
                     >
-                      {bon.kepadaYth}
+                      <span
+                        style={{
+                          color: greenText,
+                          fontWeight: 700,
+                          fontSize: '13.5px',
+                          whiteSpace: 'nowrap',
+                          marginRight: '6px'
+                        }}
+                      >
+                        Kepada Yth,
+                      </span>
+                      <span
+                        style={{
+                          flex: 1,
+                          borderBottom: '1.2px dotted #1b6837',
+                          color: '#111827',
+                          fontWeight: 'bold',
+                          fontSize: '13.5px',
+                          textTransform: 'uppercase',
+                          paddingBottom: '2px',
+                          paddingLeft: '4px',
+                          minHeight: '20px'
+                        }}
+                      >
+                        {bon.kepadaYth || ''}
+                      </span>
                     </div>
-                  )}
 
-                  {bon.telpPelanggan && (
+                    {/* Baris 3: Garis Titik-Titik Kosong */}
                     <div
                       style={{
-                        position: 'absolute',
-                        top: '79.5%',
-                        left: '66%',
-                        right: '1.5%',
-                        backgroundColor: '#ffffff',
-                        padding: '0 4px',
-                        fontSize: '13px',
-                        fontWeight: 'bold',
-                        color: '#111827',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
+                        minHeight: '24px',
+                        borderBottom: '1.2px dotted #1b6837',
+                        marginBottom: '6px'
+                      }}
+                    />
+
+                    {/* Baris 4: Garis Titik-Titik Kosong */}
+                    <div
+                      style={{
+                        minHeight: '24px',
+                        borderBottom: '1.2px dotted #1b6837',
+                        marginBottom: '6px'
+                      }}
+                    />
+
+                    {/* Baris 5: Telp. [No. HP Pelanggan] */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        minHeight: '27px'
                       }}
                     >
-                      {bon.telpPelanggan}
+                      <span
+                        style={{
+                          color: greenText,
+                          fontWeight: 700,
+                          fontSize: '13.5px',
+                          whiteSpace: 'nowrap',
+                          marginRight: '6px'
+                        }}
+                      >
+                        Telp.
+                      </span>
+                      <span
+                        style={{
+                          flex: 1,
+                          borderBottom: '1.2px dotted #1b6837',
+                          color: '#111827',
+                          fontWeight: 'bold',
+                          fontSize: '13.5px',
+                          paddingBottom: '2px',
+                          paddingLeft: '4px',
+                          minHeight: '20px'
+                        }}
+                      >
+                        {bon.telpPelanggan || ''}
+                      </span>
                     </div>
-                  )}
+                  </div>
                 </div>
 
-                {/* ================= TABEL 11 BARIS BORDER HIJAU (PERSIS GAMBAR 1) ================= */}
+                {/* ================= TABEL 13 BARIS BORDER HIJAU ================= */}
                 <div style={{ width: '100%', marginBottom: '0px' }}>
                   <table
                     style={{
                       width: '100%',
                       borderCollapse: 'collapse',
-                      fontSize: '13.5px',
+                      fontSize: '14.5px',
                       border: greenBorder
                     }}
                   >
@@ -304,20 +348,22 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           borderBottom: greenBorder,
                           color: greenText,
                           fontWeight: 900,
+                          fontSize: '15px',
+                          letterSpacing: '0.5px',
                           textAlign: 'center',
                           backgroundColor: '#ffffff'
                         }}
                       >
-                        <th style={{ width: '125px', padding: '6px 4px', borderRight: greenBorder }}>
+                        <th style={{ width: '120px', padding: '6px 4px', borderRight: greenBorder, textAlign: 'center' }}>
                           BANYAKNYA
                         </th>
-                        <th style={{ padding: '6px 12px', borderRight: greenBorder }}>
+                        <th style={{ padding: '6px 12px', borderRight: greenBorder, textAlign: 'center' }}>
                           KETERANGAN
                         </th>
-                        <th style={{ width: '145px', padding: '6px 8px', borderRight: greenBorder }}>
+                        <th style={{ width: '145px', padding: '6px 8px', borderRight: greenBorder, textAlign: 'center' }}>
                           HARGA SATUAN
                         </th>
-                        <th style={{ width: '155px', padding: '6px 8px' }}>
+                        <th style={{ width: '165px', padding: '6px 8px', textAlign: 'center' }}>
                           JUMLAH
                         </th>
                       </tr>
@@ -327,7 +373,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         <tr
                           key={index}
                           style={{
-                            height: '38px',
+                            height: '37px',
                             borderBottom: greenBorder,
                             backgroundColor: '#ffffff'
                           }}
@@ -337,6 +383,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             style={{
                               textAlign: 'center',
                               fontWeight: 'bold',
+                              fontSize: '14.5px',
                               borderRight: greenBorder,
                               verticalAlign: 'middle',
                               padding: '4px 6px',
@@ -349,10 +396,11 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           {/* Kolom 2: Keterangan */}
                           <td
                             style={{
-                              padding: '4px 12px',
+                              padding: '4px 14px',
                               borderRight: greenBorder,
                               verticalAlign: 'middle',
                               fontWeight: 'bold',
+                              fontSize: '14.5px',
                               textTransform: 'uppercase',
                               color: '#111827'
                             }}
@@ -360,40 +408,66 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             {item ? item.keterangan : ''}
                           </td>
 
-                          {/* Kolom 3: Harga Satuan */}
+                          {/* Kolom 3: Harga Satuan (Auto Ada Rp.) */}
                           <td
                             style={{
-                              textAlign: 'right',
                               padding: '4px 10px',
                               borderRight: greenBorder,
                               verticalAlign: 'middle',
-                              fontFamily: 'monospace',
-                              fontWeight: 'bold',
                               color: '#111827'
                             }}
                           >
-                            {item && item.hargaSatuan ? formatNumber(item.hargaSatuan) : ''}
+                            {item && (item.hargaSatuan || item.hargaSatuan === 0) ? (
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  width: '100%'
+                                }}
+                              >
+                                <span style={{ color: greenText, fontWeight: 700, fontSize: '13px' }}>
+                                  Rp.
+                                </span>
+                                <span style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: '14.5px' }}>
+                                  {formatNumber(item.hargaSatuan)}
+                                </span>
+                              </div>
+                            ) : ''}
                           </td>
 
-                          {/* Kolom 4: Jumlah */}
+                          {/* Kolom 4: Jumlah (Auto Ada Rp.) */}
                           <td
                             style={{
-                              textAlign: 'right',
                               padding: '4px 10px',
                               verticalAlign: 'middle',
-                              fontFamily: 'monospace',
-                              fontWeight: 900,
                               color: '#111827'
                             }}
                           >
-                            {item && item.jumlah ? formatNumber(item.jumlah) : ''}
+                            {item && (item.jumlah || item.jumlah === 0) ? (
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  width: '100%'
+                                }}
+                              >
+                                <span style={{ color: greenText, fontWeight: 700, fontSize: '13px' }}>
+                                  Rp.
+                                </span>
+                                <span style={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '14.5px' }}>
+                                  {formatNumber(item.jumlah)}
+                                </span>
+                              </div>
+                            ) : ''}
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
 
-                  {/* ================= BARIS JUMLAH & RP DI BAWAH TABEL (PERSIS GAMBAR 1) ================= */}
+                  {/* ================= BARIS JUMLAH & RP DI BAWAH TABEL ================= */}
                   <div style={{ display: 'flex', width: '100%' }}>
                     {/* Kolom 1 & 2 di bawah tabel kosong tanpa border */}
                     <div style={{ flex: '1 1 auto' }}></div>
@@ -410,7 +484,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         borderRight: greenBorder,
                         borderBottom: 'none',
                         fontWeight: 900,
-                        fontSize: '14px',
+                        fontSize: '14.5px',
                         color: greenText,
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px'
@@ -422,7 +496,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     {/* Kolom 4: Rp. [Total] dengan Box Border Hijau */}
                     <div
                       style={{
-                        width: '155px',
+                        width: '165px',
                         height: '38px',
                         display: 'flex',
                         alignItems: 'center',
@@ -432,30 +506,31 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         borderRight: greenBorder,
                         borderBottom: greenBorder,
                         fontWeight: 900,
-                        fontSize: '14.5px',
+                        fontSize: '15px',
                         color: '#111827',
                         fontFamily: 'monospace',
                         boxSizing: 'border-box'
                       }}
                     >
-                      <span style={{ color: greenText }}>Rp.</span>
+                      <span style={{ color: greenText, fontWeight: 900, fontSize: '14px' }}>Rp.</span>
                       <span>{formatNumber(bon.totalJumlah)}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* ================= FOOTER & TANDA TANGAN (PERSIS GAMBAR 3) ================= */}
+                {/* ================= FOOTER & TANDA TANGAN (YULIANTO + STEMPEL DEKAT) ================= */}
                 <div
                   style={{
                     display: 'flex',
-                    alignItems: 'flex-start',
-                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    gap: '40px',
                     marginTop: '28px',
                     padding: '0 10px'
                   }}
                 >
-                  {/* KIRI BAWAH: TEKNISI + Paraf Resmi + Nama Teknisi */}
-                  <div style={{ textAlign: 'center', width: '220px' }}>
+                  {/* KIRI BAWAH: TEKNISI + Paraf Resmi + Nama Bapak Yulianto */}
+                  <div style={{ textAlign: 'center', width: '200px' }}>
                     <div
                       style={{
                         fontSize: '13.5px',
@@ -472,7 +547,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     {/* Paraf Resmi Teknisi */}
                     <div
                       style={{
-                        height: '75px',
+                        height: '70px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
@@ -482,46 +557,37 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         src={FIXED_SIGNATURE_PATH}
                         alt="Paraf Teknisi Resmi"
                         style={{
-                          maxHeight: '70px',
-                          maxWidth: '160px',
+                          maxHeight: '68px',
+                          maxWidth: '150px',
                           objectFit: 'contain'
                         }}
                       />
                     </div>
 
-                    {/* Garis Nama Teknisi */}
-                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#111827', marginTop: '2px' }}>
-                      ( {bon.namaTeknisi || '........................................'} )
+                    {/* Garis Nama Teknisi Permanen Yulianto */}
+                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#111827', marginTop: '2px' }}>
+                      ( Yulianto )
                     </div>
                   </div>
 
-                  {/* KANAN: Stamp Biru Resmi SUMBER TEKNIK DUA + Garis Penerima (Gambar 3) */}
-                  <div style={{ textAlign: 'center', width: '320px', marginRight: '15px' }}>
-                    {/* Cap Stamp Resmi Ultra Clean (Pristine 0 Black Ink) */}
-                    <div
+                  {/* KANAN: Stempel Biru Resmi Mepet ke Kiri Dekat Tanda Tangan (Tanpa Teks di Bawahnya) */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginTop: '10px'
+                    }}
+                  >
+                    <img
+                      src="/stamp-clean.png"
+                      alt="SUMBER TEKNIK DUA Telp. 0813 8895 9081"
                       style={{
-                        height: '78px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginTop: '16px'
+                        maxHeight: '64px',
+                        maxWidth: '290px',
+                        objectFit: 'contain'
                       }}
-                    >
-                      <img
-                        src="/stamp-clean.png"
-                        alt="SUMBER TEKNIK DUA Telp. 0813 8895 9081"
-                        style={{
-                          maxHeight: '62px',
-                          maxWidth: '300px',
-                          objectFit: 'contain'
-                        }}
-                      />
-                    </div>
-
-                    {/* Garis Nama Penerima */}
-                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#111827', marginTop: '6px' }}>
-                      ( {bon.namaPenerima || '........................................'} )
-                    </div>
+                    />
                   </div>
                 </div>
               </div>

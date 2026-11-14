@@ -39,8 +39,8 @@ export const BonModal: React.FC<BonModalProps> = ({
   const [tanggal, setTanggal] = useState('');
   const [kepadaYth, setKepadaYth] = useState('');
   const [telpPelanggan, setTelpPelanggan] = useState('');
-  const [namaTeknisi, setNamaTeknisi] = useState('Sumber Teknik Dua');
-  const [namaPenerima, setNamaPenerima] = useState('');
+  const namaTeknisi = 'Yulianto';
+  const namaPenerima = '';
   const [items, setItems] = useState<ItemRow[]>([
     { banyaknya: 1, keterangan: '', hargaSatuan: 0, jumlah: 0 }
   ]);
@@ -69,8 +69,6 @@ export const BonModal: React.FC<BonModalProps> = ({
       setTanggal(bon.tanggal || '');
       setKepadaYth(bon.kepadaYth || '');
       setTelpPelanggan(bon.telpPelanggan || '');
-      setNamaTeknisi(bon.namaTeknisi || 'Sumber Teknik Dua');
-      setNamaPenerima(bon.namaPenerima || '');
 
       if (bon.items && bon.items.length > 0) {
         setItems(
@@ -89,8 +87,6 @@ export const BonModal: React.FC<BonModalProps> = ({
       setTanggal(getIndonesianDate());
       setKepadaYth('');
       setTelpPelanggan('');
-      setNamaTeknisi('Sumber Teknik Dua');
-      setNamaPenerima('');
       setItems([{ banyaknya: 1, keterangan: '', hargaSatuan: 0, jumlah: 0 }]);
     }
   }, [bon, isOpen]);
@@ -156,8 +152,8 @@ export const BonModal: React.FC<BonModalProps> = ({
       kepadaYth: kepadaYth.trim(),
       telpPelanggan: telpPelanggan.trim(),
       totalJumlah: totalCalculated,
-      namaTeknisi: namaTeknisi.trim() || 'Sumber Teknik Dua',
-      namaPenerima: namaPenerima.trim() || kepadaYth.trim(),
+      namaTeknisi: 'Yulianto',
+      namaPenerima: '',
       parafUrl: FIXED_SIGNATURE_PATH,
       items: validItems
     });
@@ -352,34 +348,6 @@ export const BonModal: React.FC<BonModalProps> = ({
                   </tr>
                 </tfoot>
               </table>
-            </div>
-          </div>
-
-          {/* Teknisi & Penerima Fields */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                Nama Teknisi (Kiri Bawah Bon)
-              </label>
-              <input
-                type="text"
-                value={namaTeknisi}
-                onChange={(e) => setNamaTeknisi(e.target.value)}
-                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                Nama Penerima / Pelanggan (Kanan Bawah Bon)
-              </label>
-              <input
-                type="text"
-                placeholder=""
-                value={namaPenerima}
-                onChange={(e) => setNamaPenerima(e.target.value)}
-                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-none"
-              />
             </div>
           </div>
 
