@@ -96,7 +96,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
   const TOTAL_ROWS = 13;
   const displayRows = Array.from({ length: TOTAL_ROWS }, (_, i) => items[i] || null);
 
-  const greenBorder = '1.8px solid #1b6837';
+  const solidBorder = '2px solid #1b6837';
   const greenText = '#1b6837';
 
   return (
@@ -163,21 +163,21 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
 
         {/* Paper Receipt Simulation */}
         <div className="bg-white rounded-3xl border border-slate-300 p-4 sm:p-8 shadow-md">
-          {/* Header Kop Surat Rapi Dua Kolom (Ukuran Lebih Besar & Tulisan Hijau) */}
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-5 mb-5">
-            {/* Kiri: Kop Surat HD SUMBER TEKNIK DUA */}
-            <div className="w-full sm:w-[56%] max-w-[425px]">
+          {/* Header Kop Surat Rapi Dua Kolom (Sejajar Tinggi Kop & Field Pelanggan) */}
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-5">
+            {/* Kiri: Kop Surat HD SUMBER TEKNIK DUA Gambar 1 */}
+            <div className="w-full sm:w-[54%] max-w-[400px]">
               <img
                 src="/kop-card-hd.png"
                 alt="SUMBER TEKNIK DUA"
-                className="w-full h-auto block"
+                className="w-full h-auto block object-contain"
               />
             </div>
 
-            {/* Kanan: Field Pelanggan Rapi dengan Garis Titik-Titik Hijau */}
-            <div className="w-full sm:w-[42%] flex flex-col justify-between pt-1">
+            {/* Kanan: Field Pelanggan Rapi Sejajar dengan Garis Titik-Titik Hijau */}
+            <div className="w-full sm:w-[44%] flex flex-col justify-between py-1 min-h-[170px]">
               {/* Baris 1: Tangerang, [Tanggal] */}
-              <div className="flex items-end min-h-[28px] mb-2">
+              <div className="flex items-end min-h-[26px]">
                 <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Tangerang,
                 </span>
@@ -187,7 +187,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
               </div>
 
               {/* Baris 2: Kepada Yth, [Nama Pelanggan] (TANPA AUTO CAPSLOCK) */}
-              <div className="flex items-end min-h-[28px] mb-2">
+              <div className="flex items-end min-h-[26px]">
                 <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Kepada Yth,
                 </span>
@@ -197,13 +197,13 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
               </div>
 
               {/* Baris 3: Garis Titik-Titik Kosong */}
-              <div className="min-h-[24px] border-b-[1.3px] border-dotted border-[#1b6837] mb-2" />
+              <div className="min-h-[20px] border-b-[1.3px] border-dotted border-[#1b6837]" />
 
               {/* Baris 4: Garis Titik-Titik Kosong */}
-              <div className="min-h-[24px] border-b-[1.3px] border-dotted border-[#1b6837] mb-2" />
+              <div className="min-h-[20px] border-b-[1.3px] border-dotted border-[#1b6837]" />
 
               {/* Baris 5: Telp. [No. HP Pelanggan] */}
-              <div className="flex items-end min-h-[28px]">
+              <div className="flex items-end min-h-[26px]">
                 <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Telp.
                 </span>
@@ -214,40 +214,48 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
             </div>
           </div>
 
-          {/* Table 13 Baris Border Hijau */}
-          <div className="overflow-x-auto border-[1.8px] border-emerald-800 rounded-none">
-            <table className="w-full text-xs sm:text-sm text-left border-collapse">
+          {/* Table 13 Baris Line Solid Konsisten 2px */}
+          <div className="overflow-x-auto border-2 border-emerald-800 rounded-none">
+            <table className="w-full text-xs sm:text-sm text-left border-collapse border-2 border-emerald-800">
               <thead>
-                <tr className="bg-white border-b-[1.8px] border-emerald-800 text-emerald-800 font-black text-center text-xs sm:text-sm">
-                  <th className="w-24 sm:w-28 py-2.5 px-2 border-r-[1.8px] border-emerald-800 text-center">
-                    BANYAKNYA
+                <tr className="bg-white border-b-2 border-emerald-800 text-emerald-800 font-black text-center text-xs sm:text-sm h-10">
+                  <th className="w-24 sm:w-28 border-r-2 border-emerald-800 p-0 text-center align-middle">
+                    <div className="flex items-center justify-center h-full w-full pb-0.5 font-black text-emerald-800 text-xs sm:text-sm">
+                      BANYAKNYA
+                    </div>
                   </th>
-                  <th className="py-2.5 px-3 border-r-[1.8px] border-emerald-800 text-center">
-                    KETERANGAN
+                  <th className="border-r-2 border-emerald-800 p-0 text-center align-middle">
+                    <div className="flex items-center justify-center h-full w-full pb-0.5 font-black text-emerald-800 text-xs sm:text-sm">
+                      KETERANGAN
+                    </div>
                   </th>
-                  <th className="w-32 sm:w-36 py-2.5 px-3 border-r-[1.8px] border-emerald-800 text-center">
-                    HARGA SATUAN
+                  <th className="w-32 sm:w-36 border-r-2 border-emerald-800 p-0 text-center align-middle">
+                    <div className="flex items-center justify-center h-full w-full pb-0.5 font-black text-emerald-800 text-xs sm:text-sm">
+                      HARGA SATUAN
+                    </div>
                   </th>
-                  <th className="w-36 sm:w-40 py-2.5 px-3 text-center">
-                    JUMLAH
+                  <th className="w-36 sm:w-40 p-0 text-center align-middle">
+                    <div className="flex items-center justify-center h-full w-full pb-0.5 font-black text-emerald-800 text-xs sm:text-sm">
+                      JUMLAH
+                    </div>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {displayRows.map((it, idx) => (
-                  <tr key={idx} className="border-b-[1.8px] border-emerald-800 h-9">
-                    {/* Banyaknya */}
-                    <td className="py-2 px-2 text-center font-bold text-slate-900 border-r-[1.8px] border-emerald-800">
+                  <tr key={idx} className="border-b-2 border-emerald-800 h-9">
+                    {/* Banyaknya (Bisa Huruf atau Angka) */}
+                    <td className="py-2 px-2 text-center font-bold text-slate-900 border-r-2 border-emerald-800">
                       {it ? it.banyaknya : ''}
                     </td>
 
                     {/* Keterangan (TANPA AUTO CAPSLOCK) */}
-                    <td className="py-2 px-3 font-bold text-slate-900 border-r-[1.8px] border-emerald-800">
+                    <td className="py-2 px-3 font-bold text-slate-900 border-r-2 border-emerald-800">
                       {it ? it.keterangan : ''}
                     </td>
 
                     {/* Harga Satuan (Auto Ada Rp.) */}
-                    <td className="py-2 px-2.5 border-r-[1.8px] border-emerald-800 text-slate-900">
+                    <td className="py-2 px-2.5 border-r-2 border-emerald-800 text-slate-900">
                       {it && (it.hargaSatuan || it.hargaSatuan === 0) ? (
                         <div className="flex items-center justify-between w-full">
                           <span className="text-emerald-800 font-bold text-[11px] sm:text-xs">Rp.</span>
@@ -270,12 +278,12 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
               </tbody>
             </table>
 
-            {/* JUMLAH & RP Bottom Line */}
+            {/* JUMLAH & RP Bottom Line Solid */}
             <div className="flex justify-end">
-              <div className="w-32 sm:w-36 py-2 px-3 text-center font-black text-xs sm:text-sm text-emerald-800 border-r-[1.8px] border-emerald-800 uppercase">
+              <div className="w-32 sm:w-36 py-2 px-3 text-center font-black text-xs sm:text-sm text-emerald-800 border-r-2 border-emerald-800 uppercase">
                 JUMLAH
               </div>
-              <div className="w-36 sm:w-40 py-2 px-3 flex items-center justify-between font-mono font-black text-xs sm:text-sm text-slate-900 border-l-[1.8px] border-r-[1.8px] border-b-[1.8px] border-emerald-800">
+              <div className="w-36 sm:w-40 py-2 px-3 flex items-center justify-between font-mono font-black text-xs sm:text-sm text-slate-900 border-l-2 border-r-2 border-b-2 border-emerald-800">
                 <span className="text-emerald-800">Rp.</span>
                 <span>{formatNumber(bon.totalJumlah)}</span>
               </div>

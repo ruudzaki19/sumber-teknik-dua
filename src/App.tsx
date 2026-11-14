@@ -241,7 +241,7 @@ export const App: React.FC = () => {
     bonData: Omit<Bon, 'id' | 'createdAt' | 'updatedAt' | 'items'> & {
       id?: string;
       items: Array<{
-        banyaknya: number;
+        banyaknya: string | number;
         keterangan: string;
         hargaSatuan: number;
         jumlah: number;

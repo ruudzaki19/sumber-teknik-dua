@@ -312,7 +312,7 @@ export const dataService = {
           const allItems: BonItem[] = (itemsData || []).map(it => ({
             id: it.id,
             bonId: it.bon_id,
-            banyaknya: Number(it.banyaknya) || 1,
+            banyaknya: it.banyaknya != null ? String(it.banyaknya) : '1',
             keterangan: it.keterangan || '',
             hargaSatuan: Number(it.harga_satuan) || 0,
             jumlah: Number(it.jumlah) || 0,
@@ -375,7 +375,7 @@ export const dataService = {
           const items: BonItem[] = (itData || []).map(it => ({
             id: it.id,
             bonId: it.bon_id,
-            banyaknya: Number(it.banyaknya) || 1,
+            banyaknya: it.banyaknya != null ? String(it.banyaknya) : '1',
             keterangan: it.keterangan || '',
             hargaSatuan: Number(it.harga_satuan) || 0,
             jumlah: Number(it.jumlah) || 0,
@@ -417,7 +417,7 @@ export const dataService = {
     bonData: Omit<Bon, 'id' | 'createdAt' | 'updatedAt' | 'items'> & {
       id?: string;
       items: Array<{
-        banyaknya: number;
+        banyaknya: string | number;
         keterangan: string;
         hargaSatuan: number;
         jumlah: number;
@@ -456,7 +456,7 @@ export const dataService = {
           const insertItems = bonData.items.map((it, idx) => ({
             id: `item-${Date.now().toString(36)}-${idx}`,
             bon_id: id,
-            banyaknya: Number(it.banyaknya) || 1,
+            banyaknya: it.banyaknya != null ? String(it.banyaknya) : '1',
             keterangan: it.keterangan || '',
             harga_satuan: Number(it.hargaSatuan) || 0,
             jumlah: Number(it.jumlah) || 0,
@@ -503,7 +503,7 @@ export const dataService = {
       const localInsertItems: BonItem[] = bonData.items.map((it, idx) => ({
         id: `item-${Date.now().toString(36)}-${idx}`,
         bonId: id,
-        banyaknya: Number(it.banyaknya) || 1,
+        banyaknya: it.banyaknya != null ? String(it.banyaknya) : '1',
         keterangan: it.keterangan || '',
         hargaSatuan: Number(it.hargaSatuan) || 0,
         jumlah: Number(it.jumlah) || 0,

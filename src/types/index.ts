@@ -55,7 +55,7 @@ export interface CompanySettings {
 export interface BonItem {
   id: string;
   bonId: string;
-  banyaknya: number;          // Qty / Jumlah
+  banyaknya: string | number; // Qty / Satuan (angka atau huruf: "1", "1 Unit", "2 Pk", "Set", dll)
   keterangan: string;         // Deskripsi item / servis / sparepart
   hargaSatuan: number;        // Nominal harga satuan (Rp)
   jumlah: number;             // Banyaknya * HargaSatuan (Rp)

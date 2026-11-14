@@ -94,7 +94,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
     }
   };
 
-  const greenBorder = '1.8px solid #1b6837';
+  // Garis solid tebal 2px konsisten di seluruh tabel (tidak ada yang tipis / tebal sebelah)
+  const solidBorder = '2px solid #1b6837';
   const greenText = '#1b6837';
 
   return (
@@ -169,38 +170,41 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
               className="shadow-2xl text-black select-text flex flex-col justify-between"
             >
               <div>
-                {/* ================= HEADER KOP SURAT BON HD & BIDANG KEPADA YTH (UKURAN BESAR & HIJAU) ================= */}
+                {/* ================= HEADER KOP SURAT BON (PERSIS GAMBAR 1, SEJAJAR TINGGI) ================= */}
                 <div
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'flex-start',
                     width: '100%',
-                    marginBottom: '20px',
-                    gap: '24px'
+                    marginBottom: '22px'
                   }}
                 >
-                  {/* Kiri: Kop Surat HD SUMBER TEKNIK DUA (Besar & Tulisan Hijau) */}
-                  <div style={{ flex: '1 1 56%', maxWidth: '425px' }}>
+                  {/* Kiri: Kop Surat Resmi Gambar 1 HD */}
+                  <div style={{ width: '400px', height: '178px' }}>
                     <img
                       src="/kop-card-hd.png"
                       alt="SUMBER TEKNIK DUA"
                       style={{
                         width: '100%',
-                        height: 'auto',
-                        display: 'block'
+                        height: '100%',
+                        display: 'block',
+                        objectFit: 'contain'
                       }}
                     />
                   </div>
 
-                  {/* Kanan: Field Pelanggan Rapi dengan Garis Titik-Titik Hijau (Ukuran Lebih Besar) */}
+                  {/* Kanan: Field Pelanggan Rapi Sejajar Tingginya dengan Kop Kiri (178px) */}
                   <div
                     style={{
-                      flex: '1 1 42%',
+                      width: '290px',
+                      height: '178px',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
-                      paddingTop: '4px'
+                      boxSizing: 'border-box',
+                      paddingTop: '2px',
+                      paddingBottom: '2px'
                     }}
                   >
                     {/* Baris 1: Tangerang, [Tanggal] */}
@@ -208,8 +212,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       style={{
                         display: 'flex',
                         alignItems: 'flex-end',
-                        minHeight: '29px',
-                        marginBottom: '7px'
+                        minHeight: '26px'
                       }}
                     >
                       <span
@@ -232,7 +235,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontSize: '14.5px',
                           paddingBottom: '2px',
                           paddingLeft: '4px',
-                          minHeight: '22px'
+                          minHeight: '20px'
                         }}
                       >
                         {bon.tanggal || ''}
@@ -244,8 +247,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       style={{
                         display: 'flex',
                         alignItems: 'flex-end',
-                        minHeight: '29px',
-                        marginBottom: '7px'
+                        minHeight: '26px'
                       }}
                     >
                       <span
@@ -268,7 +270,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontSize: '14.5px',
                           paddingBottom: '2px',
                           paddingLeft: '4px',
-                          minHeight: '22px'
+                          minHeight: '20px'
                         }}
                       >
                         {bon.kepadaYth || ''}
@@ -278,18 +280,16 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     {/* Baris 3: Garis Titik-Titik Kosong */}
                     <div
                       style={{
-                        minHeight: '26px',
-                        borderBottom: '1.4px dotted #1b6837',
-                        marginBottom: '7px'
+                        minHeight: '20px',
+                        borderBottom: '1.4px dotted #1b6837'
                       }}
                     />
 
                     {/* Baris 4: Garis Titik-Titik Kosong */}
                     <div
                       style={{
-                        minHeight: '26px',
-                        borderBottom: '1.4px dotted #1b6837',
-                        marginBottom: '7px'
+                        minHeight: '20px',
+                        borderBottom: '1.4px dotted #1b6837'
                       }}
                     />
 
@@ -298,7 +298,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       style={{
                         display: 'flex',
                         alignItems: 'flex-end',
-                        minHeight: '29px'
+                        minHeight: '26px'
                       }}
                     >
                       <span
@@ -321,7 +321,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontSize: '14.5px',
                           paddingBottom: '2px',
                           paddingLeft: '4px',
-                          minHeight: '22px'
+                          minHeight: '20px'
                         }}
                       >
                         {bon.telpPelanggan || ''}
@@ -330,40 +330,137 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                   </div>
                 </div>
 
-                {/* ================= TABEL 13 BARIS BORDER HIJAU ================= */}
+                {/* ================= TABEL 13 BARIS LINE SOLID 2PX KONSISTEN ================= */}
                 <div style={{ width: '100%', marginBottom: '0px' }}>
                   <table
                     style={{
                       width: '100%',
                       borderCollapse: 'collapse',
                       fontSize: '14.5px',
-                      border: greenBorder
+                      border: solidBorder,
+                      backgroundColor: '#ffffff'
                     }}
                   >
                     <thead>
                       <tr
                         style={{
-                          height: '38px',
-                          borderBottom: greenBorder,
-                          color: greenText,
-                          fontWeight: 900,
-                          fontSize: '15px',
-                          letterSpacing: '0.5px',
-                          textAlign: 'center',
+                          height: '40px',
                           backgroundColor: '#ffffff'
                         }}
                       >
-                        <th style={{ width: '120px', padding: '6px 4px', borderRight: greenBorder, textAlign: 'center' }}>
-                          BANYAKNYA
+                        {/* Header 1: BANYAKNYA - Posisi Tepat di Tengah Optik */}
+                        <th
+                          style={{
+                            width: '120px',
+                            border: solidBorder,
+                            padding: 0,
+                            verticalAlign: 'middle',
+                            textAlign: 'center',
+                            height: '40px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: '100%',
+                              width: '100%',
+                              fontSize: '15px',
+                              fontWeight: 900,
+                              color: greenText,
+                              letterSpacing: '0.5px',
+                              paddingBottom: '3px' // Menaikkan posisi teks 3px agar tepat di tengah optik sel header
+                            }}
+                          >
+                            BANYAKNYA
+                          </div>
                         </th>
-                        <th style={{ padding: '6px 12px', borderRight: greenBorder, textAlign: 'center' }}>
-                          KETERANGAN
+
+                        {/* Header 2: KETERANGAN - Posisi Tepat di Tengah Optik */}
+                        <th
+                          style={{
+                            border: solidBorder,
+                            padding: 0,
+                            verticalAlign: 'middle',
+                            textAlign: 'center',
+                            height: '40px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: '100%',
+                              width: '100%',
+                              fontSize: '15px',
+                              fontWeight: 900,
+                              color: greenText,
+                              letterSpacing: '0.5px',
+                              paddingBottom: '3px' // Menaikkan posisi teks 3px agar tepat di tengah optik sel header
+                            }}
+                          >
+                            KETERANGAN
+                          </div>
                         </th>
-                        <th style={{ width: '145px', padding: '6px 8px', borderRight: greenBorder, textAlign: 'center' }}>
-                          HARGA SATUAN
+
+                        {/* Header 3: HARGA SATUAN - Posisi Tepat di Tengah Optik */}
+                        <th
+                          style={{
+                            width: '145px',
+                            border: solidBorder,
+                            padding: 0,
+                            verticalAlign: 'middle',
+                            textAlign: 'center',
+                            height: '40px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: '100%',
+                              width: '100%',
+                              fontSize: '15px',
+                              fontWeight: 900,
+                              color: greenText,
+                              letterSpacing: '0.5px',
+                              paddingBottom: '3px' // Menaikkan posisi teks 3px agar tepat di tengah optik sel header
+                            }}
+                          >
+                            HARGA SATUAN
+                          </div>
                         </th>
-                        <th style={{ width: '165px', padding: '6px 8px', textAlign: 'center' }}>
-                          JUMLAH
+
+                        {/* Header 4: JUMLAH - Posisi Tepat di Tengah Optik */}
+                        <th
+                          style={{
+                            width: '165px',
+                            border: solidBorder,
+                            padding: 0,
+                            verticalAlign: 'middle',
+                            textAlign: 'center',
+                            height: '40px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: '100%',
+                              width: '100%',
+                              fontSize: '15px',
+                              fontWeight: 900,
+                              color: greenText,
+                              letterSpacing: '0.5px',
+                              paddingBottom: '3px' // Menaikkan posisi teks 3px agar tepat di tengah optik sel header
+                            }}
+                          >
+                            JUMLAH
+                          </div>
                         </th>
                       </tr>
                     </thead>
@@ -373,17 +470,16 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           key={index}
                           style={{
                             height: '37px',
-                            borderBottom: greenBorder,
                             backgroundColor: '#ffffff'
                           }}
                         >
-                          {/* Kolom 1: Banyaknya */}
+                          {/* Kolom 1: Banyaknya (Bisa Huruf atau Angka Bebas) */}
                           <td
                             style={{
                               textAlign: 'center',
                               fontWeight: 'bold',
                               fontSize: '14.5px',
-                              borderRight: greenBorder,
+                              border: solidBorder,
                               verticalAlign: 'middle',
                               padding: '4px 6px',
                               color: '#111827'
@@ -396,7 +492,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           <td
                             style={{
                               padding: '4px 14px',
-                              borderRight: greenBorder,
+                              border: solidBorder,
                               verticalAlign: 'middle',
                               fontWeight: 'bold',
                               fontSize: '14.5px',
@@ -410,7 +506,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           <td
                             style={{
                               padding: '4px 10px',
-                              borderRight: greenBorder,
+                              border: solidBorder,
                               verticalAlign: 'middle',
                               color: '#111827'
                             }}
@@ -438,6 +534,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           <td
                             style={{
                               padding: '4px 10px',
+                              border: solidBorder,
                               verticalAlign: 'middle',
                               color: '#111827'
                             }}
@@ -478,9 +575,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        borderLeft: 'none',
-                        borderRight: greenBorder,
-                        borderBottom: 'none',
+                        borderRight: solidBorder,
                         fontWeight: 900,
                         fontSize: '14.5px',
                         color: greenText,
@@ -491,7 +586,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       JUMLAH
                     </div>
 
-                    {/* Kolom 4: Rp. [Total] dengan Box Border Hijau */}
+                    {/* Kolom 4: Rp. [Total] dengan Garis Solid 2px Hijau */}
                     <div
                       style={{
                         width: '165px',
@@ -500,14 +595,15 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         padding: '0 10px',
-                        borderLeft: greenBorder,
-                        borderRight: greenBorder,
-                        borderBottom: greenBorder,
+                        borderLeft: solidBorder,
+                        borderRight: solidBorder,
+                        borderBottom: solidBorder,
                         fontWeight: 900,
                         fontSize: '15px',
                         color: '#111827',
                         fontFamily: 'monospace',
-                        boxSizing: 'border-box'
+                        boxSizing: 'border-box',
+                        backgroundColor: '#ffffff'
                       }}
                     >
                       <span style={{ color: greenText, fontWeight: 900, fontSize: '14px' }}>Rp.</span>

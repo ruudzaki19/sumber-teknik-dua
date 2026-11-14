@@ -11,7 +11,7 @@ interface BonModalProps {
     bonData: Omit<Bon, 'id' | 'createdAt' | 'updatedAt' | 'items'> & {
       id?: string;
       items: Array<{
-        banyaknya: number;
+        banyaknya: string | number;
         keterangan: string;
         hargaSatuan: number;
         jumlah: number;
@@ -22,7 +22,7 @@ interface BonModalProps {
 }
 
 interface ItemRow {
-  banyaknya: number;
+  banyaknya: string | number;
   keterangan: string;
   hargaSatuan: number;
   jumlah: number;
@@ -72,12 +72,17 @@ export const BonModal: React.FC<BonModalProps> = ({
 
       if (bon.items && bon.items.length > 0) {
         setItems(
-          bon.items.map(it => ({
-            banyaknya: it.banyaknya || 1,
-            keterangan: it.keterangan || '',
-            hargaSatuan: it.hargaSatuan || 0,
-            jumlah: (it.banyaknya || 1) * (it.hargaSatuan || 0)
-          }))
+          bon.items.map(it => {
+            const numMatch = String(it.banyaknya).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
+            const qty = numMatch ? parseFloat(numMatch[0]) : 1;
+            const price = Number(it.hargaSatuan) || 0;
+            return {
+              banyaknya: it.banyaknya != null ? it.banyaknya : 1,
+              keterangan: it.keterangan || '',
+              hargaSatuan: price,
+              jumlah: it.jumlah != null ? Number(it.jumlah) : Math.round(qty * price)
+            };
+          })
         );
       } else {
         setItems([{ banyaknya: 1, keterangan: '', hargaSatuan: 0, jumlah: 0 }]);
@@ -98,13 +103,17 @@ export const BonModal: React.FC<BonModalProps> = ({
     const row = { ...updated[index] };
 
     if (field === 'banyaknya') {
-      const qty = Math.max(1, parseFloat(value) || 0);
-      row.banyaknya = qty;
-      row.jumlah = qty * row.hargaSatuan;
+      row.banyaknya = value;
+      // Ekstrak angka jika ada untuk perhitungan otomatis
+      const numMatch = String(value).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
+      const qty = numMatch ? parseFloat(numMatch[0]) : 1;
+      row.jumlah = Math.round(qty * (row.hargaSatuan || 0));
     } else if (field === 'hargaSatuan') {
       const price = Math.max(0, parseFloat(value) || 0);
       row.hargaSatuan = price;
-      row.jumlah = row.banyaknya * price;
+      const numMatch = String(row.banyaknya).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
+      const qty = numMatch ? parseFloat(numMatch[0]) : 1;
+      row.jumlah = Math.round(qty * price);
     } else if (field === 'keterangan') {
       row.keterangan = value;
     }
@@ -279,12 +288,11 @@ export const BonModal: React.FC<BonModalProps> = ({
                       {/* Banyaknya */}
                       <td className="p-2 border-r border-emerald-200">
                         <input
-                          type="number"
-                          min="1"
-                          step="any"
+                          type="text"
+                          placeholder="1"
                           value={row.banyaknya}
                           onChange={(e) => handleItemChange(idx, 'banyaknya', e.target.value)}
-                          className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-center font-bold focus:ring-1 focus:ring-brand-500 focus:outline-none"
+                          className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-center font-bold text-slate-800 focus:ring-1 focus:ring-brand-500 focus:outline-none"
                         />
                       </td>
 

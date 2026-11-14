@@ -119,12 +119,14 @@ CREATE POLICY "Allow All Delete Bons" ON bons FOR DELETE USING (true);
 CREATE TABLE IF NOT EXISTS bon_items (
   id TEXT PRIMARY KEY,
   bon_id TEXT NOT NULL REFERENCES bons(id) ON DELETE CASCADE,
-  banyaknya NUMERIC DEFAULT 1,
+  banyaknya TEXT DEFAULT '1',
   keterangan TEXT NOT NULL,
   harga_satuan NUMERIC DEFAULT 0,
   jumlah NUMERIC DEFAULT 0,
   created_at BIGINT NOT NULL
 );
+-- Migrasi jika kolom sebelumnya adalah NUMERIC
+ALTER TABLE bon_items ALTER COLUMN banyaknya TYPE TEXT USING banyaknya::TEXT;
 
 ALTER TABLE bon_items ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public Read Bon Items" ON bon_items;
