@@ -200,21 +200,21 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
               className="shadow-2xl text-black select-text flex flex-col justify-between"
             >
               <div>
-                {/* ================= KOP SURAT GAMBAR KEDUA (GAMBAR 2) ================= */}
+                {/* ================= KOP SURAT HD SUMBER TEKNIK DUA (GAMBAR 4) ================= */}
                 <div style={{ width: '100%', marginBottom: '16px' }}>
                   <img
-                    src="/kop-surat-white.png"
+                    src="/kop-card-hd.png"
                     alt="Kop Surat SUMBER TEKNIK DUA"
                     style={{
-                      width: '100%',
-                      maxHeight: '130px',
+                      maxHeight: '125px',
+                      maxWidth: '100%',
                       objectFit: 'contain',
                       display: 'block',
                       margin: '0 auto'
                     }}
                   />
                   {/* Decorative divider line */}
-                  <div style={{ marginTop: '8px', borderBottom: '2.5px solid #14532d' }}></div>
+                  <div style={{ marginTop: '10px', borderBottom: '2.5px solid #14532d' }}></div>
                   <div style={{ marginTop: '2px', borderBottom: '1px solid #16a34a' }}></div>
                 </div>
 

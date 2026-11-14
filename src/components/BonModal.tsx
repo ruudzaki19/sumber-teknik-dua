@@ -199,34 +199,17 @@ export const BonModal: React.FC<BonModalProps> = ({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-5 text-xs">
           {/* Metadata Top Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-            {/* Nomor Bon */}
-            <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                Nomor Bon / Nota
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  required
-                  value={nomorBon}
-                  onChange={(e) => setNomorBon(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-xl font-mono font-bold text-emerald-950 focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                />
-                <Hash className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
             {/* Tanggal */}
             <div>
               <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                Tangerang, [Tanggal]
+                Tanggal
               </label>
               <div className="relative">
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: 13 November 2026"
+                  placeholder=""
                   value={tanggal}
                   onChange={(e) => setTanggal(e.target.value)}
                   className="w-full pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
@@ -238,13 +221,13 @@ export const BonModal: React.FC<BonModalProps> = ({
             {/* Kepada Yth */}
             <div>
               <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                Kepada Yth. (Pelanggan) *
+                Kepada Yth.
               </label>
               <div className="relative">
                 <input
                   type="text"
                   required
-                  placeholder="Nama Pelanggan / Kantor"
+                  placeholder=""
                   value={kepadaYth}
                   onChange={(e) => setKepadaYth(e.target.value)}
                   className="w-full pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-xl font-bold focus:ring-2 focus:ring-brand-500 focus:outline-none"
@@ -261,7 +244,7 @@ export const BonModal: React.FC<BonModalProps> = ({
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="0812 xxxx xxxx"
+                  placeholder=""
                   value={telpPelanggan}
                   onChange={(e) => setTelpPelanggan(e.target.value)}
                   className="w-full pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
@@ -276,11 +259,8 @@ export const BonModal: React.FC<BonModalProps> = ({
             <div className="flex items-center justify-between mb-2">
               <div>
                 <h4 className="font-extrabold text-slate-800 text-sm">
-                  Daftar Pekerjaan &amp; Sparepart
+                  Daftar Pekerjaan
                 </h4>
-                <p className="text-[11px] text-slate-500">
-                  Masukkan banyaknya, rincian pekerjaan atau sparepart, serta harga satuan
-                </p>
               </div>
               <button
                 type="button"
@@ -323,7 +303,7 @@ export const BonModal: React.FC<BonModalProps> = ({
                         <input
                           type="text"
                           required
-                          placeholder="Contoh: Service Cuci AC Split 1 PK / Ganti Kapasitor"
+                          placeholder=""
                           value={row.keterangan}
                           onChange={(e) => handleItemChange(idx, 'keterangan', e.target.value)}
                           className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold uppercase focus:ring-1 focus:ring-brand-500 focus:outline-none"
@@ -393,9 +373,6 @@ export const BonModal: React.FC<BonModalProps> = ({
                 onChange={(e) => setNamaTeknisi(e.target.value)}
                 className="w-full p-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-none"
               />
-              <p className="text-[10px] text-emerald-700 mt-1 font-medium">
-                ✓ Paraf teknisi resmi otomatis tertera pada area tanda tangan
-              </p>
             </div>
 
             <div>
@@ -404,7 +381,7 @@ export const BonModal: React.FC<BonModalProps> = ({
               </label>
               <input
                 type="text"
-                placeholder="Nama Pelanggan yang menerima"
+                placeholder=""
                 value={namaPenerima}
                 onChange={(e) => setNamaPenerima(e.target.value)}
                 className="w-full p-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-none"

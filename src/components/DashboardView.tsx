@@ -1,18 +1,17 @@
 import React from 'react';
 import {
-  DoorClosed,
-  Cpu,
-  Receipt,
-  ArrowRight,
-  Phone,
-  MessageCircle,
   MapPin,
-  Wrench,
+  Phone,
+  Clock,
+  CheckCircle2,
+  Wind,
   ShieldCheck,
-  Plus,
-  Coins,
-  ChevronRight,
-  ExternalLink
+  Sparkles,
+  Gauge,
+  Zap,
+  Snowflake,
+  Layers,
+  ThermometerSnowflake
 } from 'lucide-react';
 import { Room, ACUnit, Bon, UserProfile } from '../types';
 
@@ -26,286 +25,258 @@ interface DashboardViewProps {
   onOpenAddBon?: () => void;
 }
 
-export const DashboardView: React.FC<DashboardViewProps> = ({
-  user,
-  rooms,
-  acUnits,
-  bons,
-  onNavigateTab,
-  onOpenAddRoom,
-  onOpenAddBon
-}) => {
-  const isAdmin = user.role === 'admin';
+export const DashboardView: React.FC<DashboardViewProps> = () => {
+  const acCategories = [
+    {
+      title: 'AC Split Wall',
+      capacity: '1/2 PK — 2.5 PK',
+      desc: 'Unit pendingin ruangan hunian & kantor. Perawatan cuci steam menyeluruh pada evaporator indoor, fan blower, serta kondensor outdoor.',
+      tag: 'Paling Populer',
+      features: ['Cuci Steam Bersih', 'Cek Freon R32 / R410A', 'Pembersihan Drainase']
+    },
+    {
+      title: 'AC Standing Floor',
+      capacity: '3 PK — 10 PK',
+      desc: 'Unit pendingin kapasitas tinggi untuk aula pertemuan, restoran, dan lobby gedung perkantoran dengan sirkulasi udara bertenaga kuat.',
+      tag: 'Kapasitas Besar',
+      features: ['Pembersihan Filter Blower', 'Uji Kompresor 3-Phase', 'Flushing Kondensor']
+    },
+    {
+      title: 'AC Cassette Ceiling',
+      capacity: '2 PK — 5 PK',
+      desc: 'Pendingin terintegrasi plafon untuk estetika ruang meeting dan ruang kerja modern dengan aliran hembusan angin 4 arah.',
+      tag: 'Desain Minimalis',
+      features: ['Perawatan Pompa Drain', 'Desinfeksi Grill Udara', 'Cek Kelistrikan Modul']
+    },
+    {
+      title: 'AC Inverter Multi-Split',
+      capacity: 'Hemat Energi',
+      desc: 'Sistem pendingin inverter hemat listrik dengan teknologi kendali suhu presisi untuk kenyamanan maksimal sepanjang hari.',
+      tag: 'Efisiensi Daya',
+      features: ['Diagnostik Modul PCB', 'Pengukuran Tekanan Presisi', 'Deteksi Kebocoran Mikro']
+    }
+  ];
 
-  // Calculate total omset bon
-  const totalOmset = bons.reduce((sum, b) => sum + (b.totalJumlah || 0), 0);
-
-  const formatRupiah = (val: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0
-    }).format(val || 0);
-  };
-
-  const services = [
-    { title: 'AC Rumah & Kantor', desc: 'Cuci steam, tambah freon, instalasi baru & relokasi' },
-    { title: 'AC Mobil', desc: 'Perawatan kompresor, filter kabin & flushing' },
-    { title: 'Kulkas & Freezer', desc: 'Perbaikan sirkulasi dingin, thermostat & kompresor' },
-    { title: 'Water Heater', desc: 'Pengecekan elemen pemanas, instalasi & servis' },
-    { title: 'Mesin Cuci', desc: 'Perbaikan motor, pengering & modul otomatis' },
-    { title: 'Dispenser', desc: 'Pembersihan tangki, perbaikan pendingin & pemanas' }
+  const serviceStandards = [
+    {
+      title: 'Cuci Steam Tekanan Tinggi',
+      desc: 'Membersihkan debu membandel, jamur, dan lendir pada unit indoor serta outdoor untuk udara yang lebih higienis dan dingin optimal.',
+      icon: Wind
+    },
+    {
+      title: 'Cek Tekanan Freon Sesuai Standar',
+      desc: 'Pengukuran akurat menggunakan manifold gauge pada refrigeran R32, R410A, maupun R22 demi efisiensi pendinginan kompresor.',
+      icon: Gauge
+    },
+    {
+      title: 'Pemeriksaan Arus Listrik & Komponen',
+      desc: 'Pengecekan arus ampere motor kompresor, kapasitor, kontaktor kelistrikan, serta jalur kabel untuk menjamin keamanan operasional.',
+      icon: Zap
+    },
+    {
+      title: 'Pembersihan & Uji Aliran Drainase',
+      desc: 'Flushing jalur pipa pembuangan air kondensasi untuk mencegah kebocoran air (water drop) yang dapat merusak interior ruangan.',
+      icon: ThermometerSnowflake
+    }
   ];
 
   return (
     <div className="space-y-6">
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-brand-900 via-emerald-800 to-brand-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-emerald-700/40">
-        <div className="absolute right-0 top-0 w-80 h-80 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-emerald-200 text-xs font-bold border border-white/15">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
-              <span>Sistem Manajemen Terintegrasi 2026</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              Selamat Datang, {user.name}
-            </h1>
-            <p className="text-emerald-100 text-xs sm:text-sm max-w-xl leading-relaxed">
-              Platform terpadu <strong className="text-white">SUMBER TEKNIK DUA</strong> untuk pengelolaan
-              kartu riwayat pemeliharaan unit AC per ruangan serta pencatatan &amp; cetak nota bon transaksi.
-            </p>
-          </div>
+      {/* ============================================================== */}
+      {/* 1. HERO PROFILE BANNER "SUMBER TEKNIK DUA" (ABOUT US) */}
+      {/* ============================================================== */}
+      <div className="bg-gradient-to-br from-brand-900 via-emerald-800 to-brand-950 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden border border-emerald-700/50">
+        <div className="absolute -right-16 -top-16 w-80 h-80 bg-emerald-400/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute right-1/3 -bottom-20 w-72 h-72 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            {isAdmin && onOpenAddBon && (
-              <button
-                onClick={onOpenAddBon}
-                className="px-4 py-2.5 bg-white text-brand-900 hover:bg-emerald-50 text-xs font-bold rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Buat Bon Baru</span>
-              </button>
-            )}
-            {isAdmin && onOpenAddRoom && (
-              <button
-                onClick={onOpenAddRoom}
-                className="px-4 py-2.5 bg-emerald-700/80 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-95 border border-emerald-500/40 flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Tambah Ruangan</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 4 Statistics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {/* Total Ruangan */}
-        <div
-          onClick={() => onNavigateTab('pemeliharaan')}
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <DoorClosed className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] text-slate-400 group-hover:text-emerald-700 font-bold flex items-center">
-              Lihat <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
-            {rooms.length}
-          </div>
-          <p className="text-xs font-bold text-slate-500 mt-0.5">Total Ruangan</p>
-        </div>
-
-        {/* Total Unit AC */}
-        <div
-          onClick={() => onNavigateTab('pemeliharaan')}
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Cpu className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] text-slate-400 group-hover:text-emerald-700 font-bold flex items-center">
-              Lihat <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
-            {acUnits.length}
-          </div>
-          <p className="text-xs font-bold text-slate-500 mt-0.5">Total Unit AC</p>
-        </div>
-
-        {/* Total Bon / Nota */}
-        <div
-          onClick={() => onNavigateTab('bon')}
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Receipt className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] text-slate-400 group-hover:text-emerald-700 font-bold flex items-center">
-              Lihat <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
-            {bons.length}
-          </div>
-          <p className="text-xs font-bold text-slate-500 mt-0.5">Total Bon / Nota</p>
-        </div>
-
-        {/* Total Nilai Bon */}
-        <div
-          onClick={() => onNavigateTab('bon')}
-          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Coins className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] text-slate-400 group-hover:text-emerald-700 font-bold flex items-center">
-              Total <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          <div className="text-lg sm:text-xl font-black text-emerald-800 font-mono truncate">
-            {formatRupiah(totalOmset)}
-          </div>
-          <p className="text-xs font-bold text-slate-500 mt-0.5">Total Nilai Transaksi</p>
-        </div>
-      </div>
-
-      {/* Profil Perusahaan "SUMBER TEKNIK DUA" & Akses Cepat */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Kartu Profil Perusahaan */}
-        <div className="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-5">
-          <div className="flex items-start gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-50 p-2 border-2 border-emerald-200 shrink-0 flex items-center justify-center">
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Logo & Headline */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 max-w-2xl">
+            <div className="w-20 h-20 rounded-2xl bg-white p-2.5 shadow-lg flex items-center justify-center shrink-0 border-2 border-emerald-300/40">
               <img src="/logo-st.svg" alt="ST Logo" className="w-full h-full object-contain" />
             </div>
-            <div>
-              <div className="inline-block px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-md uppercase tracking-wider mb-1">
-                Profil Resmi Usaha
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-emerald-200 text-xs font-bold border border-white/20">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Spesialis Pendingin Udara (Air Conditioner)</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white uppercase">
                 SUMBER TEKNIK DUA
-              </h2>
-              <p className="text-xs text-emerald-700 font-bold">
-                Service, Jual-Beli AC Rumah, AC Mobil, Kulkas, Freezer, Water Heater, Mesin Cuci, Dispenser
+              </h1>
+              <p className="text-emerald-100 text-xs sm:text-sm leading-relaxed">
+                Penyedia layanan profesional pemeliharaan, perawatan rutin, perbaikan kelistrikan,
+                serta jual-beli unit Air Conditioner (AC). Didukung oleh teknisi berpengalaman
+                dengan standar pengerjaan bersih, rapi, dan bertanggung jawab.
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-start gap-2.5">
-              <MapPin className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-              <div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Alamat Workshop</span>
-                <span className="font-semibold text-slate-800">
-                  Komp. Griya Serpong Blok H4/2, Serpong - Tangerang
-                </span>
-              </div>
+          {/* Decorative AC Emblem Badge */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-3xl p-5 text-center shrink-0 w-full md:w-auto shadow-inner">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-400/20 border border-emerald-300/30 flex items-center justify-center mb-2.5 text-emerald-200">
+              <Snowflake className="w-8 h-8 animate-pulse text-emerald-300" />
             </div>
-
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-start gap-2.5">
-              <Phone className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-              <div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Kontak Telepon / WhatsApp</span>
-                <span className="font-bold text-slate-900 font-mono">
-                  0813 8895 9081
-                </span>
-              </div>
-            </div>
+            <span className="block text-xs font-bold text-white tracking-wide uppercase">
+              Service &amp; Jual-Beli AC
+            </span>
+            <span className="text-[11px] text-emerald-200">
+              Rumah • Kantor • Komersial
+            </span>
           </div>
+        </div>
+      </div>
 
-          {/* Hubungi Langsung Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 pt-2">
-            <a
-              href="https://wa.me/6281388959081?text=Halo%20Sumber%20Teknik%20Dua,%20saya%20ingin%20konsultasi%20layanan%20service."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all active:scale-95"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>Hubungi via WhatsApp</span>
-            </a>
-            <a
-              href="tel:081388959081"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-all"
-            >
-              <Phone className="w-4 h-4 text-emerald-700" />
-              <span>Telepon Langsung (0813 8895 9081)</span>
-            </a>
+      {/* ============================================================== */}
+      {/* 2. INFORMASI LOKASI WORKSHOP & KONTAK (STATIC CARD, NO BUTTONS) */}
+      {/* ============================================================== */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Alamat Workshop */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
+            <MapPin className="w-5 h-5" />
           </div>
-
-          {/* Cakupan Layanan */}
-          <div className="pt-4 border-t border-slate-100">
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">
-              Layanan Spesialisasi Kami
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-              {services.map((srv, idx) => (
-                <div key={idx} className="p-2.5 rounded-xl bg-emerald-50/50 border border-emerald-100 text-xs">
-                  <div className="font-bold text-emerald-950 flex items-center gap-1.5">
-                    <Wrench className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{srv.title}</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 mt-1 leading-snug">{srv.desc}</p>
-                </div>
-              ))}
-            </div>
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+              Alamat Workshop Resmi
+            </span>
+            <p className="text-xs font-extrabold text-slate-900 mt-0.5 leading-snug">
+              Komp. Griya Serpong Blok H4/2
+            </p>
+            <span className="text-[11px] text-slate-500 font-medium block">
+              Serpong - Tangerang
+            </span>
           </div>
         </div>
 
-        {/* Akses Cepat ke Menu Utama */}
-        <div className="space-y-4 flex flex-col justify-between">
-          {/* Menu 2: Kartu Pemeliharaan */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:border-emerald-300 transition-all flex flex-col justify-between h-full space-y-4">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3">
-                <DoorClosed className="w-6 h-6" />
-              </div>
-              <h3 className="text-base font-extrabold text-slate-900">
-                Kartu Pemeliharaan AC
-              </h3>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Kelola data ruangan, spesifikasi unit AC, riwayat servis berkala per baris lengkap dengan paraf teknisi resmi, serta cetak kartu dan stiker QR Code.
-              </p>
-            </div>
-            <button
-              onClick={() => onNavigateTab('pemeliharaan')}
-              className="w-full py-2.5 px-4 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95"
-            >
-              <span>Buka Kartu Pemeliharaan</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+        {/* Nomor Telepon */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
+            <Phone className="w-5 h-5" />
           </div>
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+              Kontak Layanan Pelanggan
+            </span>
+            <p className="text-sm font-black text-emerald-900 font-mono mt-0.5">
+              0813 8895 9081
+            </p>
+            <span className="text-[11px] text-slate-500 font-medium block">
+              Telepon &amp; WhatsApp Resmi
+            </span>
+          </div>
+        </div>
 
-          {/* Menu 3: Pencatatan Bon */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:border-emerald-300 transition-all flex flex-col justify-between h-full space-y-4">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3">
-                <Receipt className="w-6 h-6" />
-              </div>
-              <h3 className="text-base font-extrabold text-slate-900">
-                Pencatatan Bon / Nota
-              </h3>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Buat dan kelola nota transaksi pekerjaan servis atau jual-beli unit/sparepart, hitung otomatis, cetak PDF resmi, dan bagikan QR link ke pelanggan.
-              </p>
-            </div>
-            <button
-              onClick={() => onNavigateTab('bon')}
-              className="w-full py-2.5 px-4 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95"
-            >
-              <span>Buka Pencatatan Bon</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+        {/* Waktu Operasional */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
+            <Clock className="w-5 h-5" />
           </div>
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+              Waktu Operasional
+            </span>
+            <p className="text-xs font-extrabold text-slate-900 mt-0.5">
+              Senin — Minggu (Buka Setiap Hari)
+            </p>
+            <span className="text-[11px] text-emerald-700 font-semibold block">
+              Siap Panggilan Servis ke Lokasi
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ============================================================== */}
+      {/* 3. SHOWCASE SPESIALISASI UNIT AC (DEKORASI AC MEMPERBAGUS WEB) */}
+      {/* ============================================================== */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-emerald-700 text-xs font-bold uppercase tracking-wider">
+              <Layers className="w-4 h-4" />
+              <span>Spesialisasi Pendingin Udara</span>
+            </div>
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-1">
+              Jenis Unit AC yang Kami Tangani
+            </h2>
+          </div>
+          <span className="text-xs text-slate-500 font-medium">
+            Mencakup Seluruh Merk Terkemuka (Daikin, Panasonic, Sharp, Gree, LG, Mitsubishi, dll.)
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {acCategories.map((item, idx) => (
+            <div
+              key={idx}
+              className="p-5 rounded-2xl bg-gradient-to-b from-emerald-50/40 via-white to-slate-50 border border-emerald-200/60 shadow-sm flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                    {item.tag}
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 font-mono">
+                    {item.capacity}
+                  </span>
+                </div>
+                <h3 className="text-sm font-black text-slate-900 mb-1.5">
+                  {item.title}
+                </h3>
+                <p className="text-[11px] text-slate-600 leading-relaxed mb-4">
+                  {item.desc}
+                </p>
+              </div>
+
+              <div className="space-y-1.5 pt-3 border-t border-emerald-100">
+                {item.features.map((feat, fIdx) => (
+                  <div key={fIdx} className="flex items-center gap-2 text-[11px] font-semibold text-slate-700">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>{feat}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ============================================================== */}
+      {/* 4. STANDAR PENGERJAAN SERVIS AC BERKUALITAS */}
+      {/* ============================================================== */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-emerald-700 text-xs font-bold uppercase tracking-wider">
+            <Sparkles className="w-4 h-4" />
+            <span>Standar Pemeliharaan Teknisi</span>
+          </div>
+          <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-1">
+            Prosedur Kerja Servis Sumber Teknik Dua
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Setiap pengerjaan dilakukan teliti untuk memastikan unit AC bekerja optimal, dingin maksimal, dan tahan lama.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {serviceStandards.map((std, idx) => {
+            const Icon = std.icon;
+            return (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm flex flex-col"
+              >
+                <div className="w-10 h-10 rounded-xl bg-brand-900 text-emerald-300 flex items-center justify-center mb-3 shadow-sm">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <h4 className="text-xs font-extrabold text-slate-900 mb-1 leading-snug">
+                  {std.title}
+                </h4>
+                <p className="text-[11px] text-slate-600 leading-relaxed mt-1">
+                  {std.desc}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

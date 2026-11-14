@@ -102,7 +102,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-400/30">
-              <img src="/logo-crop.png" alt="ST" className="w-full h-full object-contain" />
+              <img src="/logo-st.svg" alt="ST" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="text-sm sm:text-base font-black tracking-tight uppercase">
@@ -156,36 +156,75 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
 
         {/* Paper Receipt Simulation */}
         <div className="bg-white rounded-3xl border border-slate-300 p-4 sm:p-8 shadow-md">
-          {/* Header Persis Gambar 1 */}
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-5 pb-4 border-b border-slate-100">
-            <div className="flex items-start gap-3">
-              <img src="/logo-crop.png" alt="Logo ST" className="w-16 h-18 object-contain shrink-0" />
-              <div>
-                <h2 className="text-lg sm:text-xl font-black text-emerald-800 uppercase tracking-tight">
-                  SUMBER TEKNIK DUA
-                </h2>
-                <div className="text-xs font-bold text-slate-700">Service, Jual-Beli</div>
-                <div className="text-[11px] text-slate-600 leading-tight">
-                  AC Rumah, AC Mobil, Kulkas, Freezer
-                  <br />
-                  Water Heater, Mesin Cuci, Dispenser
-                </div>
-                <div className="text-xs font-bold text-emerald-800 mt-1 leading-tight">
-                  Komp. Griya Serpong Blok H4/2
-                  <br />
-                  Telp. 0813 8895 9081
-                  <br />
-                  Serpong - Tangerang
-                </div>
+          {/* Header Persis Gambar 4 HD */}
+          <div className="relative w-full mb-5">
+            <img
+              src="/kop-surat-hd.jpg"
+              alt="Kop Surat SUMBER TEKNIK DUA"
+              className="w-full h-auto block"
+            />
+            {/* Dynamic overlays for customer fields */}
+            {bon.tanggal && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '10%',
+                  left: '71.5%',
+                  right: '1.5%',
+                  backgroundColor: '#ffffff',
+                  padding: '0 4px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#111827',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {bon.tanggal}
               </div>
-            </div>
-
-            <div className="text-xs text-emerald-900 font-bold space-y-1 w-full sm:w-auto">
-              <div>Tangerang, <span className="text-slate-900">{bon.tanggal}</span></div>
-              <div>Kepada Yth, <span className="text-slate-900 uppercase">{bon.kepadaYth}</span></div>
-              <div className="text-slate-400 font-mono text-[11px]">............................................................</div>
-              <div>Telp. <span className="text-slate-900">{bon.telpPelanggan || '-'}</span></div>
-            </div>
+            )}
+            {bon.kepadaYth && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '28%',
+                  left: '72.5%',
+                  right: '1.5%',
+                  backgroundColor: '#ffffff',
+                  padding: '0 4px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#111827',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {bon.kepadaYth}
+              </div>
+            )}
+            {bon.telpPelanggan && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '79.5%',
+                  left: '66%',
+                  right: '1.5%',
+                  backgroundColor: '#ffffff',
+                  padding: '0 4px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#111827',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {bon.telpPelanggan}
+              </div>
+            )}
           </div>
 
           {/* Table Persis Gambar 1 */}

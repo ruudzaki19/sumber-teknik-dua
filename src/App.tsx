@@ -301,9 +301,6 @@ export const App: React.FC = () => {
                     {isAdmin ? 'Admin' : 'User / Klien'}
                   </span>
                 </div>
-                <p className="text-[11px] text-emerald-200 truncate max-w-[280px] sm:max-w-none">
-                  Service &amp; Jual-Beli AC, Kulkas, Water Heater, Mesin Cuci, Dispenser
-                </p>
               </div>
             </div>
 
@@ -507,9 +504,6 @@ export const App: React.FC = () => {
                           <h2 className="text-base font-black text-slate-900 tracking-tight uppercase">
                             {room.namaRuangan}
                           </h2>
-                          <span className="text-[11px] text-slate-500 font-medium">
-                            {roomUnits.length} Unit AC Terdaftar
-                          </span>
                         </div>
                       </div>
 

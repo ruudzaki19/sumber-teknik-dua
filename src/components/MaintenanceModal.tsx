@@ -126,12 +126,12 @@ export const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
           {/* Uraian Pekerjaan */}
           <div>
             <label className="block text-[11px] font-bold text-slate-700 mb-1">
-              Uraian Pekerjaan / Servis / Sparepart *
+              Uraian Pekerjaan
             </label>
             <textarea
               required
               rows={4}
-              placeholder="Contoh: CUCI STEAM INDOOR/OUTDOOR, CEK TEKANAN FREON R32 (140 PSI), PERBAIKAN DRAINASE AIR"
+              placeholder=""
               value={uraianPekerjaan}
               onChange={(e) => setUraianPekerjaan(e.target.value)}
               className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold uppercase leading-relaxed"

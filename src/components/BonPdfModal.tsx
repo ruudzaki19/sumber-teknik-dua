@@ -215,99 +215,88 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
               className="shadow-2xl text-black select-text flex flex-col justify-between"
             >
               <div>
-                {/* ================= HEADER KOP SURAT BON (PERSIS GAMBAR 1) ================= */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
-                  {/* KIRI: Logo ST Roda Gigi Hijau + Teks Profil Lengkap */}
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', width: '58%' }}>
-                    <div style={{ width: '80px', height: '80px', flexShrink: 0, marginTop: '2px' }}>
-                      <img
-                        src="/logo-crop.png"
-                        alt="Logo ST"
-                        style={{ width: '75px', height: '82px', objectFit: 'contain' }}
-                      />
-                    </div>
-                    <div>
-                      <h2
-                        style={{
-                          fontSize: '22px',
-                          fontWeight: 900,
-                          color: greenText,
-                          margin: 0,
-                          lineHeight: '1.15',
-                          letterSpacing: '0.8px',
-                          textTransform: 'uppercase'
-                        }}
-                      >
-                        SUMBER TEKNIK DUA
-                      </h2>
-                      <div
-                        style={{
-                          fontSize: '12px',
-                          fontWeight: 700,
-                          color: '#2d3748',
-                          marginTop: '3px',
-                          marginBottom: '2px'
-                        }}
-                      >
-                        Service, Jual-Beli
-                      </div>
-                      <div
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: 600,
-                          color: '#2d3748',
-                          lineHeight: '1.25'
-                        }}
-                      >
-                        AC Rumah, AC Mobil, Kulkas, Freezer
-                        <br />
-                        Water Heater, Mesin Cuci, Dispenser
-                      </div>
-                      <div
-                        style={{
-                          fontSize: '11.5px',
-                          fontWeight: 800,
-                          color: greenText,
-                          marginTop: '3px',
-                          lineHeight: '1.25'
-                        }}
-                      >
-                        Komp. Griya Serpong Blok H4/2
-                        <br />
-                        Telp. 0813 8895 9081
-                        <br />
-                        Serpong - Tangerang
-                      </div>
-                    </div>
-                  </div>
+                {/* ================= HEADER KOP SURAT BON (PERSIS GAMBAR 4 HD) ================= */}
+                <div
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    marginBottom: '16px'
+                  }}
+                >
+                  <img
+                    src="/kop-surat-hd.jpg"
+                    alt="Kop Surat SUMBER TEKNIK DUA"
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      display: 'block'
+                    }}
+                  />
 
-                  {/* KANAN: Tangerang, Kepada Yth, Garis Titik-Titik, Telp */}
-                  <div style={{ width: '40%', fontSize: '12.5px', color: greenText, fontWeight: 700, paddingTop: '4px' }}>
-                    <div style={{ marginBottom: '6px' }}>
-                      Tangerang,{' '}
-                      <span style={{ color: '#111827', fontWeight: 'bold' }}>
-                        {bon.tanggal || '...................................................'}
-                      </span>
+                  {/* Dynamic overlays for customer fields over dotted lines */}
+                  {bon.tanggal && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '10%',
+                        left: '71.5%',
+                        right: '1.5%',
+                        backgroundColor: '#ffffff',
+                        padding: '0 4px',
+                        fontSize: '13px',
+                        fontWeight: 'bold',
+                        color: '#111827',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {bon.tanggal}
                     </div>
-                    <div style={{ marginBottom: '6px' }}>
-                      Kepada Yth,{' '}
-                      <span style={{ color: '#111827', fontWeight: 'bold', textTransform: 'uppercase' }}>
-                        {bon.kepadaYth || '................................................'}
-                      </span>
+                  )}
+
+                  {bon.kepadaYth && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '28%',
+                        left: '72.5%',
+                        right: '1.5%',
+                        backgroundColor: '#ffffff',
+                        padding: '0 4px',
+                        fontSize: '13px',
+                        fontWeight: 'bold',
+                        color: '#111827',
+                        textTransform: 'uppercase',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {bon.kepadaYth}
                     </div>
-                    <div style={{ color: greenText, letterSpacing: '1px', marginBottom: '6px', fontSize: '11px' }}>
-                      ....................................................................................
+                  )}
+
+                  {bon.telpPelanggan && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '79.5%',
+                        left: '66%',
+                        right: '1.5%',
+                        backgroundColor: '#ffffff',
+                        padding: '0 4px',
+                        fontSize: '13px',
+                        fontWeight: 'bold',
+                        color: '#111827',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {bon.telpPelanggan}
                     </div>
-                    <div style={{ color: greenText, letterSpacing: '1px', marginBottom: '6px', fontSize: '11px' }}>
-                      ....................................................................................
-                    </div>
-                    <div>
-                      Telp.{' '}
-                      <span style={{ color: '#111827', fontWeight: 'bold' }}>
-                        {bon.telpPelanggan || '...........................................................'}
-                      </span>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* ================= TABEL 11 BARIS BORDER HIJAU (PERSIS GAMBAR 1) ================= */}
@@ -467,13 +456,14 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                   </div>
                 </div>
 
-                {/* ================= FOOTER & TANDA TANGAN (PERSIS GAMBAR 1) ================= */}
+                {/* ================= FOOTER & TANDA TANGAN (PERSIS GAMBAR 3) ================= */}
                 <div
                   style={{
                     display: 'flex',
                     alignItems: 'flex-start',
-                    marginTop: '25px',
-                    position: 'relative'
+                    justifyContent: 'space-between',
+                    marginTop: '28px',
+                    padding: '0 10px'
                   }}
                 >
                   {/* KIRI BAWAH: TEKNISI + Paraf Resmi + Nama Teknisi */}
@@ -485,7 +475,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         color: greenText,
                         letterSpacing: '1px',
                         textTransform: 'uppercase',
-                        marginBottom: '2px'
+                        marginBottom: '4px'
                       }}
                     >
                       TEKNISI
@@ -505,28 +495,28 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         alt="Paraf Teknisi Resmi"
                         style={{
                           maxHeight: '70px',
-                          maxWidth: '150px',
+                          maxWidth: '160px',
                           objectFit: 'contain'
                         }}
                       />
                     </div>
 
                     {/* Garis Nama Teknisi */}
-                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#111827' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#111827', marginTop: '2px' }}>
                       ( {bon.namaTeknisi || '........................................'} )
                     </div>
                   </div>
 
-                  {/* TENGAH/KANAN: Stamp Biru Resmi SUMBER TEKNIK DUA + Garis Penerima */}
-                  <div style={{ marginLeft: '40px', textAlign: 'center', width: '320px' }}>
-                    {/* Cap Stamp Resmi */}
+                  {/* KANAN: Stamp Biru Resmi SUMBER TEKNIK DUA + Garis Penerima (Gambar 3) */}
+                  <div style={{ textAlign: 'center', width: '320px', marginRight: '15px' }}>
+                    {/* Cap Stamp Resmi Ultra Clean (Pristine 0 Black Ink) */}
                     <div
                       style={{
                         height: '78px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        marginTop: '10px'
+                        marginTop: '16px'
                       }}
                     >
                       <img
@@ -541,7 +531,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     </div>
 
                     {/* Garis Nama Penerima */}
-                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#111827', marginTop: '2px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#111827', marginTop: '6px' }}>
                       ( {bon.namaPenerima || '........................................'} )
                     </div>
                   </div>
