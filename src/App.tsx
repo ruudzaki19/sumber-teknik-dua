@@ -412,23 +412,23 @@ export const App: React.FC = () => {
 
             {/* ================= TAB 2: KARTU PEMELIHARAAN AC ================= */}
             {activeTab === 'pemeliharaan' && (
-              <div className="space-y-4">
+              <div className="space-y-6 font-sora text-st-text">
                 {/* Control Bar: Search & (Admin) Tambah Ruangan */}
-                <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <div className="bg-st-white p-4 sm:p-5 rounded-[20px] border-[3px] border-st-dark shadow-[6px_6px_0px_#14402c] flex flex-col sm:flex-row gap-3 items-center justify-between">
                   {/* Search Box */}
-                  <div className="relative w-full sm:w-80">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <div className="relative w-full sm:w-96">
+                    <Search className="w-4 h-4 text-st-dark absolute left-3.5 top-3" />
                     <input
                       type="text"
                       placeholder="Cari nama ruangan atau merk AC..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-medium text-slate-900 transition-colors"
+                      className="w-full pl-10 pr-14 py-2.5 text-xs bg-st-cream border-2 border-st-dark rounded-xl font-semibold text-st-text placeholder:text-st-text-muted focus:outline-none focus:border-st-primary transition-colors"
                     />
                     {searchQuery && (
                       <button
                         onClick={() => setSearchQuery('')}
-                        className="text-[11px] text-slate-400 hover:text-slate-600 absolute right-3 top-2 font-medium"
+                        className="text-xs text-st-dark hover:text-rose-600 absolute right-3 top-2.5 font-bold px-1.5 py-0.5 rounded bg-st-cream-dark border border-st-dark"
                       >
                         Reset
                       </button>
@@ -443,7 +443,7 @@ export const App: React.FC = () => {
                         setEditingRoom(null);
                         setIsRoomModalOpen(true);
                       }}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#15803D] hover:bg-[#166534] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-st-primary hover:bg-st-dark text-white text-xs font-extrabold rounded-xl border-2 border-st-dark shadow-[3px_3px_0px_#14402c] active:translate-y-0.5 transition-all"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Tambah Ruangan</span>
@@ -453,14 +453,14 @@ export const App: React.FC = () => {
 
                 {/* Empty state when no rooms exist yet */}
                 {!dataLoading && rooms.length === 0 && (
-                  <div className="bg-white rounded-xl border border-dashed border-slate-300 p-12 text-center">
-                    <div className="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-xl flex items-center justify-center mx-auto mb-3 border border-emerald-200">
-                      <DoorClosed className="w-6 h-6 text-emerald-700" />
+                  <div className="bg-st-white rounded-[20px] border-[3px] border-dashed border-st-dark p-12 text-center shadow-[6px_6px_0px_#14402c]">
+                    <div className="w-14 h-14 bg-st-pale text-st-dark rounded-2xl flex items-center justify-center mx-auto mb-3 border-2 border-st-dark shadow-[3px_3px_0px_#14402c]">
+                      <DoorClosed className="w-7 h-7 text-st-primary" />
                     </div>
-                    <h3 className="text-sm font-bold text-slate-900">
+                    <h3 className="text-base font-extrabold text-st-text uppercase tracking-tight">
                       {isAdmin ? 'Belum Ada Ruangan' : 'Belum Ada Data Ruangan'}
                     </h3>
-                    <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+                    <p className="text-xs text-st-text-muted max-w-sm mx-auto mt-1 mb-5 font-medium">
                       {isAdmin
                         ? 'Klik tombol "Tambah Ruangan" di atas untuk membuat ruangan baru.'
                         : 'Saat ini belum ada data ruangan yang didaftarkan oleh admin teknisi.'}
@@ -472,7 +472,7 @@ export const App: React.FC = () => {
                           setEditingRoom(null);
                           setIsRoomModalOpen(true);
                         }}
-                        className="px-4 py-2 bg-[#15803D] hover:bg-[#166534] text-white text-xs font-semibold rounded-lg inline-flex items-center gap-1.5 shadow-xs transition-colors"
+                        className="px-5 py-2.5 bg-st-primary hover:bg-st-dark text-white text-xs font-extrabold rounded-xl inline-flex items-center gap-2 border-2 border-st-dark shadow-[3px_3px_0px_#14402c] active:translate-y-0.5 transition-all"
                       >
                         <Plus className="w-4 h-4" />
                         <span>Tambah Ruangan Sekarang</span>
@@ -483,13 +483,13 @@ export const App: React.FC = () => {
 
                 {/* Search empty state */}
                 {!dataLoading && rooms.length > 0 && filteredRooms.length === 0 && (
-                  <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-                    <p className="text-xs font-semibold text-slate-700">
+                  <div className="bg-st-white rounded-[20px] border-[3px] border-st-dark p-8 text-center text-st-text-muted shadow-[6px_6px_0px_#14402c]">
+                    <p className="text-xs font-bold text-st-text">
                       Tidak ada ruangan yang cocok dengan pencarian "{searchQuery}"
                     </p>
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="mt-2 text-xs text-emerald-700 font-semibold hover:underline"
+                      className="mt-2 text-xs text-st-primary font-extrabold hover:underline"
                     >
                       Hapus pencarian
                     </button>
@@ -497,23 +497,26 @@ export const App: React.FC = () => {
                 )}
 
                 {/* ROOMS LIST */}
-                <div className="space-y-5">
+                <div className="space-y-6">
                   {filteredRooms.map((room) => {
                     const roomUnits = acUnits.filter((u) => u.roomId === room.id);
 
                     return (
                       <div
                         key={room.id}
-                        className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden"
+                        className="bg-st-white rounded-[20px] border-[3px] border-st-dark shadow-[6px_6px_0px_#14402c] overflow-hidden"
                       >
                         {/* ROOM HEADER: Name on left, Actions on right (Admin Only) */}
-                        <div className="bg-slate-50 p-3.5 sm:p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold border border-emerald-200">
-                              <DoorClosed className="w-4 h-4 text-emerald-700" />
+                        <div className="bg-st-cream-dark p-4 sm:p-5 border-b-[3px] border-st-dark flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-st-white text-st-primary flex items-center justify-center font-bold border-2 border-st-dark shadow-[2px_2px_0px_#14402c]">
+                              <DoorClosed className="w-5 h-5 text-st-primary" />
                             </div>
                             <div>
-                              <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight uppercase">
+                              <span className="text-[10px] text-st-text-muted uppercase tracking-wider font-extrabold block">
+                                LOKASI RUANGAN
+                              </span>
+                              <h2 className="text-base sm:text-lg font-extrabold text-st-text tracking-tight uppercase">
                                 {room.namaRuangan}
                               </h2>
                             </div>
@@ -528,9 +531,9 @@ export const App: React.FC = () => {
                                   setEditingRoom(room);
                                   setIsRoomModalOpen(true);
                                 }}
-                                className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 px-2.5 py-1.5 rounded-lg transition-colors shadow-xs"
+                                className="inline-flex items-center gap-1.5 text-xs font-bold text-st-dark bg-st-white hover:bg-st-cream border-2 border-st-dark px-3 py-2 rounded-xl transition-all shadow-[2px_2px_0px_#14402c] active:translate-y-0.5"
                               >
-                                <Edit className="w-3.5 h-3.5" />
+                                <Edit className="w-3.5 h-3.5 text-st-dark" />
                                 <span>Edit Ruangan</span>
                               </motion.button>
 
@@ -541,7 +544,7 @@ export const App: React.FC = () => {
                                   setEditingUnit(null);
                                   setIsUnitModalOpen(true);
                                 }}
-                                className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#15803D] hover:bg-[#166534] px-3 py-1.5 rounded-lg shadow-xs transition-colors"
+                                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-st-primary hover:bg-st-dark px-4 py-2 rounded-xl shadow-[3px_3px_0px_#14402c] border-2 border-st-dark active:translate-y-0.5 transition-all"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                                 <span>Tambah Unit AC</span>
@@ -551,14 +554,14 @@ export const App: React.FC = () => {
                         </div>
 
                         {/* ROOM BODY: List of AC Units inside this room */}
-                        <div className="p-4 space-y-4">
+                        <div className="p-4 sm:p-5 space-y-5">
                           {roomUnits.length === 0 ? (
-                            <div className="text-center py-6 text-slate-400 text-xs bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                            <div className="text-center py-8 text-st-text-muted text-xs bg-st-cream/60 rounded-xl border-2 border-dashed border-st-dark/30 font-medium">
                               Belum ada unit AC di ruangan ini.
                               {isAdmin && (
                                 <>
                                   <br />
-                                  Klik tombol <strong>"Tambah Unit AC"</strong> di kanan atas untuk menambahkan.
+                                  Klik tombol <strong>"Tambah Unit AC"</strong> di kanan atas untuk menambahkan unit.
                                 </>
                               )}
                             </div>
@@ -571,21 +574,21 @@ export const App: React.FC = () => {
                               return (
                                 <div
                                   key={unit.id}
-                                  className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs"
+                                  className="bg-st-white rounded-[16px] border-2 border-st-dark overflow-hidden shadow-[4px_4px_0px_#14402c]"
                                 >
                                   {/* Unit Title Bar: Solid Forest Green */}
-                                  <div className="bg-[#15803D] text-white p-3 px-4 flex flex-wrap items-center justify-between gap-2 border-b border-[#14532D]">
+                                  <div className="bg-st-primary text-white p-3.5 px-4 sm:px-5 flex flex-wrap items-center justify-between gap-2 border-b-2 border-st-dark">
                                     <div>
-                                      <span className="text-[10px] text-emerald-200 uppercase tracking-wider font-semibold block">
+                                      <span className="text-[10px] text-st-pale uppercase tracking-wider font-extrabold block">
                                         KARTU PEMELIHARAAN AC TAHUN 2026
                                       </span>
-                                      <h3 className="text-xs sm:text-sm font-bold uppercase mt-0.5 text-white">
+                                      <h3 className="text-xs sm:text-sm font-extrabold uppercase mt-0.5 text-white tracking-tight">
                                         {unit.ruanganLokasi} — {unit.merk} {unit.jenisAc} ({unit.kapasitas})
                                       </h3>
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-2">
                                       {/* QR Code Sticker Button (Visible for all: Admin & User) */}
                                       <motion.button
                                         whileTap={{ scale: 0.98 }}
@@ -593,10 +596,10 @@ export const App: React.FC = () => {
                                           setActiveStickerUnit(unit);
                                           setIsQRStickerOpen(true);
                                         }}
-                                        className="inline-flex items-center gap-1 text-xs font-medium bg-emerald-900/60 hover:bg-emerald-900 text-white px-2.5 py-1.5 rounded-lg transition-colors border border-emerald-600/40"
+                                        className="inline-flex items-center gap-1.5 text-xs font-bold bg-st-dark hover:bg-black text-white px-3 py-1.5 rounded-xl transition-all border border-st-pale/40"
                                         title="Lihat & Cetak Stiker QR Code untuk AC ini"
                                       >
-                                        <QrCode className="w-3.5 h-3.5 text-emerald-200" />
+                                        <QrCode className="w-3.5 h-3.5 text-st-light" />
                                         <span>Stiker QR</span>
                                       </motion.button>
 
@@ -609,9 +612,9 @@ export const App: React.FC = () => {
                                             setEditingRecord(null);
                                             setIsMaintenanceModalOpen(true);
                                           }}
-                                          className="inline-flex items-center gap-1.5 text-xs font-semibold bg-white text-[#15803D] hover:bg-emerald-50 px-3 py-1.5 rounded-lg shadow-xs transition-colors"
+                                          className="inline-flex items-center gap-1.5 text-xs font-extrabold bg-st-white text-st-dark hover:bg-st-cream-dark px-3.5 py-1.5 rounded-xl shadow-[2px_2px_0px_#14402c] border-2 border-st-dark active:translate-y-0.5 transition-all"
                                         >
-                                          <Plus className="w-3.5 h-3.5" />
+                                          <Plus className="w-3.5 h-3.5 text-st-primary" />
                                           <span>Tambah Catatan Servis</span>
                                         </motion.button>
                                       )}
@@ -625,66 +628,66 @@ export const App: React.FC = () => {
                                             setEditingUnit(unit);
                                             setIsUnitModalOpen(true);
                                           }}
-                                          className="p-1.5 bg-emerald-900/60 hover:bg-emerald-900 text-white rounded-lg transition-colors border border-emerald-600/40"
+                                          className="p-1.5 bg-st-dark hover:bg-black text-white rounded-xl transition-colors border border-st-pale/40"
                                           title="Edit Spesifikasi Unit"
                                         >
-                                          <Edit className="w-4 h-4" />
+                                          <Edit className="w-4 h-4 text-st-pale" />
                                         </motion.button>
                                       )}
                                     </div>
                                   </div>
 
                                   {/* Unit Meta Grid */}
-                                  <div className="p-3 bg-slate-50 border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                                  <div className="p-3.5 bg-st-cream/80 border-b-2 border-st-dark grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                                     <div>
-                                      <span className="text-[10px] text-slate-400 block uppercase font-semibold">JENIS AC</span>
-                                      <span className="font-semibold text-slate-800">{unit.jenisAc || '-'}</span>
+                                      <span className="text-[10px] text-st-text-muted block uppercase font-extrabold">JENIS AC</span>
+                                      <span className="font-extrabold text-st-text">{unit.jenisAc || '-'}</span>
                                     </div>
                                     <div>
-                                      <span className="text-[10px] text-slate-400 block uppercase font-semibold">MERK</span>
-                                      <span className="font-semibold text-slate-800">{unit.merk || '-'}</span>
+                                      <span className="text-[10px] text-st-text-muted block uppercase font-extrabold">MERK</span>
+                                      <span className="font-extrabold text-st-text">{unit.merk || '-'}</span>
                                     </div>
                                     <div>
-                                      <span className="text-[10px] text-slate-400 block uppercase font-semibold">KAPASITAS</span>
-                                      <span className="font-semibold tabular-nums text-slate-800">{unit.kapasitas || '-'}</span>
+                                      <span className="text-[10px] text-st-text-muted block uppercase font-extrabold">KAPASITAS</span>
+                                      <span className="font-extrabold tabular-nums text-st-text">{unit.kapasitas || '-'}</span>
                                     </div>
                                     <div>
-                                      <span className="text-[10px] text-slate-400 block uppercase font-semibold">NO. SERI</span>
-                                      <span className="font-mono tabular-nums text-slate-700">{unit.noSeri || '-'}</span>
+                                      <span className="text-[10px] text-st-text-muted block uppercase font-extrabold">NO. SERI</span>
+                                      <span className="font-mono tabular-nums text-st-text font-bold">{unit.noSeri || '-'}</span>
                                     </div>
                                   </div>
 
                                   {/* 12-ROW TABLE (Clean work log with automatic paraf) */}
-                                  <div className="p-3">
-                                    <div className="overflow-x-auto border border-slate-200 rounded-lg">
+                                  <div className="p-3 sm:p-4">
+                                    <div className="overflow-x-auto border-2 border-st-dark rounded-xl">
                                       <table className="w-full text-xs text-left">
-                                        <thead className="bg-slate-50 border-b border-slate-200 font-semibold text-slate-700 text-[11px] uppercase tracking-wider">
+                                        <thead className="bg-st-cream-dark border-b-2 border-st-dark font-extrabold text-st-dark text-[11px] uppercase tracking-wider">
                                           <tr>
-                                            <th className="w-12 py-2 px-3 text-center border-r border-slate-200">NO</th>
-                                            <th className="w-32 py-2 px-3 border-r border-slate-200">TANGGAL</th>
-                                            <th className="py-2 px-3 border-r border-slate-200">URAIAN PEKERJAAN</th>
-                                            <th className={`w-24 py-2 px-2 text-center ${isAdmin ? 'border-r border-slate-200' : ''}`}>
+                                            <th className="w-12 py-2.5 px-3 text-center border-r-2 border-st-dark">NO</th>
+                                            <th className="w-32 py-2.5 px-3 border-r-2 border-st-dark">TANGGAL</th>
+                                            <th className="py-2.5 px-3 border-r-2 border-st-dark">URAIAN PEKERJAAN</th>
+                                            <th className={`w-24 py-2.5 px-2 text-center ${isAdmin ? 'border-r-2 border-st-dark' : ''}`}>
                                               PARAF
                                             </th>
                                             {isAdmin && (
-                                              <th className="w-16 py-2 px-2 text-center">AKSI</th>
+                                              <th className="w-16 py-2.5 px-2 text-center">AKSI</th>
                                             )}
                                           </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-slate-100 bg-white">
+                                        <tbody className="divide-y border-st-dark/20 bg-st-white">
                                           {unitRecords.length > 0 ? (
                                             unitRecords.map((rec, idx) => (
-                                              <tr key={rec.id} className="hover:bg-slate-50/70 transition-colors">
-                                                <td className="py-2 px-3 text-center font-bold font-mono tabular-nums text-slate-600 border-r border-slate-100 align-top">
+                                              <tr key={rec.id} className="hover:bg-st-pale/30 transition-colors">
+                                                <td className="py-2.5 px-3 text-center font-extrabold font-mono tabular-nums text-st-dark border-r border-st-dark/20 align-top">
                                                   {rec.nomorUrut || idx + 1}
                                                 </td>
-                                                <td className="py-2 px-3 font-medium tabular-nums text-slate-800 border-r border-slate-100 whitespace-nowrap align-top">
+                                                <td className="py-2.5 px-3 font-bold tabular-nums text-st-text border-r border-st-dark/20 whitespace-nowrap align-top">
                                                   {rec.tanggal}
                                                 </td>
-                                                <td className="py-2 px-3 font-normal text-slate-900 border-r border-slate-100 whitespace-pre-line leading-relaxed align-top">
+                                                <td className="py-2.5 px-3 font-medium text-st-text border-r border-st-dark/20 whitespace-pre-line leading-relaxed align-top">
                                                   {rec.uraianPekerjaan}
                                                 </td>
-                                                <td className={`py-1 px-2 text-center align-top ${isAdmin ? 'border-r border-slate-100' : ''}`}>
+                                                <td className={`py-1.5 px-2 text-center align-top ${isAdmin ? 'border-r border-st-dark/20' : ''}`}>
                                                   <img
                                                     src={FIXED_SIGNATURE_PATH}
                                                     alt="Paraf"
@@ -692,14 +695,14 @@ export const App: React.FC = () => {
                                                   />
                                                 </td>
                                                 {isAdmin && (
-                                                  <td className="py-2 px-2 text-center align-top">
+                                                  <td className="py-2.5 px-2 text-center align-top">
                                                     <button
                                                       onClick={() => {
                                                         setActiveUnitForRecord(unit);
                                                         setEditingRecord(rec);
                                                         setIsMaintenanceModalOpen(true);
                                                       }}
-                                                      className="text-emerald-700 hover:text-emerald-900 font-semibold text-[11px]"
+                                                      className="text-st-primary hover:text-st-dark font-extrabold text-xs underline"
                                                     >
                                                       Edit
                                                     </button>
@@ -709,7 +712,7 @@ export const App: React.FC = () => {
                                             ))
                                           ) : (
                                             <tr>
-                                              <td colSpan={isAdmin ? 5 : 4} className="py-5 text-center text-slate-400">
+                                              <td colSpan={isAdmin ? 5 : 4} className="py-6 text-center text-st-text-muted font-medium">
                                                 {isAdmin
                                                   ? 'Belum ada catatan servis. Tekan tombol "Tambah Catatan Servis" di atas.'
                                                   : 'Belum ada catatan servis terdaftar untuk unit ini.'}
@@ -721,16 +724,16 @@ export const App: React.FC = () => {
                                     </div>
 
                                     {/* Direct Download JPG button at bottom of table */}
-                                    <div className="mt-3 flex justify-end">
+                                    <div className="mt-4 flex justify-end">
                                       <motion.button
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => {
                                           setActivePdfUnit(unit);
                                           setIsPdfModalOpen(true);
                                         }}
-                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#15803D] hover:bg-[#166534] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-st-primary hover:bg-st-dark text-white text-xs font-extrabold rounded-xl border-2 border-st-dark shadow-[3px_3px_0px_#14402c] active:translate-y-0.5 transition-all"
                                       >
-                                        <Download className="w-3.5 h-3.5" />
+                                        <Download className="w-4 h-4" />
                                         <span>Download Gambar Kartu Pemeliharaan (JPG)</span>
                                       </motion.button>
                                     </div>
