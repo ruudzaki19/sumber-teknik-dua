@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { X, Download, QrCode } from 'lucide-react';
+import { motion } from 'framer-motion';
 import html2canvas from 'html2canvas';
 import { ACUnit } from '../types';
 
@@ -56,55 +57,62 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto">
-      <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-emerald-100">
-        {/* Header */}
-        <div className="bg-brand-900 text-white p-4 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-3 overflow-y-auto">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-white rounded-xl w-full max-w-md overflow-hidden shadow-sm border border-slate-200"
+      >
+        {/* Header - Solid Forest Green */}
+        <div className="bg-[#15803D] text-white p-3.5 px-4 flex items-center justify-between border-b border-[#14532D]">
           <div className="flex items-center gap-2">
-            <QrCode className="w-5 h-5 text-emerald-300" />
-            <h3 className="font-bold text-sm">Stiker QR Code AC</h3>
+            <div className="w-8 h-8 rounded-lg bg-emerald-900/60 border border-emerald-600/40 flex items-center justify-center">
+              <QrCode className="w-4 h-4 text-emerald-200" />
+            </div>
+            <h3 className="font-bold text-sm text-white">Stiker QR Code AC</h3>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+            className="w-7 h-7 rounded-lg bg-emerald-900/60 hover:bg-emerald-900 flex items-center justify-center text-white transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Printable Sticker Content */}
-        <div className="p-6 flex flex-col items-center">
+        <div className="p-5 flex flex-col items-center">
           <div
             ref={printAreaRef}
             id="printable-qr-sticker"
-            className="w-full max-w-[320px] bg-white border-2 border-emerald-800 rounded-2xl p-5 shadow-md flex flex-col items-center text-center text-slate-800"
+            className="w-full max-w-[320px] bg-white border border-[#1b6837] rounded-xl p-4 shadow-xs flex flex-col items-center text-center text-slate-800"
           >
             {/* Header with Official ST Logo */}
-            <div className="border-b-2 border-emerald-800 pb-2 mb-3 w-full flex items-center justify-center gap-2">
+            <div className="border-b border-[#1b6837] pb-2 mb-3 w-full flex items-center justify-center gap-2">
               <img src="/logo-resmi.png" alt="ST Logo" className="w-7 h-7 object-contain" />
               <div>
                 <h4 className="text-xs font-black tracking-wider text-emerald-950 uppercase">
                   SUMBER TEKNIK DUA
                 </h4>
-                <p className="text-[9px] text-emerald-700 font-bold uppercase tracking-tight">
+                <p className="text-[9px] text-[#1b6837] font-bold uppercase tracking-tight">
                   KARTU PEMELIHARAAN AC
                 </p>
               </div>
             </div>
 
             {/* Room & Unit Info */}
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 w-full mb-3">
-              <div className="text-[10px] text-emerald-700 font-bold uppercase">LOKASI / RUANGAN</div>
-              <div className="text-sm font-black text-emerald-950 uppercase leading-tight">
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-2.5 w-full mb-3">
+              <div className="text-[10px] text-slate-500 font-semibold uppercase">LOKASI / RUANGAN</div>
+              <div className="text-sm font-bold text-slate-900 uppercase leading-tight mt-0.5">
                 {unit.ruanganLokasi}
               </div>
-              <div className="text-[11px] text-slate-600 font-semibold mt-0.5">
+              <div className="text-[11px] text-slate-600 font-medium mt-0.5">
                 {unit.merk} {unit.jenisAc} ({unit.kapasitas})
               </div>
             </div>
 
             {/* QR Code Container */}
-            <div className="p-3 bg-white border border-slate-300 rounded-xl shadow-sm">
+            <div className="p-3 bg-white border border-slate-200 rounded-lg shadow-xs">
               <QRCodeSVG
                 id="sticker-qrcode-svg"
                 value={publicScanUrl}
@@ -114,24 +122,25 @@ export const QRStickerModal: React.FC<QRStickerModalProps> = ({
               />
             </div>
 
-            <p className="text-[10px] text-slate-400 mt-3 font-medium">
+            <p className="text-[10px] text-slate-400 mt-2.5 font-medium">
               Scan untuk melihat riwayat servis berkala AC
             </p>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200">
-          <button
+        <div className="p-3.5 bg-slate-50 border-t border-slate-200">
+          <motion.button
+            whileTap={{ scale: 0.98 }}
             onClick={handleDownloadJPG}
             disabled={isDownloading}
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition-all disabled:opacity-50"
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#15803D] hover:bg-[#166534] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4 text-white" />
             <span>{isDownloading ? 'Menyiapkan Gambar JPG...' : 'Download Gambar (JPG)'}</span>
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

@@ -91,19 +91,19 @@ export const PublicQRView: React.FC<PublicQRViewProps> = ({ unitId, onAdminLogin
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col text-slate-800 pb-16">
-      {/* Public Header */}
-      <header className="bg-brand-900 text-white sticky top-0 z-40 shadow-md">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col text-slate-900 pb-16">
+      {/* Public Header - Solid Forest Green */}
+      <header className="bg-[#15803D] text-white sticky top-0 z-40 border-b border-[#14532D] shadow-xs">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-400/30">
+            <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-300">
               <img src="/logo-resmi.png" alt="ST" className="w-full h-full object-contain" />
             </div>
             <div>
-              <h1 className="text-sm sm:text-base font-black tracking-tight uppercase">
+              <h1 className="text-sm sm:text-base font-black tracking-tight uppercase text-white">
                 SUMBER TEKNIK DUA
               </h1>
-              <p className="text-[10px] sm:text-[11px] text-emerald-200">
+              <p className="text-[10px] sm:text-[11px] text-emerald-100 font-medium">
                 Kartu Pemeliharaan AC • Mode Publik Klien
               </p>
             </div>
@@ -112,16 +112,16 @@ export const PublicQRView: React.FC<PublicQRViewProps> = ({ unitId, onAdminLogin
           <div className="flex items-center gap-2">
             <button
               onClick={loadData}
-              className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors"
+              className="p-2 bg-emerald-900/60 hover:bg-emerald-900 text-white rounded-lg transition-colors border border-emerald-700/60"
               title="Refresh Data"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
             <button
               onClick={onAdminLoginClick}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-brand-900 hover:bg-emerald-50 text-xs font-bold rounded-xl shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-emerald-950 hover:bg-emerald-50 text-xs font-semibold rounded-lg shadow-xs transition-colors"
             >
-              <LogIn className="w-3.5 h-3.5" />
+              <LogIn className="w-3.5 h-3.5 text-emerald-800" />
               <span>Login Akun</span>
             </button>
           </div>

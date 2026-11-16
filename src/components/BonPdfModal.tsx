@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { X, Download, Image as ImageIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import html2canvas from 'html2canvas';
 import { Bon } from '../types';
 import { FIXED_SIGNATURE_PATH } from '../db/db';
@@ -99,17 +100,22 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
   const greenText = '#1b6837';
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[96vh]">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-white rounded-xl w-full max-w-4xl overflow-hidden shadow-sm border border-slate-200 flex flex-col max-h-[96vh]"
+      >
         {/* Header Bar Modal */}
-        <div className="bg-brand-900 text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0">
+        <div className="bg-[#15803D] text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0 border-b border-[#14532D]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-              <ImageIcon className="w-4 h-4 text-emerald-300" />
+            <div className="w-8 h-8 rounded-lg bg-emerald-900/60 border border-emerald-600/40 flex items-center justify-center">
+              <ImageIcon className="w-4 h-4 text-emerald-200" />
             </div>
             <div>
-              <h3 className="font-bold text-sm sm:text-base">Pratinjau Nota / Bon Transaksi</h3>
-              <p className="text-emerald-200 text-xs">
+              <h3 className="font-bold text-sm sm:text-base text-white">Pratinjau Nota / Bon Transaksi</h3>
+              <p className="text-emerald-100 text-xs">
                 Format Resmi SUMBER TEKNIK DUA (Siap Simpan ke Galeri / Unduh JPG)
               </p>
             </div>
@@ -117,22 +123,23 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+            className="w-7 h-7 rounded-lg bg-emerald-900/60 hover:bg-emerald-900 flex items-center justify-center text-white transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Toolbar */}
-        <div className="bg-slate-100 p-3 px-4 border-b border-slate-200 flex items-center justify-end shrink-0">
-          <button
+        <div className="bg-slate-50 p-3 px-4 border-b border-slate-200 flex items-center justify-end shrink-0">
+          <motion.button
+            whileTap={{ scale: 0.98 }}
             onClick={handleDownloadJPG}
             disabled={isGenerating}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md disabled:opacity-50 transition-all active:scale-95"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 bg-[#15803D] hover:bg-[#166534] text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs disabled:opacity-50 transition-colors"
           >
             <Download className="w-4 h-4" />
             <span>{isGenerating ? 'Membuat Gambar HD...' : 'Download Gambar Bon (JPG)'}</span>
-          </button>
+          </motion.button>
         </div>
 
         {/* Document Viewport */}
@@ -695,7 +702,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

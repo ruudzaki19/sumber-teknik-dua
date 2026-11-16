@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Wrench,
   Plus,
@@ -274,31 +275,38 @@ export const App: React.FC = () => {
     return matchesRoom || matchesUnit;
   });
 
+  const navTabs: { id: AppTab; label: string; icon: React.FC<{ className?: string }> }[] = [
+    { id: 'beranda', label: 'Beranda', icon: LayoutDashboard },
+    { id: 'pemeliharaan', label: 'Kartu Pemeliharaan', icon: DoorClosed },
+    { id: 'bon', label: 'Pencatatan Bon', icon: Receipt },
+  ];
+
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col text-slate-800 pb-16">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col text-slate-900 pb-16">
       {/* ============================================================== */}
-      {/* 1. NAVIGASI UTAMA (3 MENU NAVBAR) - HIJAU TUA & PUTIH BERSIH */}
+      {/* 1. NAVIGASI UTAMA (3 MENU NAVBAR) - SOLID FOREST GREEN */}
       {/* ============================================================== */}
-      <header className="bg-brand-900 text-white sticky top-0 z-40 shadow-md">
+      <header className="bg-[#15803D] text-white sticky top-0 z-40 border-b border-[#14532D] shadow-xs">
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Logo & Brand Info */}
           <div className="flex items-center justify-between sm:justify-start gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-400/30 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-300 shrink-0 shadow-xs">
                 <img src="/logo-resmi.png" alt="ST" className="w-full h-full object-contain" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-base sm:text-lg font-black tracking-tight uppercase">
+                  <h1 className="text-base sm:text-lg font-black tracking-tight uppercase text-white">
                     SUMBER TEKNIK DUA
                   </h1>
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                    className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-bold inline-flex items-center gap-1.5 ${
                       isAdmin
-                        ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30'
-                        : 'bg-emerald-400/20 text-emerald-200 border border-emerald-400/30'
+                        ? 'bg-amber-400/20 text-amber-200 border border-amber-400/30'
+                        : 'bg-emerald-900/60 text-emerald-100 border border-emerald-600/40'
                     }`}
                   >
+                    <span className={`w-1.5 h-1.5 rounded-full ${isAdmin ? 'bg-amber-400' : 'bg-emerald-300'}`}></span>
                     {isAdmin ? 'Admin' : 'User / Klien'}
                   </span>
                 </div>
@@ -307,72 +315,59 @@ export const App: React.FC = () => {
 
             {/* User Profile & Logout (Mobile) */}
             <div className="sm:hidden flex items-center gap-2">
-              <button
+              <motion.button
+                whileTap={{ scale: 0.98 }}
                 onClick={logout}
-                className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors"
+                className="p-2 bg-emerald-900/60 hover:bg-emerald-900 text-white rounded-lg transition-colors border border-emerald-700/60"
                 title="Keluar Akun"
               >
                 <LogOut className="w-4 h-4 text-emerald-200" />
-              </button>
+              </motion.button>
             </div>
           </div>
 
-          {/* 3 Navigasi Menu Tabs & User Section (Desktop) */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-emerald-800/60">
-            <nav className="flex items-center gap-1 bg-emerald-950/60 p-1 rounded-2xl border border-emerald-800/80 w-full sm:w-auto justify-between sm:justify-start">
-              {/* Menu 1: Beranda */}
-              <button
-                onClick={() => setActiveTab('beranda')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  activeTab === 'beranda'
-                    ? 'bg-white text-brand-900 shadow-sm'
-                    : 'text-emerald-200 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <LayoutDashboard className="w-3.5 h-3.5" />
-                <span>Beranda</span>
-              </button>
-
-              {/* Menu 2: Kartu Pemeliharaan */}
-              <button
-                onClick={() => setActiveTab('pemeliharaan')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  activeTab === 'pemeliharaan'
-                    ? 'bg-white text-brand-900 shadow-sm'
-                    : 'text-emerald-200 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <DoorClosed className="w-3.5 h-3.5" />
-                <span>Kartu Pemeliharaan</span>
-              </button>
-
-              {/* Menu 3: Pencatatan Bon */}
-              <button
-                onClick={() => setActiveTab('bon')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  activeTab === 'bon'
-                    ? 'bg-white text-brand-900 shadow-sm'
-                    : 'text-emerald-200 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <Receipt className="w-3.5 h-3.5" />
-                <span>Pencatatan Bon</span>
-              </button>
+          {/* 3 Navigasi Menu Tabs with Smooth layoutId Pill & User Section (Desktop) */}
+          <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-emerald-700/60">
+            <nav className="relative flex items-center gap-1 bg-[#14532D] p-1 rounded-xl border border-emerald-800/80 w-full sm:w-auto justify-between sm:justify-start">
+              {navTabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 z-10 ${
+                      isActive ? 'text-slate-900 font-bold' : 'text-emerald-100 hover:text-white'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeNavPill"
+                        className="absolute inset-0 bg-white rounded-lg shadow-xs z-[-1]"
+                        transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                      />
+                    )}
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#15803D]' : 'text-emerald-200'}`} />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
             </nav>
 
             {/* User Profile & Logout (Desktop) */}
-            <div className="hidden sm:flex items-center gap-2.5 pl-2 border-l border-emerald-800/60">
+            <div className="hidden sm:flex items-center gap-2.5 pl-2 border-l border-emerald-700/60">
               <span className="text-xs font-semibold text-emerald-100 max-w-[120px] truncate">
                 {user.name}
               </span>
-              <button
+              <motion.button
+                whileTap={{ scale: 0.98 }}
                 onClick={logout}
-                className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors inline-flex items-center gap-1.5 text-xs font-medium"
+                className="p-1.5 sm:px-2.5 sm:py-1.5 bg-emerald-900/60 hover:bg-emerald-900 text-white rounded-lg transition-colors inline-flex items-center gap-1.5 text-xs font-medium border border-emerald-700/60"
                 title="Keluar Akun"
               >
-                <LogOut className="w-4 h-4 text-emerald-200" />
+                <LogOut className="w-3.5 h-3.5 text-emerald-200" />
                 <span className="hidden md:inline">Keluar</span>
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>
@@ -381,379 +376,398 @@ export const App: React.FC = () => {
       {/* ============================================================== */}
       {/* 2. KONTEN UTAMA BERDASARKAN TAB YANG AKTIF */}
       {/* ============================================================== */}
-      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-5 flex-1 w-full space-y-4">
-        {/* ================= TAB 1: BERANDA ================= */}
-        {activeTab === 'beranda' && (
-          <DashboardView
-            user={user}
-            rooms={rooms}
-            acUnits={acUnits}
-            bons={bons}
-            onNavigateTab={(tab) => setActiveTab(tab)}
-            onOpenAddRoom={() => {
-              setEditingRoom(null);
-              setIsRoomModalOpen(true);
-            }}
-            onOpenAddBon={() => {
-              setEditingBon(null);
-              setIsBonModalOpen(true);
-            }}
-          />
-        )}
+      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-5 flex-1 w-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full space-y-4"
+          >
+            {/* ================= TAB 1: BERANDA ================= */}
+            {activeTab === 'beranda' && (
+              <DashboardView
+                user={user}
+                rooms={rooms}
+                acUnits={acUnits}
+                bons={bons}
+                onNavigateTab={(tab) => setActiveTab(tab)}
+                onOpenAddRoom={() => {
+                  setEditingRoom(null);
+                  setIsRoomModalOpen(true);
+                }}
+                onOpenAddBon={() => {
+                  setEditingBon(null);
+                  setIsBonModalOpen(true);
+                }}
+              />
+            )}
 
-        {/* ================= TAB 2: KARTU PEMELIHARAAN AC ================= */}
-        {activeTab === 'pemeliharaan' && (
-          <div className="space-y-4">
-            {/* Control Bar: Search & (Admin) Tambah Ruangan */}
-            <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
-              {/* Search Box */}
-              <div className="relative w-full sm:w-80">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                <input
-                  type="text"
-                  placeholder="Cari nama ruangan atau merk AC..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="text-[10px] text-slate-400 hover:text-slate-600 absolute right-3 top-2.5 font-bold"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
+            {/* ================= TAB 2: KARTU PEMELIHARAAN AC ================= */}
+            {activeTab === 'pemeliharaan' && (
+              <div className="space-y-4">
+                {/* Control Bar: Search & (Admin) Tambah Ruangan */}
+                <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row gap-3 items-center justify-between">
+                  {/* Search Box */}
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    <input
+                      type="text"
+                      placeholder="Cari nama ruangan atau merk AC..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-medium text-slate-900 transition-colors"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="text-[11px] text-slate-400 hover:text-slate-600 absolute right-3 top-2 font-medium"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
 
-              {/* + Tambah Ruangan (Khusus Admin) */}
-              {isAdmin && (
-                <button
-                  onClick={() => {
-                    setEditingRoom(null);
-                    setIsRoomModalOpen(true);
-                  }}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl shadow-sm transition-colors active:scale-95"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Tambah Ruangan</span>
-                </button>
-              )}
-            </div>
-
-            {/* Empty state when no rooms exist yet */}
-            {!dataLoading && rooms.length === 0 && (
-              <div className="bg-white rounded-3xl border-2 border-dashed border-slate-300 p-12 text-center">
-                <div className="w-16 h-16 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-emerald-100">
-                  <DoorClosed className="w-8 h-8" />
+                  {/* + Tambah Ruangan (Khusus Admin) */}
+                  {isAdmin && (
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setEditingRoom(null);
+                        setIsRoomModalOpen(true);
+                      }}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#15803D] hover:bg-[#166534] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Tambah Ruangan</span>
+                    </motion.button>
+                  )}
                 </div>
-                <h3 className="text-base font-bold text-slate-800">
-                  {isAdmin ? 'Belum Ada Ruangan' : 'Belum Ada Data Ruangan'}
-                </h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-5">
-                  {isAdmin
-                    ? 'Klik tombol "Tambah Ruangan" di atas untuk membuat ruangan baru.'
-                    : 'Saat ini belum ada data ruangan yang didaftarkan oleh admin teknisi.'}
-                </p>
-                {isAdmin && (
-                  <button
-                    onClick={() => {
-                      setEditingRoom(null);
-                      setIsRoomModalOpen(true);
-                    }}
-                    className="px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl inline-flex items-center gap-2 shadow-sm"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Tambah Ruangan Sekarang
-                  </button>
-                )}
-              </div>
-            )}
 
-            {/* Search empty state */}
-            {!dataLoading && rooms.length > 0 && filteredRooms.length === 0 && (
-              <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center text-slate-400">
-                <p className="text-sm font-semibold text-slate-600">
-                  Tidak ada ruangan yang cocok dengan pencarian "{searchQuery}"
-                </p>
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="mt-2 text-xs text-brand-700 font-bold hover:underline"
-                >
-                  Hapus pencarian
-                </button>
-              </div>
-            )}
-
-            {/* ROOMS LIST */}
-            <div className="space-y-6">
-              {filteredRooms.map((room) => {
-                const roomUnits = acUnits.filter((u) => u.roomId === room.id);
-
-                return (
-                  <div
-                    key={room.id}
-                    className="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden"
-                  >
-                    {/* ROOM HEADER: Name on left, Actions on right (Admin Only) */}
-                    <div className="bg-slate-50 p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                          <DoorClosed className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h2 className="text-base font-black text-slate-900 tracking-tight uppercase">
-                            {room.namaRuangan}
-                          </h2>
-                        </div>
-                      </div>
-
-                      {/* ACTION BUTTONS: Admin Only */}
-                      {isAdmin && (
-                        <div className="flex items-center gap-2 self-end sm:self-auto">
-                          <button
-                            onClick={() => {
-                              setEditingRoom(room);
-                              setIsRoomModalOpen(true);
-                            }}
-                            className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-xl transition-colors shadow-xs"
-                          >
-                            <Edit className="w-3.5 h-3.5" />
-                            <span>Edit Ruangan</span>
-                          </button>
-
-                          <button
-                            onClick={() => {
-                              setTargetRoomForUnit(room);
-                              setEditingUnit(null);
-                              setIsUnitModalOpen(true);
-                            }}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 px-3.5 py-1.5 rounded-xl shadow-sm transition-colors active:scale-95"
-                          >
-                            <Plus className="w-3.5 h-3.5" />
-                            <span>Tambah Unit AC</span>
-                          </button>
-                        </div>
-                      )}
+                {/* Empty state when no rooms exist yet */}
+                {!dataLoading && rooms.length === 0 && (
+                  <div className="bg-white rounded-xl border border-dashed border-slate-300 p-12 text-center">
+                    <div className="w-12 h-12 bg-emerald-50 text-emerald-800 rounded-xl flex items-center justify-center mx-auto mb-3 border border-emerald-200">
+                      <DoorClosed className="w-6 h-6 text-emerald-700" />
                     </div>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      {isAdmin ? 'Belum Ada Ruangan' : 'Belum Ada Data Ruangan'}
+                    </h3>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+                      {isAdmin
+                        ? 'Klik tombol "Tambah Ruangan" di atas untuk membuat ruangan baru.'
+                        : 'Saat ini belum ada data ruangan yang didaftarkan oleh admin teknisi.'}
+                    </p>
+                    {isAdmin && (
+                      <motion.button
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          setEditingRoom(null);
+                          setIsRoomModalOpen(true);
+                        }}
+                        className="px-4 py-2 bg-[#15803D] hover:bg-[#166534] text-white text-xs font-semibold rounded-lg inline-flex items-center gap-1.5 shadow-xs transition-colors"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Tambah Ruangan Sekarang</span>
+                      </motion.button>
+                    )}
+                  </div>
+                )}
 
-                    {/* ROOM BODY: List of AC Units inside this room */}
-                    <div className="p-4 space-y-5">
-                      {roomUnits.length === 0 ? (
-                        <div className="text-center py-6 text-slate-400 text-xs bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                          Belum ada unit AC di ruangan ini.
+                {/* Search empty state */}
+                {!dataLoading && rooms.length > 0 && filteredRooms.length === 0 && (
+                  <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+                    <p className="text-xs font-semibold text-slate-700">
+                      Tidak ada ruangan yang cocok dengan pencarian "{searchQuery}"
+                    </p>
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="mt-2 text-xs text-emerald-700 font-semibold hover:underline"
+                    >
+                      Hapus pencarian
+                    </button>
+                  </div>
+                )}
+
+                {/* ROOMS LIST */}
+                <div className="space-y-5">
+                  {filteredRooms.map((room) => {
+                    const roomUnits = acUnits.filter((u) => u.roomId === room.id);
+
+                    return (
+                      <div
+                        key={room.id}
+                        className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden"
+                      >
+                        {/* ROOM HEADER: Name on left, Actions on right (Admin Only) */}
+                        <div className="bg-slate-50 p-3.5 sm:p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold border border-emerald-200">
+                              <DoorClosed className="w-4 h-4 text-emerald-700" />
+                            </div>
+                            <div>
+                              <h2 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight uppercase">
+                                {room.namaRuangan}
+                              </h2>
+                            </div>
+                          </div>
+
+                          {/* ACTION BUTTONS: Admin Only */}
                           {isAdmin && (
-                            <>
-                              <br />
-                              Klik tombol <strong>"Tambah Unit AC"</strong> di kanan atas untuk menambahkan.
-                            </>
+                            <div className="flex items-center gap-2 self-end sm:self-auto">
+                              <motion.button
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => {
+                                  setEditingRoom(room);
+                                  setIsRoomModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 px-2.5 py-1.5 rounded-lg transition-colors shadow-xs"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                                <span>Edit Ruangan</span>
+                              </motion.button>
+
+                              <motion.button
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => {
+                                  setTargetRoomForUnit(room);
+                                  setEditingUnit(null);
+                                  setIsUnitModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#15803D] hover:bg-[#166534] px-3 py-1.5 rounded-lg shadow-xs transition-colors"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>Tambah Unit AC</span>
+                              </motion.button>
+                            </div>
                           )}
                         </div>
-                      ) : (
-                        roomUnits.map((unit) => {
-                          const unitRecords = maintenanceRecords
-                            .filter((r) => r.unitId === unit.id)
-                            .sort((a, b) => (a.nomorUrut || 0) - (b.nomorUrut || 0));
 
-                          return (
-                            <div
-                              key={unit.id}
-                              className="bg-white rounded-2xl border border-slate-300 overflow-hidden shadow-sm"
-                            >
-                              {/* Unit Title Bar */}
-                              <div className="bg-brand-900 text-white p-3 px-4 flex flex-wrap items-center justify-between gap-2">
-                                <div>
-                                  <span className="text-[10px] text-emerald-300 uppercase tracking-widest font-bold block">
-                                    KARTU PEMELIHARAAN AC TAHUN 2026
-                                  </span>
-                                  <h3 className="text-sm sm:text-base font-extrabold uppercase mt-0.5">
-                                    {unit.ruanganLokasi} — {unit.merk} {unit.jenisAc} ({unit.kapasitas})
-                                  </h3>
-                                </div>
+                        {/* ROOM BODY: List of AC Units inside this room */}
+                        <div className="p-4 space-y-4">
+                          {roomUnits.length === 0 ? (
+                            <div className="text-center py-6 text-slate-400 text-xs bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                              Belum ada unit AC di ruangan ini.
+                              {isAdmin && (
+                                <>
+                                  <br />
+                                  Klik tombol <strong>"Tambah Unit AC"</strong> di kanan atas untuk menambahkan.
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            roomUnits.map((unit) => {
+                              const unitRecords = maintenanceRecords
+                                .filter((r) => r.unitId === unit.id)
+                                .sort((a, b) => (a.nomorUrut || 0) - (b.nomorUrut || 0));
 
-                                {/* Action Buttons */}
-                                <div className="flex items-center gap-2">
-                                  {/* QR Code Sticker Button (Visible for all: Admin & User) */}
-                                  <button
-                                    onClick={() => {
-                                      setActiveStickerUnit(unit);
-                                      setIsQRStickerOpen(true);
-                                    }}
-                                    className="inline-flex items-center gap-1 text-xs font-bold bg-white/15 hover:bg-white/25 text-white px-2.5 py-1.5 rounded-lg transition-colors border border-white/20"
-                                    title="Lihat & Cetak Stiker QR Code untuk AC ini"
-                                  >
-                                    <QrCode className="w-3.5 h-3.5 text-emerald-200" />
-                                    <span>Stiker QR</span>
-                                  </button>
+                              return (
+                                <div
+                                  key={unit.id}
+                                  className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs"
+                                >
+                                  {/* Unit Title Bar: Solid Forest Green */}
+                                  <div className="bg-[#15803D] text-white p-3 px-4 flex flex-wrap items-center justify-between gap-2 border-b border-[#14532D]">
+                                    <div>
+                                      <span className="text-[10px] text-emerald-200 uppercase tracking-wider font-semibold block">
+                                        KARTU PEMELIHARAAN AC TAHUN 2026
+                                      </span>
+                                      <h3 className="text-xs sm:text-sm font-bold uppercase mt-0.5 text-white">
+                                        {unit.ruanganLokasi} — {unit.merk} {unit.jenisAc} ({unit.kapasitas})
+                                      </h3>
+                                    </div>
 
-                                  {/* Tambah Catatan Servis (Admin Only) */}
-                                  {isAdmin && (
-                                    <button
-                                      onClick={() => {
-                                        setActiveUnitForRecord(unit);
-                                        setEditingRecord(null);
-                                        setIsMaintenanceModalOpen(true);
-                                      }}
-                                      className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-brand-900 hover:bg-emerald-50 px-3 py-1.5 rounded-lg shadow-sm transition-colors"
-                                    >
-                                      <Plus className="w-3.5 h-3.5" />
-                                      <span>Tambah Catatan Servis</span>
-                                    </button>
-                                  )}
+                                    {/* Action Buttons */}
+                                    <div className="flex items-center gap-1.5">
+                                      {/* QR Code Sticker Button (Visible for all: Admin & User) */}
+                                      <motion.button
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => {
+                                          setActiveStickerUnit(unit);
+                                          setIsQRStickerOpen(true);
+                                        }}
+                                        className="inline-flex items-center gap-1 text-xs font-medium bg-emerald-900/60 hover:bg-emerald-900 text-white px-2.5 py-1.5 rounded-lg transition-colors border border-emerald-600/40"
+                                        title="Lihat & Cetak Stiker QR Code untuk AC ini"
+                                      >
+                                        <QrCode className="w-3.5 h-3.5 text-emerald-200" />
+                                        <span>Stiker QR</span>
+                                      </motion.button>
 
-                                  {/* Edit Unit (Admin Only) */}
-                                  {isAdmin && (
-                                    <button
-                                      onClick={() => {
-                                        setTargetRoomForUnit(room);
-                                        setEditingUnit(unit);
-                                        setIsUnitModalOpen(true);
-                                      }}
-                                      className="p-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
-                                      title="Edit Spesifikasi Unit"
-                                    >
-                                      <Edit className="w-4 h-4" />
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
+                                      {/* Tambah Catatan Servis (Admin Only) */}
+                                      {isAdmin && (
+                                        <motion.button
+                                          whileTap={{ scale: 0.98 }}
+                                          onClick={() => {
+                                            setActiveUnitForRecord(unit);
+                                            setEditingRecord(null);
+                                            setIsMaintenanceModalOpen(true);
+                                          }}
+                                          className="inline-flex items-center gap-1.5 text-xs font-semibold bg-white text-[#15803D] hover:bg-emerald-50 px-3 py-1.5 rounded-lg shadow-xs transition-colors"
+                                        >
+                                          <Plus className="w-3.5 h-3.5" />
+                                          <span>Tambah Catatan Servis</span>
+                                        </motion.button>
+                                      )}
 
-                              {/* Unit Meta Grid */}
-                              <div className="p-3 bg-slate-50 border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                                <div>
-                                  <span className="text-[10px] text-slate-400 block uppercase font-semibold">JENIS AC</span>
-                                  <span className="font-bold text-slate-800">{unit.jenisAc || '-'}</span>
-                                </div>
-                                <div>
-                                  <span className="text-[10px] text-slate-400 block uppercase font-semibold">MERK</span>
-                                  <span className="font-bold text-slate-800">{unit.merk || '-'}</span>
-                                </div>
-                                <div>
-                                  <span className="text-[10px] text-slate-400 block uppercase font-semibold">KAPASITAS</span>
-                                  <span className="font-bold text-slate-800">{unit.kapasitas || '-'}</span>
-                                </div>
-                                <div>
-                                  <span className="text-[10px] text-slate-400 block uppercase font-semibold">NO. SERI</span>
-                                  <span className="font-mono text-slate-700">{unit.noSeri || '-'}</span>
-                                </div>
-                              </div>
+                                      {/* Edit Unit (Admin Only) */}
+                                      {isAdmin && (
+                                        <motion.button
+                                          whileTap={{ scale: 0.98 }}
+                                          onClick={() => {
+                                            setTargetRoomForUnit(room);
+                                            setEditingUnit(unit);
+                                            setIsUnitModalOpen(true);
+                                          }}
+                                          className="p-1.5 bg-emerald-900/60 hover:bg-emerald-900 text-white rounded-lg transition-colors border border-emerald-600/40"
+                                          title="Edit Spesifikasi Unit"
+                                        >
+                                          <Edit className="w-4 h-4" />
+                                        </motion.button>
+                                      )}
+                                    </div>
+                                  </div>
 
-                              {/* 12-ROW TABLE (Clean work log with automatic paraf) */}
-                              <div className="p-3">
-                                <div className="overflow-x-auto border border-slate-300 rounded-xl">
-                                  <table className="w-full text-xs text-left">
-                                    <thead className="bg-slate-100 border-b border-slate-300 font-bold text-slate-700">
-                                      <tr>
-                                        <th className="w-12 py-2 px-3 text-center border-r border-slate-200">NO</th>
-                                        <th className="w-32 py-2 px-3 border-r border-slate-200">TANGGAL</th>
-                                        <th className="py-2 px-3 border-r border-slate-200">URAIAN PEKERJAAN</th>
-                                        <th className={`w-24 py-2 px-2 text-center ${isAdmin ? 'border-r border-slate-200' : ''}`}>
-                                          PARAF
-                                        </th>
-                                        {isAdmin && (
-                                          <th className="w-16 py-2 px-2 text-center">AKSI</th>
-                                        )}
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-200 bg-white">
-                                      {unitRecords.length > 0 ? (
-                                        unitRecords.map((rec, idx) => (
-                                          <tr key={rec.id} className="hover:bg-slate-50 transition-colors">
-                                            <td className="py-2 px-3 text-center font-bold text-slate-600 border-r border-slate-200 align-top">
-                                              {rec.nomorUrut || idx + 1}
-                                            </td>
-                                            <td className="py-2 px-3 font-medium text-slate-800 border-r border-slate-200 whitespace-nowrap align-top">
-                                              {rec.tanggal}
-                                            </td>
-                                            <td className="py-2 px-3 font-semibold text-slate-900 border-r border-slate-200 whitespace-pre-line leading-relaxed align-top">
-                                              {rec.uraianPekerjaan}
-                                            </td>
-                                            <td className={`py-1 px-2 text-center align-top ${isAdmin ? 'border-r border-slate-200' : ''}`}>
-                                              <img
-                                                src={FIXED_SIGNATURE_PATH}
-                                                alt="Paraf"
-                                                className="h-6 max-w-[65px] mx-auto object-contain"
-                                              />
-                                            </td>
+                                  {/* Unit Meta Grid */}
+                                  <div className="p-3 bg-slate-50 border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                                    <div>
+                                      <span className="text-[10px] text-slate-400 block uppercase font-semibold">JENIS AC</span>
+                                      <span className="font-semibold text-slate-800">{unit.jenisAc || '-'}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-[10px] text-slate-400 block uppercase font-semibold">MERK</span>
+                                      <span className="font-semibold text-slate-800">{unit.merk || '-'}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-[10px] text-slate-400 block uppercase font-semibold">KAPASITAS</span>
+                                      <span className="font-semibold tabular-nums text-slate-800">{unit.kapasitas || '-'}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-[10px] text-slate-400 block uppercase font-semibold">NO. SERI</span>
+                                      <span className="font-mono tabular-nums text-slate-700">{unit.noSeri || '-'}</span>
+                                    </div>
+                                  </div>
+
+                                  {/* 12-ROW TABLE (Clean work log with automatic paraf) */}
+                                  <div className="p-3">
+                                    <div className="overflow-x-auto border border-slate-200 rounded-lg">
+                                      <table className="w-full text-xs text-left">
+                                        <thead className="bg-slate-50 border-b border-slate-200 font-semibold text-slate-700 text-[11px] uppercase tracking-wider">
+                                          <tr>
+                                            <th className="w-12 py-2 px-3 text-center border-r border-slate-200">NO</th>
+                                            <th className="w-32 py-2 px-3 border-r border-slate-200">TANGGAL</th>
+                                            <th className="py-2 px-3 border-r border-slate-200">URAIAN PEKERJAAN</th>
+                                            <th className={`w-24 py-2 px-2 text-center ${isAdmin ? 'border-r border-slate-200' : ''}`}>
+                                              PARAF
+                                            </th>
                                             {isAdmin && (
-                                              <td className="py-2 px-2 text-center align-top">
-                                                <button
-                                                  onClick={() => {
-                                                    setActiveUnitForRecord(unit);
-                                                    setEditingRecord(rec);
-                                                    setIsMaintenanceModalOpen(true);
-                                                  }}
-                                                  className="text-brand-700 hover:text-brand-900 font-bold text-[11px]"
-                                                >
-                                                  Edit
-                                                </button>
-                                              </td>
+                                              <th className="w-16 py-2 px-2 text-center">AKSI</th>
                                             )}
                                           </tr>
-                                        ))
-                                      ) : (
-                                        <tr>
-                                          <td colSpan={isAdmin ? 5 : 4} className="py-5 text-center text-slate-400">
-                                            {isAdmin
-                                              ? 'Belum ada catatan servis. Tekan tombol "Tambah Catatan Servis" di atas.'
-                                              : 'Belum ada catatan servis terdaftar untuk unit ini.'}
-                                          </td>
-                                        </tr>
-                                      )}
-                                    </tbody>
-                                  </table>
-                                </div>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 bg-white">
+                                          {unitRecords.length > 0 ? (
+                                            unitRecords.map((rec, idx) => (
+                                              <tr key={rec.id} className="hover:bg-slate-50/70 transition-colors">
+                                                <td className="py-2 px-3 text-center font-bold font-mono tabular-nums text-slate-600 border-r border-slate-100 align-top">
+                                                  {rec.nomorUrut || idx + 1}
+                                                </td>
+                                                <td className="py-2 px-3 font-medium tabular-nums text-slate-800 border-r border-slate-100 whitespace-nowrap align-top">
+                                                  {rec.tanggal}
+                                                </td>
+                                                <td className="py-2 px-3 font-normal text-slate-900 border-r border-slate-100 whitespace-pre-line leading-relaxed align-top">
+                                                  {rec.uraianPekerjaan}
+                                                </td>
+                                                <td className={`py-1 px-2 text-center align-top ${isAdmin ? 'border-r border-slate-100' : ''}`}>
+                                                  <img
+                                                    src={FIXED_SIGNATURE_PATH}
+                                                    alt="Paraf"
+                                                    className="h-6 max-w-[65px] mx-auto object-contain"
+                                                  />
+                                                </td>
+                                                {isAdmin && (
+                                                  <td className="py-2 px-2 text-center align-top">
+                                                    <button
+                                                      onClick={() => {
+                                                        setActiveUnitForRecord(unit);
+                                                        setEditingRecord(rec);
+                                                        setIsMaintenanceModalOpen(true);
+                                                      }}
+                                                      className="text-emerald-700 hover:text-emerald-900 font-semibold text-[11px]"
+                                                    >
+                                                      Edit
+                                                    </button>
+                                                  </td>
+                                                )}
+                                              </tr>
+                                            ))
+                                          ) : (
+                                            <tr>
+                                              <td colSpan={isAdmin ? 5 : 4} className="py-5 text-center text-slate-400">
+                                                {isAdmin
+                                                  ? 'Belum ada catatan servis. Tekan tombol "Tambah Catatan Servis" di atas.'
+                                                  : 'Belum ada catatan servis terdaftar untuk unit ini.'}
+                                              </td>
+                                            </tr>
+                                          )}
+                                        </tbody>
+                                      </table>
+                                    </div>
 
-                                {/* Direct Download JPG button at bottom of table */}
-                                <div className="mt-3 flex justify-end">
-                                  <button
-                                    onClick={() => {
-                                      setActivePdfUnit(unit);
-                                      setIsPdfModalOpen(true);
-                                    }}
-                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold rounded-xl shadow-sm transition-colors active:scale-95"
-                                  >
-                                    <Download className="w-3.5 h-3.5" />
-                                    <span>Download Gambar Kartu Pemeliharaan (JPG)</span>
-                                  </button>
+                                    {/* Direct Download JPG button at bottom of table */}
+                                    <div className="mt-3 flex justify-end">
+                                      <motion.button
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => {
+                                          setActivePdfUnit(unit);
+                                          setIsPdfModalOpen(true);
+                                        }}
+                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#15803D] hover:bg-[#166534] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                                      >
+                                        <Download className="w-3.5 h-3.5" />
+                                        <span>Download Gambar Kartu Pemeliharaan (JPG)</span>
+                                      </motion.button>
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+                              );
+                            })
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-        {/* ================= TAB 3: PENCATATAN BON ================= */}
-        {activeTab === 'bon' && (
-          <BonListView
-            bons={bons}
-            isAdmin={isAdmin}
-            onOpenCreate={() => {
-              setEditingBon(null);
-              setIsBonModalOpen(true);
-            }}
-            onOpenEdit={(b) => {
-              setEditingBon(b);
-              setIsBonModalOpen(true);
-            }}
-            onOpenPdf={(b) => {
-              setActivePdfBon(b);
-              setIsBonPdfOpen(true);
-            }}
-            onOpenQR={(b) => {
-              setActiveQRBon(b);
-              setIsBonQROpen(true);
-            }}
-            onDelete={handleDeleteBon}
-          />
-        )}
+            {/* ================= TAB 3: PENCATATAN BON ================= */}
+            {activeTab === 'bon' && (
+              <BonListView
+                bons={bons}
+                isAdmin={isAdmin}
+                onOpenCreate={() => {
+                  setEditingBon(null);
+                  setIsBonModalOpen(true);
+                }}
+                onOpenEdit={(b) => {
+                  setEditingBon(b);
+                  setIsBonModalOpen(true);
+                }}
+                onOpenPdf={(b) => {
+                  setActivePdfBon(b);
+                  setIsBonPdfOpen(true);
+                }}
+                onOpenQR={(b) => {
+                  setActiveQRBon(b);
+                  setIsBonQROpen(true);
+                }}
+                onDelete={handleDeleteBon}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* ============================================================== */}

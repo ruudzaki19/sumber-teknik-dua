@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2, Plus, Receipt, User, Phone, Calendar, Hash } from 'lucide-react';
-import { Bon, BonItem } from '../types';
+import { X, Save, Trash2, Plus, Receipt, User, Phone, Calendar } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Bon } from '../types';
 import { FIXED_SIGNATURE_PATH } from '../db/db';
 
 interface BonModalProps {
@@ -39,8 +40,6 @@ export const BonModal: React.FC<BonModalProps> = ({
   const [tanggal, setTanggal] = useState('');
   const [kepadaYth, setKepadaYth] = useState('');
   const [telpPelanggan, setTelpPelanggan] = useState('');
-  const namaTeknisi = 'Yulianto';
-  const namaPenerima = '';
   const [items, setItems] = useState<ItemRow[]>([
     { banyaknya: 1, keterangan: '', hargaSatuan: 0, jumlah: 0 }
   ]);
@@ -104,7 +103,6 @@ export const BonModal: React.FC<BonModalProps> = ({
 
     if (field === 'banyaknya') {
       row.banyaknya = value;
-      // Ekstrak angka jika ada untuk perhitungan otomatis
       const numMatch = String(value).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
       const qty = numMatch ? parseFloat(numMatch[0]) : 1;
       row.jumlah = Math.round(qty * (row.hargaSatuan || 0));
@@ -171,84 +169,88 @@ export const BonModal: React.FC<BonModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl border border-emerald-100 my-auto flex flex-col max-h-[92vh]">
-        {/* Header */}
-        <div className="bg-brand-900 text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/20">
-              <Receipt className="w-5 h-5 text-emerald-300" />
+    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-white rounded-xl w-full max-w-3xl overflow-hidden shadow-sm border border-slate-200 my-auto flex flex-col max-h-[92vh]"
+      >
+        {/* Header - Solid Forest Green */}
+        <div className="bg-[#15803D] text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0 border-b border-[#14532D]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-emerald-900/60 border border-emerald-600/40 flex items-center justify-center">
+              <Receipt className="w-4 h-4 text-emerald-200" />
             </div>
             <div>
-              <h3 className="font-black text-base sm:text-lg">
+              <h3 className="font-bold text-sm sm:text-base text-white">
                 {bon ? 'Edit Bon / Nota Transaksi' : 'Buat Bon / Nota Transaksi Baru'}
               </h3>
-              <p className="text-emerald-200 text-xs">
+              <p className="text-emerald-100 text-xs">
                 Format Resmi SUMBER TEKNIK DUA
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+            className="w-7 h-7 rounded-lg bg-emerald-900/60 hover:bg-emerald-900 flex items-center justify-center text-white transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-5 text-xs">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4 text-xs">
           {/* Metadata Top Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
             {/* Tanggal */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1">
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
                 Tanggal
               </label>
               <div className="relative">
                 <input
                   type="text"
                   required
-                  placeholder=""
                   value={tanggal}
                   onChange={(e) => setTanggal(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg font-medium tabular-nums text-slate-900 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
                 />
-                <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
+                <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2 pointer-events-none" />
               </div>
             </div>
 
             {/* Kepada Yth (Opsional) */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1">
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
                 Kepada Yth.
               </label>
               <div className="relative">
                 <input
                   type="text"
-                  placeholder=""
+                  placeholder="Nama Pelanggan"
                   value={kepadaYth}
                   onChange={(e) => setKepadaYth(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-xl font-bold focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg font-semibold text-slate-900 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
                 />
-                <User className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
+                <User className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2 pointer-events-none" />
               </div>
             </div>
 
             {/* Telp. Pelanggan */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1">
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
                 No. Telp Pelanggan
               </label>
               <div className="relative">
                 <input
                   type="text"
-                  placeholder=""
+                  placeholder="08xxxxxxxxxx"
                   value={telpPelanggan}
                   onChange={(e) => setTelpPelanggan(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg font-medium tabular-nums text-slate-900 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
                 />
-                <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
+                <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2 pointer-events-none" />
               </div>
             </div>
           </div>
@@ -256,62 +258,61 @@ export const BonModal: React.FC<BonModalProps> = ({
           {/* Dynamic Items Table */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <div>
-                <h4 className="font-extrabold text-slate-800 text-sm">
-                  Daftar Pekerjaan
-                </h4>
-              </div>
-              <button
+              <h4 className="font-bold text-slate-900 text-xs">
+                Daftar Pekerjaan &amp; Rincian Bon
+              </h4>
+              <motion.button
+                whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={handleAddItem}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold rounded-xl transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold rounded-lg transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Tambah Baris</span>
-              </button>
+              </motion.button>
             </div>
 
-            <div className="overflow-x-auto border-2 border-emerald-700 rounded-2xl shadow-sm bg-white">
+            <div className="overflow-x-auto border border-slate-200 rounded-lg shadow-xs bg-white">
               <table className="w-full text-xs text-left">
-                <thead className="bg-emerald-800 text-white font-bold">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold text-[11px] uppercase tracking-wider">
                   <tr>
-                    <th className="w-20 py-2.5 px-3 text-center border-r border-emerald-600">BANYAKNYA</th>
-                    <th className="py-2.5 px-3 border-r border-emerald-600">KETERANGAN</th>
-                    <th className="w-36 py-2.5 px-3 border-r border-emerald-600">HARGA SATUAN</th>
-                    <th className="w-36 py-2.5 px-3 border-r border-emerald-600">JUMLAH</th>
-                    <th className="w-12 py-2.5 px-2 text-center">AKSI</th>
+                    <th className="w-20 py-2 px-3 text-center border-r border-slate-200">BANYAKNYA</th>
+                    <th className="py-2 px-3 border-r border-slate-200">KETERANGAN</th>
+                    <th className="w-36 py-2 px-3 border-r border-slate-200 text-right">HARGA SATUAN</th>
+                    <th className="w-36 py-2 px-3 border-r border-slate-200 text-right">JUMLAH</th>
+                    <th className="w-12 py-2 px-2 text-center">AKSI</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-emerald-200">
+                <tbody className="divide-y divide-slate-100">
                   {items.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-emerald-50/40">
+                    <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
                       {/* Banyaknya */}
-                      <td className="p-2 border-r border-emerald-200">
+                      <td className="p-1.5 border-r border-slate-100">
                         <input
                           type="text"
                           placeholder="1"
                           value={row.banyaknya}
                           onChange={(e) => handleItemChange(idx, 'banyaknya', e.target.value)}
-                          className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-center font-bold text-slate-800 focus:ring-1 focus:ring-brand-500 focus:outline-none"
+                          className="w-full px-2 py-1 bg-slate-50 border border-slate-300 rounded text-center font-semibold tabular-nums text-slate-800 focus:ring-1 focus:ring-emerald-600 focus:bg-white focus:outline-none"
                         />
                       </td>
 
                       {/* Keterangan */}
-                      <td className="p-2 border-r border-emerald-200">
+                      <td className="p-1.5 border-r border-slate-100">
                         <input
                           type="text"
                           required
-                          placeholder=""
+                          placeholder="Uraian perbaikan / suku cadang"
                           value={row.keterangan}
                           onChange={(e) => handleItemChange(idx, 'keterangan', e.target.value)}
-                          className="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold focus:ring-1 focus:ring-brand-500 focus:outline-none"
+                          className="w-full px-2 py-1 bg-slate-50 border border-slate-300 rounded font-normal text-slate-900 focus:ring-1 focus:ring-emerald-600 focus:bg-white focus:outline-none"
                         />
                       </td>
 
                       {/* Harga Satuan */}
-                      <td className="p-2 border-r border-emerald-200">
+                      <td className="p-1.5 border-r border-slate-100">
                         <div className="relative">
-                          <span className="absolute left-2.5 top-2 text-slate-400 font-bold text-[10px]">Rp</span>
+                          <span className="absolute left-2 top-1 text-slate-400 font-semibold text-[10px]">Rp</span>
                           <input
                             type="number"
                             min="0"
@@ -319,37 +320,37 @@ export const BonModal: React.FC<BonModalProps> = ({
                             placeholder="0"
                             value={row.hargaSatuan || ''}
                             onChange={(e) => handleItemChange(idx, 'hargaSatuan', e.target.value)}
-                            className="w-full pl-8 pr-2 py-2 bg-slate-50 border border-slate-300 rounded-lg text-right font-mono font-bold focus:ring-1 focus:ring-brand-500 focus:outline-none"
+                            className="w-full pl-7 pr-2 py-1 bg-slate-50 border border-slate-300 rounded text-right font-mono tabular-nums font-semibold text-slate-800 focus:ring-1 focus:ring-emerald-600 focus:bg-white focus:outline-none"
                           />
                         </div>
                       </td>
 
                       {/* Jumlah (Banyaknya x Harga Satuan) */}
-                      <td className="p-2 border-r border-emerald-200 text-right font-mono font-black text-emerald-900 bg-emerald-50/50">
+                      <td className="p-1.5 border-r border-slate-100 text-right font-mono tabular-nums font-bold text-slate-900 bg-slate-50/50">
                         {formatRupiah(row.jumlah)}
                       </td>
 
                       {/* Aksi */}
-                      <td className="p-2 text-center">
+                      <td className="p-1.5 text-center">
                         <button
                           type="button"
                           onClick={() => handleRemoveItem(idx)}
-                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
                           title="Hapus baris ini"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
                 {/* Total Row */}
-                <tfoot className="bg-emerald-50 border-t-2 border-emerald-700 font-black">
+                <tfoot className="bg-slate-50 border-t border-slate-200 font-bold">
                   <tr>
-                    <td colSpan={3} className="py-3 px-4 text-right text-xs uppercase tracking-wider text-emerald-950 border-r border-emerald-300">
+                    <td colSpan={3} className="py-2.5 px-4 text-right text-xs uppercase tracking-wider text-slate-700 border-r border-slate-200">
                       JUMLAH TOTAL
                     </td>
-                    <td className="py-3 px-3 text-right text-sm font-mono text-emerald-900 border-r border-emerald-300">
+                    <td className="py-2.5 px-3 text-right text-xs font-mono tabular-nums text-emerald-800 border-r border-slate-200 font-bold">
                       {formatRupiah(totalCalculated)}
                     </td>
                     <td></td>
@@ -360,9 +361,10 @@ export const BonModal: React.FC<BonModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-2">
+          <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-2">
             {bon && onDelete ? (
-              <button
+              <motion.button
+                whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={() => {
                   if (confirm(`Hapus bon nomor "${bon.nomorBon}" secara permanen?`)) {
@@ -370,34 +372,36 @@ export const BonModal: React.FC<BonModalProps> = ({
                     onClose();
                   }
                 }}
-                className="px-3.5 py-2.5 bg-red-50 text-red-700 hover:bg-red-100 font-bold rounded-xl flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 font-semibold rounded-lg flex items-center gap-1.5 transition-colors text-xs"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" />
                 <span>Hapus Bon</span>
-              </button>
+              </motion.button>
             ) : (
               <div></div>
             )}
 
             <div className="flex items-center gap-2">
-              <button
+              <motion.button
+                whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition-colors text-xs"
               >
                 Batal
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition-all"
+                className="px-4 py-1.5 bg-[#15803D] hover:bg-[#166534] text-white font-semibold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors text-xs"
               >
-                <Save className="w-4 h-4" />
+                <Save className="w-3.5 h-3.5" />
                 <span>Simpan Bon Transaksi</span>
-              </button>
+              </motion.button>
             </div>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };
