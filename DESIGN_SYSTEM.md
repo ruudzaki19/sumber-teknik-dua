@@ -19,9 +19,9 @@ Sistem visual **SUMBER TEKNIK DUA** dirancang untuk keandalan, kejelasan, dan ke
 
 | Kategori | Hex Token | Tailwind Class | Penggunaan & Konteks |
 |---|---|---|---|
-| **Canvas Background** | `#F8FAFC` / `#F9FAF8` | `bg-slate-50` / `bg-[#F8FAFC]` | Latar belakang seluruh halaman aplikasi. Hangat, nyaman di mata saat kerja panjang. |
-| **Surface (Card / Table)** | `#FFFFFF` | `bg-white` | Kartu informasi, panel form, baris tabel, modal dialog. |
-| **Crisp Border** | `#E2E8F0` / `#CBD5E1` | `border-slate-200` / `border-slate-300` | Batas tegas 1px pada seluruh kartu, baris tabel, dan input field. |
+| **Canvas Background (Putih Cream)** | `#F9F6F0` | `bg-[#F9F6F0]` | Latar belakang seluruh halaman aplikasi. Putih cream hangat (warm ivory cream) agar mata tidak lelah dan tidak terkesan putih polos. |
+| **Surface (Card / Table)** | `#FFFFFF` | `bg-white` | Kartu informasi, panel form, baris tabel, modal dialog. Kontras tinggi di atas kanvas cream. |
+| **Crisp Border** | `#E7E2D6` / `#E2E8F0` | `border-stone-200` / `border-slate-200` | Batas tegas 1px pada seluruh kartu, baris tabel, dan input field. |
 | **Brand Primary (Technical Green)** | `#15803D` / `#166534` | `bg-emerald-700` / `bg-emerald-800` | Header navbar, tombol aksi utama (Simpan, Cetak, Tambah), aksen aktif terpilih. |
 | **Brand Accent / Hover** | `#14532D` | `hover:bg-emerald-900` | State hover tombol primer dan highlight status teknis. |
 | **Subtle Tint (Active/Focus)** | `#F0FDF4` | `bg-emerald-50` | Latar belakang elemen aktif, fokus input field, banner informasi penting. |
@@ -31,6 +31,15 @@ Sistem visual **SUMBER TEKNIK DUA** dirancang untuk keandalan, kejelasan, dan ke
 | **Status Dot: Lunas / Siap** | `#16A34A` | `bg-emerald-600` | Indikator `• Selesai`, `• Normal`, `• Lunas`. |
 | **Status Dot: Pending / Perlu Servis** | `#D97706` | `bg-amber-600` | Indikator `• Perlu Servis`, `• Pending`. |
 | **Status Dot: Bahaya / Rusak** | `#DC2626` | `bg-rose-600` | Indikator `• Rusak`, `• Batal`. |
+
+---
+
+## 3. Background Animasi Tematik (Cooling Airflow & Blueprint)
+Aplikasi menggunakan komponen latar belakang dinamis `<CoolingAirflowBackground />` yang dirancang khusus untuk tema pendingin AC & bengkel teknik:
+1. **Tekstur Blueprint Dot-Matrix (`#CDC5B4`)**: Pola titik-titik geometris grid teknik berjarak 28px yang halus menyerupai kertas milimeter blok kalkir teknik.
+2. **Gelombang Aliran Angin Sejuk AC (`Cooling Breeze Waves`)**: Tiga jalur pita angin hembusan AC beranimasi halus melintas horizontal dengan gradien hembusan sejuk (emerald `#15803D`, teal `#10B981`, dan ice cyan `#0EA5E9`).
+3. **Partikel Hawa Sejuk Melayang (`Cool Air Particles`)**: 14 partikel embun/udara sejuk mikro melayang perlahan ke atas dengan pergerakan meliuk natural.
+4. **Watermark Roda Gigi Mesin ST (`Mechanical Gear`)**: Siluet roda gigi 8 gigi resmi ST berputar sangat lambat (120 detik per putaran) di sudut latar belakang dengan opasitas sangat rendah (0.045) untuk menegaskan identitas teknik tanpa mengganggu keterbacaan teks.
 
 ---
 

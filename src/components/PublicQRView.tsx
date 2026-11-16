@@ -4,6 +4,7 @@ import { dataService } from '../db/dataService';
 import { ACUnit, MaintenanceRecord } from '../types';
 import { FIXED_SIGNATURE_PATH } from '../db/db';
 import { PdfExportModal } from './PdfExportModal';
+import { CoolingAirflowBackground } from './CoolingAirflowBackground';
 import { supabase } from '../lib/supabase';
 
 interface PublicQRViewProps {
@@ -91,9 +92,11 @@ export const PublicQRView: React.FC<PublicQRViewProps> = ({ unitId, onAdminLogin
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col text-slate-900 pb-16">
+    <div className="min-h-screen bg-[#F9F6F0] flex flex-col text-slate-900 pb-16 relative">
+      <CoolingAirflowBackground />
+
       {/* Public Header - Solid Forest Green */}
-      <header className="bg-[#15803D] text-white sticky top-0 z-40 border-b border-[#14532D] shadow-xs">
+      <header className="bg-[#15803D] text-white sticky top-0 z-40 border-b border-[#14532D] shadow-xs relative z-10">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-300">
@@ -129,7 +132,7 @@ export const PublicQRView: React.FC<PublicQRViewProps> = ({ unitId, onAdminLogin
       </header>
 
       {/* Main Content View (Read-Only) */}
-      <main className="max-w-4xl mx-auto px-3 sm:px-4 py-5 flex-1 w-full space-y-4">
+      <main className="max-w-4xl mx-auto px-3 sm:px-4 py-5 flex-1 w-full space-y-4 relative z-10">
         {/* Banner Status */}
         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 flex items-center justify-between text-xs text-brand-950">
           <span className="font-medium">

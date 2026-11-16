@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Eye, EyeOff, Lock, Mail, User, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { CoolingAirflowBackground } from './CoolingAirflowBackground';
 
 export const LoginScreen: React.FC = () => {
   const { loginWithEmail, registerUser } = useAuth();
@@ -74,12 +75,13 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center items-center px-4 py-8">
+    <div className="min-h-screen bg-[#F9F6F0] flex flex-col justify-center items-center px-4 py-8 relative">
+      <CoolingAirflowBackground />
       <motion.div
         initial={{ opacity: 0, y: 8, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-md bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden"
+        className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-[#E7E2D6] overflow-hidden relative z-10"
       >
         {/* Header Banner - Solid Industrial Green */}
         <div className="bg-[#15803D] text-white p-6 text-center border-b border-[#14532D]">

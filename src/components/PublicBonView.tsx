@@ -3,6 +3,7 @@ import { Download, RefreshCw, AlertCircle, ArrowLeft, Image as ImageIcon } from 
 import { dataService } from '../db/dataService';
 import { Bon } from '../types';
 import { BonPdfModal } from './BonPdfModal';
+import { CoolingAirflowBackground } from './CoolingAirflowBackground';
 import { FIXED_SIGNATURE_PATH } from '../db/db';
 import { supabase } from '../lib/supabase';
 
@@ -100,9 +101,11 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
   const greenText = '#1b6837';
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col text-slate-900 pb-16">
+    <div className="min-h-screen bg-[#F9F6F0] flex flex-col text-slate-900 pb-16 relative">
+      <CoolingAirflowBackground />
+
       {/* Top Navbar - Solid Forest Green */}
-      <header className="bg-[#15803D] text-white sticky top-0 z-40 border-b border-[#14532D] shadow-xs">
+      <header className="bg-[#15803D] text-white sticky top-0 z-40 border-b border-[#14532D] shadow-xs relative z-10">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-300">
@@ -138,7 +141,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
       </header>
 
       {/* Main Container */}
-      <main className="max-w-4xl mx-auto px-3 sm:px-4 py-6 flex-1 w-full space-y-4">
+      <main className="max-w-4xl mx-auto px-3 sm:px-4 py-6 flex-1 w-full space-y-4 relative z-10">
         {/* Status Banner */}
         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-brand-950">
           <div>

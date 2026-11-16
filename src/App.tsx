@@ -30,6 +30,7 @@ import { BonListView } from './components/BonListView';
 import { BonModal } from './components/BonModal';
 import { BonPdfModal } from './components/BonPdfModal';
 import { BonQRModal } from './components/BonQRModal';
+import { CoolingAirflowBackground } from './components/CoolingAirflowBackground';
 import { dataService } from './db/dataService';
 import { supabase } from './lib/supabase';
 import { FIXED_SIGNATURE_PATH } from './db/db';
@@ -188,10 +189,11 @@ export const App: React.FC = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-[#F9F6F0] flex items-center justify-center relative">
+        <CoolingAirflowBackground />
+        <div className="text-center relative z-10">
           <div className="w-10 h-10 border-4 border-brand-700 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-xs text-slate-500 font-bold">Memuat Sumber Teknik Dua...</p>
+          <p className="text-xs text-slate-700 font-bold">Memuat Sumber Teknik Dua...</p>
         </div>
       </div>
     );
@@ -282,11 +284,14 @@ export const App: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col text-slate-900 pb-16">
+    <div className="min-h-screen bg-[#F9F6F0] flex flex-col text-slate-900 pb-16 relative">
+      {/* Background Animasi Aliran Angin Sejuk AC & Blueprint Teknik */}
+      <CoolingAirflowBackground />
+
       {/* ============================================================== */}
       {/* 1. NAVIGASI UTAMA (3 MENU NAVBAR) - SOLID FOREST GREEN */}
       {/* ============================================================== */}
-      <header className="bg-[#15803D] text-white sticky top-0 z-40 border-b border-[#14532D] shadow-xs">
+      <header className="bg-[#15803D] text-white sticky top-0 z-40 border-b border-[#14532D] shadow-xs relative">
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Logo & Brand Info */}
           <div className="flex items-center justify-between sm:justify-start gap-3">
@@ -376,7 +381,7 @@ export const App: React.FC = () => {
       {/* ============================================================== */}
       {/* 2. KONTEN UTAMA BERDASARKAN TAB YANG AKTIF */}
       {/* ============================================================== */}
-      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-5 flex-1 w-full">
+      <main className="max-w-6xl mx-auto px-3 sm:px-4 py-5 flex-1 w-full relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
