@@ -7,6 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
+        'st-cream': '#f6f1e4',
+        'st-cream-dark': '#ece4cf',
+        'st-white': '#ffffff',
+        'st-primary': '#1f6f4a',
+        'st-dark': '#14402c',
+        'st-light': '#7fb58f',
+        'st-pale': '#dcebd9',
+        'st-text': '#17261e',
+        'st-text-muted': '#5d6f64',
         brand: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -20,6 +29,9 @@ export default {
           900: '#14532d',
           950: '#052e16',
         }
+      },
+      fontFamily: {
+        sora: ['Sora', 'sans-serif'],
       }
     },
   },

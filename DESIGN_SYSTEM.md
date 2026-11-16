@@ -15,38 +15,40 @@ Sistem visual **SUMBER TEKNIK DUA** dirancang untuk keandalan, kejelasan, dan ke
 
 ---
 
-## 2. Palet Warna (Solid Industrial Technical Palette)
+## 2. Palet Warna (Solid Industrial Flat Palette — Hijau, Putih, Krem)
 
-| Kategori | Hex Token | Tailwind Class | Penggunaan & Konteks |
+| Kategori | Hex Token | Tailwind Token | Penggunaan & Konteks |
 |---|---|---|---|
-| **Canvas Background (Putih Cream)** | `#F9F6F0` | `bg-[#F9F6F0]` | Latar belakang seluruh halaman aplikasi. Putih cream hangat (warm ivory cream) agar mata tidak lelah dan tidak terkesan putih polos. |
-| **Surface (Card / Table)** | `#FFFFFF` | `bg-white` | Kartu informasi, panel form, baris tabel, modal dialog. Kontras tinggi di atas kanvas cream. |
-| **Crisp Border** | `#E7E2D6` / `#E2E8F0` | `border-stone-200` / `border-slate-200` | Batas tegas 1px pada seluruh kartu, baris tabel, dan input field. |
-| **Brand Primary (Technical Green)** | `#15803D` / `#166534` | `bg-emerald-700` / `bg-emerald-800` | Header navbar, tombol aksi utama (Simpan, Cetak, Tambah), aksen aktif terpilih. |
-| **Brand Accent / Hover** | `#14532D` | `hover:bg-emerald-900` | State hover tombol primer dan highlight status teknis. |
-| **Subtle Tint (Active/Focus)** | `#F0FDF4` | `bg-emerald-50` | Latar belakang elemen aktif, fokus input field, banner informasi penting. |
-| **Primary Text** | `#0F172A` | `text-slate-900` | Seluruh heading, label penting, nilai nominal, dan isi data. Kontras tinggi (WCAG AAA). |
-| **Secondary Text** | `#475569` | `text-slate-600` | Sub-judul, keterangan teknis, tanggal sekunder, metadata. |
-| **Muted Text / Placeholder** | `#94A3B8` | `text-slate-400` | Placeholder input, ikon non-interaktif, border sekunder. |
-| **Status Dot: Lunas / Siap** | `#16A34A` | `bg-emerald-600` | Indikator `• Selesai`, `• Normal`, `• Lunas`. |
-| **Status Dot: Pending / Perlu Servis** | `#D97706` | `bg-amber-600` | Indikator `• Perlu Servis`, `• Pending`. |
-| **Status Dot: Bahaya / Rusak** | `#DC2626` | `bg-rose-600` | Indikator `• Rusak`, `• Batal`. |
+| **Canvas Background (Krem)** | `#F6F1E4` | `bg-st-cream` | Latar belakang seluruh halaman aplikasi. Putih cream hangat anti silau. |
+| **Krem Gelap (Aksen Permukaan)** | `#ECE4CF` | `bg-st-cream-dark` | Kontainer sekunder, thumbnail strip, card CTA. |
+| **Surface (Card / Table Putih)** | `#FFFFFF` | `bg-st-white` / `bg-white` | Kartu informasi, panel form, baris tabel, modal dialog. Kontras tinggi di atas krem. |
+| **Brand Primary (Hijau Utama)** | `#1F6F4A` | `bg-st-primary` | Tombol aksi utama, header aktif, badge status, highlight utama. |
+| **Brand Dark (Hijau Tua)** | `#14402C` | `bg-st-dark` | Border tegas 2-3px, hard offset box-shadow (`#14402C`), footer. |
+| **Brand Light (Hijau Muda)** | `#7FB58F` | `bg-st-light` | Garis hembusan angin sejuk AC, aksen border sekunder. |
+| **Brand Pale (Hijau Pucat)** | `#DCEBD9` | `bg-st-pale` | Highlight box kata kunci judul, fallback foto, badge aktif. |
+| **Primary Text (Slate Gelap)** | `#17261E` | `text-st-text` | Seluruh heading, judul extrabold, teks data. |
+| **Secondary Text (Teks Redup)** | `#5D6F64` | `text-st-text-muted` | Sub-judul, metadata teknis, caption singkat. |
 
 ---
 
-## 3. Background Animasi Tematik (Cooling Airflow & Blueprint)
-Aplikasi menggunakan komponen latar belakang dinamis `<CoolingAirflowBackground />` yang dirancang khusus untuk tema pendingin AC & bengkel teknik:
-1. **Tekstur Blueprint Dot-Matrix (`#CDC5B4`)**: Pola titik-titik geometris grid teknik berjarak 28px yang halus menyerupai kertas milimeter blok kalkir teknik.
-2. **Gelombang Aliran Angin Sejuk AC (`Cooling Breeze Waves`)**: Tiga jalur pita angin hembusan AC beranimasi halus melintas horizontal dengan gradien hembusan sejuk (emerald `#15803D`, teal `#10B981`, dan ice cyan `#0EA5E9`).
-3. **Partikel Hawa Sejuk Melayang (`Cool Air Particles`)**: 14 partikel embun/udara sejuk mikro melayang perlahan ke atas dengan pergerakan meliuk natural.
-4. **Watermark Roda Gigi Mesin ST (`Mechanical Gear`)**: Siluet roda gigi 8 gigi resmi ST berputar sangat lambat (120 detik per putaran) di sudut latar belakang dengan opasitas sangat rendah (0.045) untuk menegaskan identitas teknik tanpa mengganggu keterbacaan teks.
+## 3. Background Animasi Tematik (Cooling Airflow — Flat Solid, Zero Gradient)
+Aplikasi menggunakan komponen latar belakang dinamis `<CoolingAirflowBackground />` berdesain flat solid tanpa gradasi:
+1. **Latar Solid Krem (`#F6F1E4`)**: Menggunakan token `bg-st-cream` yang hangat dan nyaman di mata.
+2. **5 Lingkaran Solid Melayang**:
+   - Hijau pucat (`#DCEBD9`), krem gelap (`#ECE4CF`), dan hijau muda semi-transparan (`#7FB58F`/35%).
+   - Melayang perlahan 14–18 detik (`translate` + `scale`, alternate, delay bertingkat).
+3. **4 Garis Tipis Hembusan Angin AC (`bg-st-light`)**:
+   - Garis horizontal tipis 2px bergerak dari kiri ke kanan melintasi layar (loop 9 detik).
+4. **Aksesibilitas (`prefers-reduced-motion`)**:
+   - Menggunakan hook `useReducedMotion()`. Jika pengguna mengaktifkan preferensi minim gerak, animasi dinonaktifkan secara otomatis.
 
 ---
 
-## 3. Tipografi & Angka Tabular (Tabular Nums)
+## 4. Tipografi & Angka Tabular (Sora & Tabular Nums)
 
-1. **Font Standar:** Inter / Sistem Sans-Serif Bersih (`font-sans`).
-2. **Kewajiban Tabular Nums:**
+1. **Font Standar:** Sora (`font-sora`, Google Fonts). Judul menggunakan bobot `font-extrabold`.
+2. **Penulisan Brand Resmi:** Ditulis secara konsisten **"Sumber Teknik Dua"** (menggunakan huruf, bukan angka).
+3. **Kewajiban Tabular Nums:**
    - **Wajib gunakan kelas `tabular-nums`** (angka monospace sejajar vertikal) untuk:
      - Seluruh nominal mata uang Rupiah (`Rp 150.000`).
      - Nomor seri unit AC (`STD-2026-001`).

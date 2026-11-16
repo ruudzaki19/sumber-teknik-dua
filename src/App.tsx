@@ -291,24 +291,24 @@ export const App: React.FC = () => {
       {/* ============================================================== */}
       {/* 1. NAVIGASI UTAMA (3 MENU NAVBAR) - SOLID FOREST GREEN */}
       {/* ============================================================== */}
-      <header className="bg-[#15803D] text-white sticky top-0 z-40 border-b border-[#14532D] shadow-xs relative">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <header className="bg-st-primary text-white sticky top-0 z-40 border-b-2 border-st-dark relative">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-sora">
           {/* Logo & Brand Info */}
           <div className="flex items-center justify-between sm:justify-start gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center border border-emerald-300 shrink-0 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center border-2 border-st-dark shrink-0">
                 <img src="/logo-resmi.png" alt="ST" className="w-full h-full object-contain" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-base sm:text-lg font-black tracking-tight uppercase text-white">
+                  <h1 className="text-base sm:text-lg font-extrabold tracking-tight uppercase text-white">
                     SUMBER TEKNIK DUA
                   </h1>
                   <span
                     className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-bold inline-flex items-center gap-1.5 ${
                       isAdmin
                         ? 'bg-amber-400/20 text-amber-200 border border-amber-400/30'
-                        : 'bg-emerald-900/60 text-emerald-100 border border-emerald-600/40'
+                        : 'bg-st-dark/80 text-st-pale border border-st-dark'
                     }`}
                   >
                     <span className={`w-1.5 h-1.5 rounded-full ${isAdmin ? 'bg-amber-400' : 'bg-emerald-300'}`}></span>
@@ -323,17 +323,17 @@ export const App: React.FC = () => {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={logout}
-                className="p-2 bg-emerald-900/60 hover:bg-emerald-900 text-white rounded-lg transition-colors border border-emerald-700/60"
+                className="p-2 bg-st-dark hover:bg-black text-white rounded-lg transition-colors border border-st-dark"
                 title="Keluar Akun"
               >
-                <LogOut className="w-4 h-4 text-emerald-200" />
+                <LogOut className="w-4 h-4 text-st-pale" />
               </motion.button>
             </div>
           </div>
 
           {/* 3 Navigasi Menu Tabs with Smooth layoutId Pill & User Section (Desktop) */}
           <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-emerald-700/60">
-            <nav className="relative flex items-center gap-1 bg-[#14532D] p-1 rounded-xl border border-emerald-800/80 w-full sm:w-auto justify-between sm:justify-start">
+            <nav className="relative flex items-center gap-1 bg-st-dark p-1 rounded-xl border border-st-dark w-full sm:w-auto justify-between sm:justify-start">
               {navTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -342,7 +342,7 @@ export const App: React.FC = () => {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`relative px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 z-10 ${
-                      isActive ? 'text-slate-900 font-bold' : 'text-emerald-100 hover:text-white'
+                      isActive ? 'text-st-text font-bold' : 'text-st-pale hover:text-white'
                     }`}
                   >
                     {isActive && (
@@ -352,7 +352,7 @@ export const App: React.FC = () => {
                         transition={{ type: "spring", stiffness: 450, damping: 32 }}
                       />
                     )}
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#15803D]' : 'text-emerald-200'}`} />
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-st-primary' : 'text-st-pale'}`} />
                     <span>{tab.label}</span>
                   </button>
                 );

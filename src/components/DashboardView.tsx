@@ -1,22 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   MapPin,
   Phone,
   Clock,
-  Wind,
+  Wrench,
   CheckCircle2,
-  ShieldCheck,
   ChevronLeft,
   ChevronRight,
   ArrowRight,
-  Star,
-  Wrench,
-  Sparkles,
-  Zap,
-  Gauge,
-  Check
+  MessageCircle,
+  ShieldCheck,
+  Award,
+  CalendarCheck
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useReducedMotion, type Variants } from 'framer-motion';
 import { Room, ACUnit, Bon, UserProfile } from '../types';
 
 interface DashboardViewProps {
@@ -47,124 +44,173 @@ const SERVICES: ServiceItem[] = [
   {
     id: 'cuci-steam',
     index: '01',
-    title: 'CUCI STEAM AC',
+    title: 'Cuci Steam AC',
     subtitle: 'Pembersihan Evaporator, Blower & Kondensor',
-    badge: 'Perawatan Rutin Berkala',
+    badge: 'Perawatan Berkala',
     image: '/ac-cuci-steam.jpg',
-    desc: 'Pembersihan mendalam menggunakan jet steam bertekanan pas untuk merontokkan lendir, lumut, jamur, serta debu pekat pada evaporator indoor dan kondensor outdoor. Menjadikan hembusan angin seketika dingin kencang, higienis, bebas bau apek, dan menghemat konsumsi listrik.',
+    desc: 'Pembersihan mendalam dengan jet steam bertekanan pas merontokkan lendir, jamur, dan debu pekat. Udara seketika dingin segar, bersih, dan hemat listrik.',
     specs: [
       { label: 'Metode', value: 'Jet Steam Air Presisi' },
-      { label: 'Durasi Pengerjaan', value: '± 45 - 60 Menit' },
-      { label: 'Hasil Hembusan', value: 'Dingin Segar & Higienis' },
-      { label: 'Rekomendasi', value: 'Rutin Tiap 3 - 4 Bulan' }
+      { label: 'Durasi', value: '± 45 - 60 Menit' },
+      { label: 'Hasil', value: 'Dingin & Higienis' },
+      { label: 'Siklus', value: 'Tiap 3 - 4 Bulan' }
     ],
     floatingBadge: {
       title: 'Filter Higienis 100%',
-      detail: 'Bebas Debu & Aliran Lancar'
+      detail: 'Hembusan Bersih Lancar'
     },
-    actionLabel: 'Lihat Kartu Pemeliharaan',
+    actionLabel: 'Buka Kartu Pemeliharaan',
     targetTab: 'pemeliharaan'
   },
   {
     id: 'isi-freon',
     index: '02',
-    title: 'ISI & TAMBAH FREON',
+    title: 'Isi & Tambah Freon',
     subtitle: 'Refrigeran Murni R32, R410A & R22',
-    badge: 'Optimalisasi Suhu Dingin',
+    badge: 'Optimalisasi Dingin',
     image: '/ac-isi-freon.jpg',
-    desc: 'Pengecekan dan pengisian gas refrigeran presisi menggunakan manifold gauge digital berstandar pabrikan. Disertai pengecekan kebocoran nepel pipa dan uji ampere kompresor agar mesin tidak overload serta menghasilkan pendinginan maksimal tahan lama.',
+    desc: 'Pengisian gas freon presisi dengan manifold gauge digital. Disertai cek kebocoran nepel pipa dan uji ampere agar kompresor awet tahan lama.',
     specs: [
-      { label: 'Tipe Freon', value: 'R32 / R410A / R22 Murni' },
-      { label: 'Tekanan Ideal', value: '130 - 150 PSI' },
-      { label: 'Uji Kebocoran', value: 'Deteksi Nepel & Sambungan' },
-      { label: 'Ampere Mesin', value: 'Sesuai Standar Nameplate' }
+      { label: 'Tipe Gas', value: 'R32 / R410A / R22 Murni' },
+      { label: 'Tekanan', value: '130 - 150 PSI Ideal' },
+      { label: 'Uji Nepel', value: 'Deteksi Kebocoran Pipa' },
+      { label: 'Ampere', value: 'Sesuai Standar Mesin' }
     ],
     floatingBadge: {
-      title: 'Tekanan Freon Akurat',
-      detail: 'Kompresor Aman & Awet'
+      title: 'Tekanan Akurat',
+      detail: 'Kompresor Lebih Awet'
     },
-    actionLabel: 'Buka Catatan Servis',
+    actionLabel: 'Cek Unit AC',
     targetTab: 'pemeliharaan'
   },
   {
     id: 'bongkar-pasang',
     index: '03',
-    title: 'BONGKAR PASANG AC',
+    title: 'Bongkar Pasang AC',
     subtitle: 'Relokasi & Instalasi Rapi Siap Pakai',
     badge: 'Instalasi Presisi',
     image: '/ac-bongkar-pasang.jpg',
-    desc: 'Pemasangan unit baru atau pemindahan AC antar ruangan dengan teknik instalasi rapi. Pemasangan bracket kokoh, kemiringan pipa drainase terukur anti-bocor air, perapian instalasi listrik, serta proses vakum instalasi pipa tembaga sebelum unit dioperasikan.',
+    desc: 'Pemasangan unit baru dan pemindahan AC dengan bracket kokoh, kemiringan pipa drainase terukur anti-bocor, serta proses vakum instalasi sebelum dinyalakan.',
     specs: [
-      { label: 'Pipa Tembaga', value: 'Standar Tebal Berkualitas' },
+      { label: 'Pipa Tembaga', value: 'Tebal Berkualitas Tinggi' },
       { label: 'Drainase Air', value: 'Kemiringan Gravitasi Rapi' },
-      { label: 'Vakum Instalasi', value: '2-Stage Vacuum Pump' },
+      { label: 'Vakum Pipa', value: '2-Stage Vacuum Pump' },
       { label: 'Garansi', value: 'Garansi Pemasangan Rapi' }
     ],
     floatingBadge: {
-      title: 'Instalasi Bebas Bocor',
-      detail: 'Bracket Kokoh & Drainase Pas'
+      title: 'Instalasi Rapi',
+      detail: 'Pipa Vakum Bebas Bocor'
     },
-    actionLabel: 'Kelola Unit AC Ruangan',
+    actionLabel: 'Kelola Ruangan & Unit',
     targetTab: 'pemeliharaan'
   },
   {
     id: 'perbaikan-sparepart',
     index: '04',
-    title: 'PERBAIKAN & SPAREPART',
-    subtitle: 'Kompresor, Kapasitor & Modul PCB',
-    badge: 'Diagnosa Akurat',
+    title: 'Perbaikan & Sparepart',
+    subtitle: 'Kapasitor, Kompresor & Modul PCB',
+    badge: 'Diagnosa Cepat',
     image: '/ac-perbaikan-sparepart.jpg',
-    desc: 'Solusi tuntas untuk masalah AC mati total, tidak dingin, kompresor macet, atau hembusan fan lemah. Didukung peralatan ukur digital dan stok suku cadang original seperti kapasitor, sensor thermistor, motor swing, hingga perbaikan sirkuit modul PCB.',
+    desc: 'Solusi tuntas untuk AC mati total, tidak dingin, atau hembusan fan lemah. Didukung alat ukur digital dan suku cadang original bergaransi resmi.',
     specs: [
       { label: 'Alat Ukur', value: 'Digital Multimeter & Clamp' },
-      { label: 'Suku Cadang', value: 'Kapasitor & Modul Original' },
-      { label: 'Garansi Servis', value: 'Garansi Resmi Pengerjaan' },
-      { label: 'Uji Suhu', value: 'Pendinginan Normal Teruji' }
+      { label: 'Suku Cadang', value: 'Original & Teruji' },
+      { label: 'Garansi', value: 'Garansi Servis Resmi' },
+      { label: 'Uji Suhu', value: 'Normal Standar Pabrik' }
     ],
     floatingBadge: {
-      title: 'Komponen Original',
+      title: 'Suku Cadang Asli',
       detail: 'Tahan Lama & Bergaransi'
     },
-    actionLabel: 'Buat Nota / Bon Servis',
+    actionLabel: 'Buat Nota / Bon',
     targetTab: 'bon'
   },
   {
     id: 'jual-beli-ac',
     index: '05',
-    title: 'JUAL-BELI AC BERKUALITAS',
+    title: 'Jual Beli AC Berkualitas',
     subtitle: 'Unit Split Daikin, Panasonic, Sharp & Gree',
-    badge: 'Unit Teruji & Bergaransi',
+    badge: 'Unit Teruji',
     image: '/ac-showcase-modern.jpg',
-    desc: 'Penyediaan unit AC baru resmi serta tukar-tambah AC bekas rekondisi berkualitas prima. Setiap unit telah melalui pengujian kompresi mesin, pembersihan evaporator menyeluruh, pengecatan rapi, dan siap dikirim serta dipasang langsung oleh teknisi kami.',
+    desc: 'Penyediaan unit AC baru resmi serta tukar-tambah unit seken rekondisi prima. Kompresi mesin normal 100%, siap kirim dan dipasang langsung oleh teknisi.',
     specs: [
       { label: 'Merk Tersedia', value: 'Daikin, Panasonic, Sharp, Gree' },
-      { label: 'Kapasitas', value: '1/2 PK, 3/4 PK, 1 PK, 2 PK' },
+      { label: 'Kapasitas', value: '1/2 PK hingga 2 PK' },
       { label: 'Kondisi Mesin', value: 'Kompresi 100% Normal' },
-      { label: 'Paket Lengkap', value: 'Tersedia Paket Pasang Baru' }
+      { label: 'Paket Pasang', value: 'Termasuk Pipa & Bracket' }
     ],
     floatingBadge: {
       title: 'Unit Siap Pasang',
-      detail: 'Kondisi Prima Bergaransi'
+      detail: 'Kondisi Prima & Bergaransi'
     },
-    actionLabel: 'Catat Transaksi Penjualan',
+    actionLabel: 'Catat Bon Penjualan',
     targetTab: 'bon'
   }
 ];
+
+// Animated Number Counter Component
+const CountUpNumber: React.FC<{ end: number; suffix?: string; prefix?: string; duration?: number }> = ({
+  end,
+  suffix = '',
+  prefix = '',
+  duration = 1.6
+}) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  const shouldReduceMotion = useReducedMotion();
+  const [value, setValue] = useState(shouldReduceMotion ? end : 0);
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setValue(end);
+      return;
+    }
+    if (!isInView) return;
+
+    let startTime: number | null = null;
+    let animationFrameId: number;
+
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setValue(Math.floor(easeProgress * end));
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(step);
+      } else {
+        setValue(end);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isInView, end, duration, shouldReduceMotion]);
+
+  return (
+    <span ref={ref} className="tabular-nums font-sora font-extrabold">
+      {prefix}
+      {value.toLocaleString('id-ID')}
+      {suffix}
+    </span>
+  );
+};
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   onNavigateTab
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const activeService = SERVICES[currentIndex];
 
-  // Auto-advance slider every 6.5 seconds when not paused by mouse hover
+  // Auto-advance carousel every 6 seconds when not paused by user
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % SERVICES.length);
-    }, 6500);
+    }, 6000);
     return () => clearInterval(timer);
   }, [isPaused]);
 
@@ -176,383 +222,588 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     setCurrentIndex((prev) => (prev + 1) % SERVICES.length);
   };
 
+  // Scroll reveal animation variants (fade + slide-up 36px)
+  const sectionVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 36 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.45, ease: 'easeOut' }
+    }
+  };
+
+  const containerStagger: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-      className="space-y-6"
-    >
+    <div className="space-y-10 sm:space-y-12 pb-16 font-sora text-st-text">
       {/* ============================================================== */}
-      {/* 1. HERO SHOWCASE WITH INTERACTIVE SERVICE SLIDER (INSPIRASI FRESHBOOKS & FOXICO) */}
+      {/* 1. HERO SECTION (HEADLINE + 2 TOMBOL + CAROUSEL FOTO BOBBING) */}
       {/* ============================================================== */}
-      <div
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        className="bg-[#14532D] text-white rounded-3xl p-5 sm:p-7 lg:p-9 shadow-md border border-[#166534] relative overflow-hidden"
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-40px' }}
+        variants={sectionVariants}
+        className="space-y-6"
       >
-        {/* Subtle Organic Background Accents & Technical Blueprint Pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.07] pointer-events-none"
-          style={{
-            backgroundImage: 'radial-gradient(circle, #86EFAC 1px, transparent 1px)',
-            backgroundSize: '24px 24px'
-          }}
-        />
-
-        {/* Ambient Top Glow */}
-        <div
-          className="absolute -top-32 -left-32 w-96 h-96 rounded-full pointer-events-none"
-          style={{
-            background: 'radial-gradient(circle, rgba(34, 197, 94, 0.15) 0%, transparent 70%)'
-          }}
-        />
-
-        {/* Brand Header Bar */}
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-6 border-b border-emerald-800/80">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0 border border-emerald-300 shadow-xs">
-              <img src="/logo-resmi.png" alt="ST Logo" className="w-full h-full object-contain" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Left Column: Headline & Action Buttons */}
+          <div className="lg:col-span-6 space-y-5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-st-white border-2 border-st-dark rounded-full shadow-[3px_3px_0px_#14402c]">
+              <span className="w-2 h-2 rounded-full bg-st-primary"></span>
+              <span className="text-xs font-bold text-st-dark uppercase tracking-wider">
+                Bengkel Resmi AC &amp; Pendingin
+              </span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm font-black tracking-tight uppercase text-white">
-                  SUMBER TEKNIK DUA
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-st-text leading-[1.15] tracking-tight">
+              Spesialis{' '}
+              <span className="bg-st-pale text-st-dark border-2 border-st-dark px-2.5 py-0.5 rounded-xl inline-block shadow-[3px_3px_0px_#14402c]">
+                Servis AC
+              </span>{' '}
+              &amp; Pendingin Terpercaya di Tangerang
+            </h1>
+
+            <p className="text-sm sm:text-base text-st-text-muted font-normal leading-relaxed max-w-xl">
+              Layanan servis cuci steam, tambah freon, instalasi bongkar-pasang, serta perbaikan modul dan kompresor bergaransi resmi untuk hunian, kantor, dan komersial.
+            </p>
+
+            {/* 2 Action Buttons */}
+            <div className="pt-2 flex flex-wrap items-center gap-3.5">
+              <motion.a
+                href="https://wa.me/6281388959081"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={shouldReduceMotion ? undefined : { y: -3 }}
+                transition={{ duration: 0.3 }}
+                className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-st-primary hover:bg-st-dark text-white rounded-xl font-bold text-sm border-2 border-st-dark shadow-[4px_4px_0px_#14402c] transition-colors"
+              >
+                <Phone className="w-4 h-4 text-white" />
+                <span>Konsultasi Servis (WhatsApp)</span>
+              </motion.a>
+
+              <motion.button
+                onClick={() => onNavigateTab('pemeliharaan')}
+                whileHover={shouldReduceMotion ? undefined : { y: -3 }}
+                transition={{ duration: 0.3 }}
+                className="inline-flex items-center gap-2.5 px-5 py-3.5 bg-st-white hover:bg-st-cream-dark text-st-dark rounded-xl font-bold text-sm border-2 border-st-dark shadow-[4px_4px_0px_#14402c] transition-colors"
+              >
+                <CalendarCheck className="w-4 h-4 text-st-primary" />
+                <span>Lihat Kartu Pemeliharaan</span>
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </div>
+
+            {/* Micro Trust Points */}
+            <div className="pt-2 flex items-center gap-6 text-xs text-st-text-muted font-semibold">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-st-primary" />
+                <span>Teknisi Berpengalaman</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-st-primary" />
+                <span>Garansi Pengerjaan</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Hero Photo Block with 5s Bobbing + Flat Carousel */}
+          <div className="lg:col-span-6">
+            <motion.div
+              animate={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      y: [0, -8, 0]
+                    }
+              }
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              }}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              className="bg-st-white rounded-[24px] p-4 sm:p-5 border-[3px] border-st-dark shadow-[8px_8px_0px_#14402c] space-y-4"
+            >
+              {/* Carousel Header & Counter */}
+              <div className="flex items-center justify-between pb-3 border-b-2 border-st-dark">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-st-primary"></span>
+                  <span className="text-xs font-extrabold uppercase tracking-wide text-st-dark">
+                    Layanan #{activeService.index}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="px-3 py-1 bg-st-pale border-2 border-st-dark rounded-lg text-xs font-bold text-st-dark font-mono tabular-nums">
+                    <span>{activeService.index}</span>
+                    <span className="text-st-text-muted mx-1">/</span>
+                    <span>05</span>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={handlePrev}
+                      className="w-8 h-8 rounded-lg bg-st-white hover:bg-st-cream-dark text-st-dark border-2 border-st-dark flex items-center justify-center font-bold transition-colors active:translate-y-0.5"
+                      title="Layanan Sebelumnya"
+                      aria-label="Sebelumnya"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      className="w-8 h-8 rounded-lg bg-st-primary hover:bg-st-dark text-white border-2 border-st-dark flex items-center justify-center font-bold transition-colors active:translate-y-0.5"
+                      title="Layanan Berikutnya"
+                      aria-label="Berikutnya"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Showcase Photo Frame */}
+              <div className="relative rounded-[20px] overflow-hidden border-[3px] border-st-dark bg-st-pale aspect-[4/3] group">
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={activeService.image}
+                    src={activeService.image}
+                    alt={`Aktivitas ${activeService.title} Sumber Teknik Dua`}
+                    loading="lazy"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                  />
+                </AnimatePresence>
+
+                {/* Floating Technical Badge (Flat Neo-Brutalist Card) */}
+                <div className="absolute top-3 right-3 bg-st-white text-st-dark rounded-xl p-2.5 border-2 border-st-dark shadow-[4px_4px_0px_#14402c] max-w-[200px]">
+                  <div className="flex items-center gap-1.5 text-st-primary font-extrabold text-[10px] uppercase">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-st-primary shrink-0" />
+                    <span>{activeService.floatingBadge.title}</span>
+                  </div>
+                  <p className="text-[11px] font-bold text-st-text mt-0.5 leading-tight">
+                    {activeService.floatingBadge.detail}
+                  </p>
+                </div>
+
+                {/* Bottom Photo Title Overlay */}
+                <div className="absolute bottom-3 left-3 right-3 bg-st-dark text-white px-3 py-2 rounded-xl border-2 border-st-dark flex items-center justify-between">
+                  <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wide truncate">
+                    {activeService.title}
+                  </span>
+                  <span className="text-[10px] font-bold text-st-light bg-st-dark/80 px-2 py-0.5 rounded border border-st-light/30 shrink-0">
+                    {activeService.badge}
+                  </span>
+                </div>
+              </div>
+
+              {/* Service Explanation Text */}
+              <div className="pt-1">
+                <p className="text-xs sm:text-sm text-st-text font-medium leading-snug">
+                  {activeService.desc}
+                </p>
+              </div>
+
+              {/* Clickable Thumbnail Strip */}
+              <div className="pt-1">
+                <div className="grid grid-cols-5 gap-2">
+                  {SERVICES.map((srv, idx) => {
+                    const isActive = idx === currentIndex;
+                    return (
+                      <button
+                        key={srv.id}
+                        onClick={() => setCurrentIndex(idx)}
+                        className={`relative rounded-xl overflow-hidden aspect-[4/3] border-2 transition-all bg-st-pale ${
+                          isActive
+                            ? 'border-st-dark ring-2 ring-st-primary shadow-[2px_2px_0px_#14402c] scale-[1.02]'
+                            : 'border-st-dark/40 opacity-70 hover:opacity-100 hover:border-st-dark'
+                        }`}
+                        title={srv.title}
+                      >
+                        <img
+                          src={srv.image}
+                          alt={srv.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-0 inset-x-0 bg-st-dark text-white text-[9px] font-extrabold py-0.5 text-center">
+                          #{srv.index}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* ============================================================== */}
+      {/* 2. LAYANAN SECTION (5 CARDS WITH HOVER -1.5DEG, GREEN BG, WHITE TEXT, SHADOW) */}
+      {/* ============================================================== */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-40px' }}
+        variants={sectionVariants}
+        className="space-y-6"
+      >
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-st-white border-2 border-st-dark rounded-full shadow-[2px_2px_0px_#14402c] text-xs font-bold text-st-dark">
+            <Wrench className="w-3.5 h-3.5 text-st-primary" />
+            <span>SOLUSI LENGKAP PENDINGIN</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-st-text tracking-tight">
+            Layanan Spesialis Kami
+          </h2>
+          <p className="text-xs sm:text-sm text-st-text-muted">
+            Pekerjaan ditangani langsung oleh teknisi berpengalaman dengan peralatan digital presisi.
+          </p>
+        </div>
+
+        <motion.div
+          variants={containerStagger}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
+          {SERVICES.map((srv) => (
+            <motion.div
+              key={srv.id}
+              variants={sectionVariants}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      y: -8,
+                      rotate: -1.5
+                    }
+              }
+              transition={{ duration: 0.3 }}
+              className="group bg-st-white hover:bg-st-primary rounded-[20px] p-5 border-[3px] border-st-dark shadow-[6px_6px_0px_#14402c] hover:shadow-[8px_8px_0px_#14402c] transition-colors duration-300 flex flex-col justify-between cursor-pointer"
+              onClick={() => onNavigateTab(srv.targetTab)}
+            >
+              <div className="space-y-4">
+                {/* Card Top: Index & Badge */}
+                <div className="flex items-center justify-between">
+                  <span className="w-9 h-9 rounded-xl bg-st-pale group-hover:bg-st-white text-st-dark font-mono font-extrabold text-xs flex items-center justify-center border-2 border-st-dark transition-colors">
+                    {srv.index}
+                  </span>
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-st-cream-dark group-hover:bg-st-dark text-st-dark group-hover:text-st-pale border-2 border-st-dark transition-colors">
+                    {srv.badge}
+                  </span>
+                </div>
+
+                {/* Card Photo */}
+                <div className="relative rounded-xl overflow-hidden border-2 border-st-dark bg-st-pale aspect-[16/9]">
+                  <img
+                    src={srv.image}
+                    alt={srv.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                  />
+                </div>
+
+                {/* Title & Desc */}
+                <div className="space-y-1.5">
+                  <h3 className="text-lg font-extrabold text-st-text group-hover:text-white transition-colors">
+                    {srv.title}
+                  </h3>
+                  <p className="text-xs text-st-text-muted group-hover:text-st-pale font-medium leading-relaxed transition-colors">
+                    {srv.desc}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Button Link inside Card */}
+              <div className="pt-4 mt-2 border-t-2 border-st-dark/20 group-hover:border-white/30 flex items-center justify-between">
+                <span className="text-xs font-bold text-st-primary group-hover:text-white transition-colors">
+                  {srv.actionLabel}
                 </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-900/80 text-emerald-200 border border-emerald-700/80 font-mono">
-                  RESMI
+                <span className="w-7 h-7 rounded-lg bg-st-pale group-hover:bg-white text-st-dark flex items-center justify-center border-2 border-st-dark transition-colors">
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <p className="text-[11px] text-emerald-200 font-medium">
-                Spesialis Servis, Perawatan, Bongkar-Pasang &amp; Jual-Beli AC
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.section>
+
+      {/* ============================================================== */}
+      {/* 3. AKTIVITAS KAMI SECTION (SHOWCASE FOTO ASLI LAPANGAN) */}
+      {/* ============================================================== */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-40px' }}
+        variants={sectionVariants}
+        className="space-y-6"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-st-white border-2 border-st-dark rounded-full shadow-[2px_2px_0px_#14402c] text-xs font-bold text-st-dark mb-2">
+              <Award className="w-3.5 h-3.5 text-st-primary" />
+              <span>DOKUMENTASI PEKERJAAN</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-st-text tracking-tight">
+              Aktivitas Teknisi Kami
+            </h2>
+            <p className="text-xs sm:text-sm text-st-text-muted">
+              Dokumentasi nyata kegiatan pengerjaan servis dan instalasi pendingin di lapangan.
+            </p>
+          </div>
+
+          <a
+            href="https://wa.me/6281388959081"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-bold text-st-primary hover:text-st-dark inline-flex items-center gap-1.5 shrink-0"
+          >
+            <span>Tanya Jadwal Servis</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        {/* Gallery Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {SERVICES.slice(0, 3).map((item) => (
+            <div
+              key={`act-${item.id}`}
+              className="bg-st-white rounded-[20px] p-4 border-[3px] border-st-dark shadow-[6px_6px_0px_#14402c] space-y-3 group"
+            >
+              <div className="relative rounded-xl overflow-hidden border-2 border-st-dark bg-st-pale aspect-[4/3]">
+                <img
+                  src={item.image}
+                  alt={`Aktivitas ${item.title} di lapangan`}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-[1.04]"
+                />
+                <div className="absolute top-2 left-2 px-2 py-0.5 bg-st-dark text-white rounded text-[10px] font-mono font-bold">
+                  DOK-0{item.index}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-extrabold text-st-text">
+                  {item.title}
+                </h4>
+                <p className="text-xs text-st-text-muted mt-0.5 leading-snug">
+                  {item.subtitle}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* ============================================================== */}
+      {/* 4. STATISTIK SECTION (3 ANGKA COUNT-UP DALAM BLOK HIJAU SOLID) */}
+      {/* ============================================================== */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-40px' }}
+        variants={sectionVariants}
+      >
+        <div className="bg-st-primary text-white rounded-[24px] sm:rounded-3xl border-[3px] border-st-dark shadow-[8px_8px_0px_#14402c] p-6 sm:p-8">
+          <div className="max-w-xl mb-6">
+            <span className="text-[11px] font-extrabold tracking-wider uppercase text-st-pale block">
+              PENCAPAIAN LAYANAN
+            </span>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-white mt-1">
+              Dipercaya untuk Kenyamanan Udara Bersih &amp; Dingin
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2 border-t-2 border-white/20">
+            {/* Stat 1 */}
+            <div className="bg-st-dark/40 p-4 rounded-2xl border-2 border-st-dark">
+              <div className="text-3xl sm:text-4xl font-extrabold text-white">
+                <CountUpNumber end={1250} suffix="+" />
+              </div>
+              <span className="text-xs font-bold text-st-pale block mt-1">
+                Unit AC Ditangani
+              </span>
+              <p className="text-[11px] text-st-pale/80 mt-0.5">
+                Perawatan berkala &amp; perbaikan di Serpong
+              </p>
+            </div>
+
+            {/* Stat 2 */}
+            <div className="bg-st-dark/40 p-4 rounded-2xl border-2 border-st-dark">
+              <div className="text-3xl sm:text-4xl font-extrabold text-white">
+                <CountUpNumber end={99} suffix="%" />
+              </div>
+              <span className="text-xs font-bold text-st-pale block mt-1">
+                Kepuasan Pelanggan
+              </span>
+              <p className="text-[11px] text-st-pale/80 mt-0.5">
+                Feedback positif atas hasil pengerjaan rapi
+              </p>
+            </div>
+
+            {/* Stat 3 */}
+            <div className="bg-st-dark/40 p-4 rounded-2xl border-2 border-st-dark">
+              <div className="text-3xl sm:text-4xl font-extrabold text-white">
+                &lt; <CountUpNumber end={60} suffix=" Mnt" />
+              </div>
+              <span className="text-xs font-bold text-st-pale block mt-1">
+                Waktu Respon Cepat
+              </span>
+              <p className="text-[11px] text-st-pale/80 mt-0.5">
+                Konfirmasi panggilan cepat via WhatsApp
               </p>
             </div>
           </div>
-
-          {/* Slider Progress Indicator & Navigation Controls */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 font-mono text-xs text-emerald-200 font-bold bg-emerald-950/60 px-3 py-1.5 rounded-xl border border-emerald-800/80">
-              <span className="text-white tabular-nums">{activeService.index}</span>
-              <span className="text-emerald-500">/</span>
-              <span className="text-emerald-300 tabular-nums">05</span>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <motion.button
-                whileTap={{ scale: 0.92 }}
-                onClick={handlePrev}
-                className="w-9 h-9 rounded-xl bg-emerald-950/70 hover:bg-emerald-900 text-white flex items-center justify-center border border-emerald-800/80 transition-colors"
-                title="Layanan Sebelumnya"
-              >
-                <ChevronLeft className="w-4 h-4 text-emerald-200" />
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.92 }}
-                onClick={handleNext}
-                className="w-9 h-9 rounded-xl bg-white text-[#15803D] hover:bg-emerald-50 flex items-center justify-center shadow-xs transition-colors font-bold"
-                title="Layanan Berikutnya"
-              >
-                <ChevronRight className="w-4 h-4 text-[#15803D]" />
-              </motion.button>
-            </div>
-          </div>
         </div>
-
-        {/* Main Interactive Stage: Left Details + Right Showcase & Preview Cards */}
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 pt-6 items-center">
-          {/* ================= LEFT PANE: SERVICE DETAILS & EXPLANATION ================= */}
-          <div className="lg:col-span-6 space-y-4">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeService.id}
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 12 }}
-                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="space-y-3.5"
-              >
-                {/* Tagline Badge */}
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-emerald-900/80 text-emerald-200 border border-emerald-700/80">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span>{activeService.badge}</span>
-                </div>
-
-                {/* Big Bold Headline */}
-                <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-white leading-tight">
-                  {activeService.title}
-                </h2>
-
-                {/* Subtitle */}
-                <p className="text-xs sm:text-sm font-semibold text-emerald-300">
-                  {activeService.subtitle}
-                </p>
-
-                {/* Comprehensive Description */}
-                <p className="text-xs sm:text-sm text-emerald-100 font-normal leading-relaxed">
-                  {activeService.desc}
-                </p>
-
-                {/* Key Technical Specs Grid */}
-                <div className="grid grid-cols-2 gap-2.5 pt-2">
-                  {activeService.specs.map((sp, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-emerald-950/60 border border-emerald-800/80 p-2.5 rounded-xl"
-                    >
-                      <span className="text-[10px] text-emerald-300 font-medium block uppercase tracking-wider">
-                        {sp.label}
-                      </span>
-                      <span className="text-xs font-bold text-white block mt-0.5 tabular-nums">
-                        {sp.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Direct Action Button to App Feature */}
-                <div className="pt-2 flex flex-wrap items-center gap-3">
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => onNavigateTab(activeService.targetTab)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-[#14532D] hover:bg-emerald-50 rounded-xl text-xs font-bold shadow-sm transition-all"
-                  >
-                    <span>{activeService.actionLabel}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </motion.button>
-
-                  <a
-                    href="https://wa.me/6281388959081"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-900/80 hover:bg-emerald-900 text-white rounded-xl text-xs font-semibold border border-emerald-700/80 transition-colors"
-                  >
-                    <Phone className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>Panggil Teknisi (WhatsApp)</span>
-                  </a>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* ================= RIGHT PANE: REALISTIC PHOTO SHOWCASE & THUMBNAIL SLIDER ================= */}
-          <div className="lg:col-span-6 space-y-4">
-            {/* Main Showcase Photo with Floating Technical Badge (Like FreshBooks Image 1) */}
-            <div className="relative rounded-2xl overflow-hidden border border-emerald-600/50 shadow-xl bg-emerald-950 group aspect-[4/3]">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={activeService.image}
-                  src={activeService.image}
-                  alt={activeService.title}
-                  initial={{ opacity: 0, scale: 1.04 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                  className="w-full h-full object-cover"
-                />
-              </AnimatePresence>
-
-              {/* Subtle Cool Air Breeze Overlay */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(to top, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.1) 50%, rgba(21, 128, 61, 0.2) 100%)'
-                }}
-              />
-
-              {/* Floating Technical Badge (Like Floating Invoice in Image 1) */}
-              <motion.div
-                key={`badge-${activeService.id}`}
-                initial={{ opacity: 0, y: 12, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.24, delay: 0.1 }}
-                className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white/95 text-slate-900 rounded-xl p-2.5 sm:p-3 shadow-lg border border-slate-200/80 backdrop-blur-xs max-w-[210px]"
-              >
-                <div className="flex items-center gap-1.5 text-emerald-700 font-bold text-[10px] uppercase">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>{activeService.floatingBadge.title}</span>
-                </div>
-                <p className="text-[11px] font-bold text-slate-800 mt-0.5 leading-tight">
-                  {activeService.floatingBadge.detail}
-                </p>
-              </motion.div>
-
-              {/* Active Service Label on Image Bottom */}
-              <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 text-white">
-                <span className="text-[10px] font-mono text-emerald-300 font-bold block">
-                  AKTIVITAS TEKNIK #{activeService.index}
-                </span>
-                <span className="text-sm sm:text-base font-black uppercase text-white drop-shadow-sm">
-                  {activeService.title}
-                </span>
-              </div>
-            </div>
-
-            {/* Interactive Carousel Cards Strip (Inspired by Foxico Image 2) */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-emerald-200 uppercase tracking-wider">
-                  Pilih Aktivitas Layanan:
-                </span>
-                <span className="text-[10px] text-emerald-300 italic">
-                  Klik foto untuk melihat rincian
-                </span>
-              </div>
-
-              {/* Horizontal Scrollable Thumbnails */}
-              <div className="grid grid-cols-5 gap-2">
-                {SERVICES.map((srv, idx) => {
-                  const isActive = idx === currentIndex;
-                  return (
-                    <motion.button
-                      key={srv.id}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setCurrentIndex(idx)}
-                      className={`relative rounded-xl overflow-hidden text-left transition-all aspect-[4/3] group border-2 ${
-                        isActive
-                          ? 'border-white shadow-md ring-2 ring-emerald-400'
-                          : 'border-emerald-800/80 opacity-70 hover:opacity-100 hover:border-emerald-600'
-                      }`}
-                    >
-                      <img
-                        src={srv.image}
-                        alt={srv.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-                      <div className="absolute bottom-1 left-1.5 right-1.5">
-                        <span className="text-[9px] font-bold font-mono text-emerald-300 block">
-                          #{srv.index}
-                        </span>
-                        <span className="text-[10px] font-bold text-white uppercase truncate block leading-tight">
-                          {srv.title.split(' ')[0]}
-                        </span>
-                      </div>
-
-                      {/* Active Indicator Bar */}
-                      {isActive && (
-                        <motion.div
-                          layoutId="activeSliderThumb"
-                          className="absolute top-0 left-0 right-0 h-1 bg-emerald-400"
-                        />
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Social Proof / Trust Highlights (Like FreshBooks Image 1 Bottom Bar) */}
-        <div className="mt-8 pt-5 border-t border-emerald-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3 text-emerald-100 text-xs">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-900/80 flex items-center justify-center text-amber-300">
-              <Star className="w-4 h-4 fill-amber-300" />
-            </div>
-            <div>
-              <span className="font-bold text-white block">4.9 / 5.0 Rating</span>
-              <span className="text-[10px] text-emerald-200">Kepuasan Pelanggan</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-900/80 flex items-center justify-center text-emerald-300">
-              <Wrench className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="font-bold text-white block">Teknisi Ahli</span>
-              <span className="text-[10px] text-emerald-200">Berpengalaman &amp; Rapi</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-900/80 flex items-center justify-center text-emerald-300">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="font-bold text-white block">Garansi Servis</span>
-              <span className="text-[10px] text-emerald-200">Bertanggung Jawab Penuh</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-900/80 flex items-center justify-center text-emerald-300">
-              <Zap className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="font-bold text-white block">Respon Cepat</span>
-              <span className="text-[10px] text-emerald-200">Siap Panggilan Lokasi</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      </motion.section>
 
       {/* ============================================================== */}
-      {/* 2. INFORMASI LOKASI WORKSHOP & KONTAK (WARM CREAM & CRISP BORDERS) */}
+      {/* 5. CTA SECTION ("AC BERMASALAH?" + CHAT WHATSAPP) */}
       {/* ============================================================== */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Alamat Workshop */}
-        <div className="bg-white p-5 rounded-2xl border border-[#E7E2D6] shadow-xs flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#F9F6F0] text-emerald-800 flex items-center justify-center shrink-0 border border-[#E7E2D6]">
-            <MapPin className="w-5 h-5 text-[#15803D]" />
-          </div>
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-              Alamat Workshop Resmi
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-40px' }}
+        variants={sectionVariants}
+      >
+        <div className="bg-st-cream-dark border-[3px] border-st-dark rounded-[24px] shadow-[8px_8px_0px_#14402c] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="space-y-2 text-center sm:text-left">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-st-dark bg-st-white px-2.5 py-1 rounded-lg border-2 border-st-dark inline-block shadow-[2px_2px_0px_#14402c]">
+              BANTUAN CEPAT TEKNISI
             </span>
-            <p className="text-xs font-bold text-slate-900 mt-1 leading-snug">
-              Komp. Griya Serpong Blok H4/2
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-st-text">
+              AC Bermasalah atau Tidak Dingin?
+            </h3>
+            <p className="text-xs sm:text-sm text-st-text-muted max-w-lg">
+              Hubungi tim teknisi Sumber Teknik Dua sekarang. Kami siap datang ke lokasi Anda dengan peralatan lengkap dan jaminan garansi servis.
             </p>
-            <span className="text-[11px] text-slate-600 font-medium block mt-0.5">
-              Serpong - Tangerang
-            </span>
           </div>
-        </div>
 
-        {/* Nomor Telepon */}
-        <div className="bg-white p-5 rounded-2xl border border-[#E7E2D6] shadow-xs flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#F9F6F0] text-emerald-800 flex items-center justify-center shrink-0 border border-[#E7E2D6]">
-            <Phone className="w-5 h-5 text-[#15803D]" />
-          </div>
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-              Kontak Layanan Pelanggan
-            </span>
-            <p className="text-sm font-bold text-slate-900 font-mono tabular-nums mt-0.5">
-              0813 8895 9081
-            </p>
-            <a
-              href="https://wa.me/6281388959081"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] text-emerald-700 font-semibold hover:underline block mt-0.5"
-            >
-              Hubungi via WhatsApp &rarr;
-            </a>
-          </div>
+          <motion.a
+            href="https://wa.me/6281388959081"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={shouldReduceMotion ? undefined : { y: -3 }}
+            transition={{ duration: 0.3 }}
+            className="inline-flex items-center gap-2.5 px-6 py-4 bg-st-primary hover:bg-st-dark text-white rounded-xl font-bold text-sm border-2 border-st-dark shadow-[4px_4px_0px_#14402c] transition-colors shrink-0"
+          >
+            <MessageCircle className="w-5 h-5 text-white" />
+            <span>Chat WhatsApp Sekarang</span>
+          </motion.a>
         </div>
+      </motion.section>
 
-        {/* Waktu Operasional */}
-        <div className="bg-white p-5 rounded-2xl border border-[#E7E2D6] shadow-xs flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#F9F6F0] text-emerald-800 flex items-center justify-center shrink-0 border border-[#E7E2D6]">
-            <Clock className="w-5 h-5 text-[#15803D]" />
-          </div>
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-              Waktu Operasional
-            </span>
-            <p className="text-xs font-bold text-slate-900 mt-1">
-              Senin — Sabtu
-            </p>
-            <div className="mt-1">
-              <span className="inline-flex items-center gap-1.5 text-[11px] text-emerald-800 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                Siap Panggilan Servis Lapangan
+      {/* ============================================================== */}
+      {/* 6. FOOTER HIJAU TUA (OFFICIAL WORKSHOP & CONTACT) */}
+      {/* ============================================================== */}
+      <footer className="bg-st-dark text-st-pale rounded-[24px] border-[3px] border-st-dark shadow-[8px_8px_0px_#14402c] p-6 sm:p-8 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b-2 border-white/15">
+          {/* Brand Info */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border-2 border-st-dark shrink-0">
+                <img src="/logo-resmi.png" alt="ST Logo" className="w-full h-full object-contain" />
+              </div>
+              <span className="text-base font-extrabold text-white uppercase tracking-tight">
+                Sumber Teknik Dua
               </span>
             </div>
+            <p className="text-xs text-st-pale/90 leading-relaxed">
+              Layanan profesional servis AC, isi freon, bongkar pasang, perbaikan sparepart, dan jual-beli unit AC bergaransi.
+            </p>
+          </div>
+
+          {/* Workshop Address */}
+          <div className="space-y-1.5">
+            <span className="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-st-light" />
+              <span>Alamat Workshop</span>
+            </span>
+            <p className="text-xs text-st-pale font-medium">
+              Komp. Griya Serpong Blok H4/2
+            </p>
+            <p className="text-xs text-st-pale/80">
+              Serpong - Tangerang, Banten
+            </p>
+          </div>
+
+          {/* Operational Hours & Phone */}
+          <div className="space-y-1.5">
+            <span className="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-st-light" />
+              <span>Kontak &amp; Operasional</span>
+            </span>
+            <p className="text-xs text-white font-mono font-bold tabular-nums">
+              0813 8895 9081
+            </p>
+            <p className="text-xs text-st-pale/80">
+              Senin — Sabtu (08.00 - 17.00 WIB)
+            </p>
           </div>
         </div>
-      </div>
-    </motion.div>
+
+        {/* Copyright */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-st-pale/70 pt-1">
+          <p>
+            &copy; {new Date().getFullYear()} Sumber Teknik Dua. Hak Cipta Dilindungi.
+          </p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => onNavigateTab('pemeliharaan')}
+              className="hover:text-white transition-colors"
+            >
+              Kartu Pemeliharaan
+            </button>
+            <span>&bull;</span>
+            <button
+              onClick={() => onNavigateTab('bon')}
+              className="hover:text-white transition-colors"
+            >
+              Pencatatan Bon
+            </button>
+          </div>
+        </div>
+      </footer>
+
+      {/* ============================================================== */}
+      {/* 7. FLOATING WHATSAPP BUTTON (PULSE ANIMATION DI KANAN BAWAH) */}
+      {/* ============================================================== */}
+      <motion.a
+        href="https://wa.me/6281388959081"
+        target="_blank"
+        rel="noopener noreferrer"
+        animate={
+          shouldReduceMotion
+            ? undefined
+            : {
+                scale: [1, 1.08, 1]
+              }
+        }
+        transition={{
+          duration: 2.2,
+          repeat: Infinity,
+          ease: 'easeInOut'
+        }}
+        whileHover={shouldReduceMotion ? undefined : { scale: 1.12 }}
+        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 px-4 py-3 bg-st-primary hover:bg-st-dark text-white rounded-full font-bold text-xs sm:text-sm border-2 border-st-dark shadow-[4px_4px_0px_#14402c] transition-colors"
+        title="Chat Teknisi via WhatsApp"
+        aria-label="Hubungi WhatsApp Sumber Teknik Dua"
+      >
+        <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+        <span className="font-extrabold">WhatsApp</span>
+      </motion.a>
+    </div>
   );
 };
