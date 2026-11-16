@@ -169,43 +169,44 @@ export const BonModal: React.FC<BonModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-st-dark/65 backdrop-blur-[2px] flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <motion.div
-        initial={{ opacity: 0, scale: 0.97, y: 8 }}
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-white rounded-xl w-full max-w-3xl overflow-hidden shadow-sm border border-slate-200 my-auto flex flex-col max-h-[92vh]"
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-st-white rounded-[24px] w-full max-w-3xl overflow-hidden shadow-[8px_8px_0px_#14402c] border-[3px] border-st-dark my-auto flex flex-col max-h-[92vh] font-sora text-st-text"
       >
         {/* Header - Solid Forest Green */}
-        <div className="bg-[#15803D] text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0 border-b border-[#14532D]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-900/60 border border-emerald-600/40 flex items-center justify-center">
-              <Receipt className="w-4 h-4 text-emerald-200" />
+        <div className="bg-st-primary text-white p-4 sm:p-5 flex items-center justify-between shrink-0 border-b-[3px] border-st-dark">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-st-dark border-2 border-st-pale/40 flex items-center justify-center shadow-[2px_2px_0px_#14402c]">
+              <Receipt className="w-4 h-4 sm:w-5 sm:h-5 text-st-light" />
             </div>
             <div>
-              <h3 className="font-bold text-sm sm:text-base text-white">
+              <h3 className="font-extrabold text-sm sm:text-base text-white uppercase tracking-tight">
                 {bon ? 'Edit Bon / Nota Transaksi' : 'Buat Bon / Nota Transaksi Baru'}
               </h3>
-              <p className="text-emerald-100 text-xs">
+              <p className="text-st-pale text-[11px] font-bold">
                 Format Resmi SUMBER TEKNIK DUA
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-emerald-900/60 hover:bg-emerald-900 flex items-center justify-center text-white transition-colors"
+            className="w-8 h-8 rounded-xl bg-st-dark hover:bg-black border-2 border-st-dark flex items-center justify-center text-st-pale hover:text-white transition-all shadow-[1px_1px_0px_#14402c] active:translate-y-0.5"
+            title="Tutup Modal"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 text-xs">
           {/* Metadata Top Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-st-cream/80 p-4 rounded-2xl border-2 border-st-dark">
             {/* Tanggal */}
             <div>
-              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
                 Tanggal
               </label>
               <div className="relative">
@@ -214,15 +215,15 @@ export const BonModal: React.FC<BonModalProps> = ({
                   required
                   value={tanggal}
                   onChange={(e) => setTanggal(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg font-medium tabular-nums text-slate-900 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  className="w-full pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-bold tabular-nums text-st-text focus:border-st-primary focus:outline-none transition-colors"
                 />
-                <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2 pointer-events-none" />
+                <Calendar className="w-4 h-4 text-st-dark absolute left-3 top-2.5 pointer-events-none" />
               </div>
             </div>
 
             {/* Kepada Yth (Opsional) */}
             <div>
-              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
                 Kepada Yth.
               </label>
               <div className="relative">
@@ -231,15 +232,15 @@ export const BonModal: React.FC<BonModalProps> = ({
                   placeholder="Nama Pelanggan"
                   value={kepadaYth}
                   onChange={(e) => setKepadaYth(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg font-semibold text-slate-900 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  className="w-full pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted focus:border-st-primary focus:outline-none transition-colors"
                 />
-                <User className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2 pointer-events-none" />
+                <User className="w-4 h-4 text-st-dark absolute left-3 top-2.5 pointer-events-none" />
               </div>
             </div>
 
             {/* Telp. Pelanggan */}
             <div>
-              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
                 No. Telp Pelanggan
               </label>
               <div className="relative">
@@ -248,71 +249,71 @@ export const BonModal: React.FC<BonModalProps> = ({
                   placeholder="08xxxxxxxxxx"
                   value={telpPelanggan}
                   onChange={(e) => setTelpPelanggan(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg font-medium tabular-nums text-slate-900 focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  className="w-full pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-mono tabular-nums font-bold text-st-text placeholder:text-st-text-muted focus:border-st-primary focus:outline-none transition-colors"
                 />
-                <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2 pointer-events-none" />
+                <Phone className="w-4 h-4 text-st-dark absolute left-3 top-2.5 pointer-events-none" />
               </div>
             </div>
           </div>
 
           {/* Dynamic Items Table */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="font-bold text-slate-900 text-xs">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h4 className="font-extrabold text-st-dark text-xs uppercase tracking-wider">
                 Daftar Pekerjaan &amp; Rincian Bon
               </h4>
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={handleAddItem}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold rounded-lg transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-st-pale hover:bg-st-cream text-st-dark border-2 border-st-dark text-xs font-extrabold rounded-xl shadow-[2px_2px_0px_#14402c] active:translate-y-0.5 transition-all"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Tambah Baris</span>
               </motion.button>
             </div>
 
-            <div className="overflow-x-auto border border-slate-200 rounded-lg shadow-xs bg-white">
+            <div className="overflow-x-auto border-2 border-st-dark rounded-xl shadow-[3px_3px_0px_#14402c] bg-st-white">
               <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold text-[11px] uppercase tracking-wider">
+                <thead className="bg-st-cream-dark border-b-2 border-st-dark text-st-dark font-extrabold text-[11px] uppercase tracking-wider">
                   <tr>
-                    <th className="w-20 py-2 px-3 text-center border-r border-slate-200">BANYAKNYA</th>
-                    <th className="py-2 px-3 border-r border-slate-200">KETERANGAN</th>
-                    <th className="w-36 py-2 px-3 border-r border-slate-200 text-right">HARGA SATUAN</th>
-                    <th className="w-36 py-2 px-3 border-r border-slate-200 text-right">JUMLAH</th>
-                    <th className="w-12 py-2 px-2 text-center">AKSI</th>
+                    <th className="w-24 py-2.5 px-3 text-center border-r-2 border-st-dark">BANYAKNYA</th>
+                    <th className="py-2.5 px-3 border-r-2 border-st-dark">KETERANGAN</th>
+                    <th className="w-36 py-2.5 px-3 border-r-2 border-st-dark text-right">HARGA SATUAN</th>
+                    <th className="w-36 py-2.5 px-3 border-r-2 border-st-dark text-right">JUMLAH</th>
+                    <th className="w-12 py-2.5 px-2 text-center">AKSI</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-st-dark/20">
                   {items.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
+                    <tr key={idx} className="hover:bg-st-pale/20 transition-colors">
                       {/* Banyaknya */}
-                      <td className="p-1.5 border-r border-slate-100">
+                      <td className="p-2 border-r border-st-dark/20">
                         <input
                           type="text"
                           placeholder="1"
                           value={row.banyaknya}
                           onChange={(e) => handleItemChange(idx, 'banyaknya', e.target.value)}
-                          className="w-full px-2 py-1 bg-slate-50 border border-slate-300 rounded text-center font-semibold tabular-nums text-slate-800 focus:ring-1 focus:ring-emerald-600 focus:bg-white focus:outline-none"
+                          className="w-full px-2 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-center font-extrabold tabular-nums text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors"
                         />
                       </td>
 
                       {/* Keterangan */}
-                      <td className="p-1.5 border-r border-slate-100">
+                      <td className="p-2 border-r border-st-dark/20">
                         <input
                           type="text"
                           required
                           placeholder="Uraian perbaikan / suku cadang"
                           value={row.keterangan}
                           onChange={(e) => handleItemChange(idx, 'keterangan', e.target.value)}
-                          className="w-full px-2 py-1 bg-slate-50 border border-slate-300 rounded font-normal text-slate-900 focus:ring-1 focus:ring-emerald-600 focus:bg-white focus:outline-none"
+                          className="w-full px-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg font-medium text-st-text focus:border-st-primary focus:bg-white focus:outline-none transition-colors"
                         />
                       </td>
 
                       {/* Harga Satuan */}
-                      <td className="p-1.5 border-r border-slate-100">
+                      <td className="p-2 border-r border-st-dark/20">
                         <div className="relative">
-                          <span className="absolute left-2 top-1 text-slate-400 font-semibold text-[10px]">Rp</span>
+                          <span className="absolute left-2.5 top-1.5 text-st-text-muted font-bold text-xs">Rp</span>
                           <input
                             type="number"
                             min="0"
@@ -320,22 +321,22 @@ export const BonModal: React.FC<BonModalProps> = ({
                             placeholder="0"
                             value={row.hargaSatuan || ''}
                             onChange={(e) => handleItemChange(idx, 'hargaSatuan', e.target.value)}
-                            className="w-full pl-7 pr-2 py-1 bg-slate-50 border border-slate-300 rounded text-right font-mono tabular-nums font-semibold text-slate-800 focus:ring-1 focus:ring-emerald-600 focus:bg-white focus:outline-none"
+                            className="w-full pl-8 pr-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-right font-mono tabular-nums font-bold text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors"
                           />
                         </div>
                       </td>
 
                       {/* Jumlah (Banyaknya x Harga Satuan) */}
-                      <td className="p-1.5 border-r border-slate-100 text-right font-mono tabular-nums font-bold text-slate-900 bg-slate-50/50">
+                      <td className="p-2 border-r border-st-dark/20 text-right font-mono tabular-nums font-extrabold text-st-dark bg-st-cream/40">
                         {formatRupiah(row.jumlah)}
                       </td>
 
                       {/* Aksi */}
-                      <td className="p-1.5 text-center">
+                      <td className="p-2 text-center">
                         <button
                           type="button"
                           onClick={() => handleRemoveItem(idx)}
-                          className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                          className="p-1.5 text-st-text-muted hover:text-rose-600 hover:bg-rose-100 rounded-lg transition-colors border border-transparent hover:border-rose-400"
                           title="Hapus baris ini"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -345,12 +346,12 @@ export const BonModal: React.FC<BonModalProps> = ({
                   ))}
                 </tbody>
                 {/* Total Row */}
-                <tfoot className="bg-slate-50 border-t border-slate-200 font-bold">
+                <tfoot className="bg-st-cream-dark border-t-2 border-st-dark font-extrabold">
                   <tr>
-                    <td colSpan={3} className="py-2.5 px-4 text-right text-xs uppercase tracking-wider text-slate-700 border-r border-slate-200">
+                    <td colSpan={3} className="py-3 px-4 text-right text-xs uppercase tracking-wider text-st-dark border-r-2 border-st-dark">
                       JUMLAH TOTAL
                     </td>
-                    <td className="py-2.5 px-3 text-right text-xs font-mono tabular-nums text-emerald-800 border-r border-slate-200 font-bold">
+                    <td className="py-3 px-3 text-right text-xs sm:text-sm font-mono tabular-nums text-st-primary border-r-2 border-st-dark font-extrabold">
                       {formatRupiah(totalCalculated)}
                     </td>
                     <td></td>
@@ -361,7 +362,7 @@ export const BonModal: React.FC<BonModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-between gap-2">
+          <div className="pt-4 border-t-2 border-st-dark/20 flex items-center justify-between gap-2">
             {bon && onDelete ? (
               <motion.button
                 whileTap={{ scale: 0.98 }}
@@ -372,7 +373,7 @@ export const BonModal: React.FC<BonModalProps> = ({
                     onClose();
                   }
                 }}
-                className="px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 font-semibold rounded-lg flex items-center gap-1.5 transition-colors text-xs"
+                className="px-4 py-2.5 bg-rose-50 text-rose-700 hover:bg-rose-100 font-bold rounded-xl border-2 border-rose-600 flex items-center gap-1.5 transition-all shadow-[2px_2px_0px_#991b1b] active:translate-y-0.5 text-xs"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Hapus Bon</span>
@@ -381,19 +382,19 @@ export const BonModal: React.FC<BonModalProps> = ({
               <div></div>
             )}
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={onClose}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition-colors text-xs"
+                className="px-4 py-2.5 bg-st-white hover:bg-st-cream text-st-dark font-bold rounded-xl border-2 border-st-dark transition-all shadow-[2px_2px_0px_#14402c] active:translate-y-0.5 text-xs"
               >
                 Batal
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="px-4 py-1.5 bg-[#15803D] hover:bg-[#166534] text-white font-semibold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors text-xs"
+                className="px-5 py-2.5 bg-st-primary hover:bg-st-dark text-white font-extrabold rounded-xl border-2 border-st-dark flex items-center gap-2 shadow-[3px_3px_0px_#14402c] active:translate-y-0.5 transition-all text-xs"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Simpan Bon Transaksi</span>
