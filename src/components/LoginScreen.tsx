@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Eye, EyeOff, Lock, Mail, User, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CoolingAirflowBackground } from './CoolingAirflowBackground';
 
@@ -75,26 +75,27 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F6F0] flex flex-col justify-center items-center px-4 py-8 relative">
+    <div className="min-h-screen bg-st-cream flex flex-col justify-center items-center px-4 py-8 relative font-sora text-st-text">
       <CoolingAirflowBackground />
+
       <motion.div
-        initial={{ opacity: 0, y: 8, scale: 0.98 }}
+        initial={{ opacity: 0, y: 12, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-[#E7E2D6] overflow-hidden relative z-10"
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-md bg-st-white rounded-[24px] shadow-[8px_8px_0px_#14402c] border-[3px] border-st-dark overflow-hidden relative z-10"
       >
-        {/* Header Banner - Solid Industrial Green */}
-        <div className="bg-[#15803D] text-white p-6 text-center border-b border-[#14532D]">
+        {/* Header Banner - Solid Forest Green */}
+        <div className="bg-st-primary text-white p-6 sm:p-7 text-center border-b-[3px] border-st-dark">
           <div className="flex flex-col items-center">
             {/* Logo Roda Gigi Hijau ST Resmi */}
-            <div className="w-16 h-16 rounded-xl bg-white p-2 shadow-xs mb-3 flex items-center justify-center border border-emerald-300">
+            <div className="w-16 h-16 rounded-2xl bg-white p-2 border-2 border-st-dark shadow-[3px_3px_0px_#14402c] mb-3 flex items-center justify-center">
               <img src="/logo-resmi.png" alt="Logo Sumber Teknik Dua" className="w-full h-full object-contain" />
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight uppercase text-white">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight uppercase text-white">
               SUMBER TEKNIK DUA
             </h1>
-            <p className="text-emerald-100 text-xs font-medium mt-1">
+            <p className="text-st-pale text-xs font-bold mt-1">
               Pemeliharaan AC Ruangan &amp; Pencatatan Bon
             </p>
           </div>
@@ -103,11 +104,11 @@ export const LoginScreen: React.FC = () => {
         {/* Content Box */}
         <div className="p-6 sm:p-7">
           <div className="mb-5 text-center">
-            <h2 className="text-sm font-bold text-slate-900">
+            <h2 className="text-base font-extrabold text-st-text uppercase tracking-wide">
               {isRegisterMode ? 'Registrasi Akun Klien Baru' : 'Masuk ke Sistem'}
             </h2>
             {isRegisterMode && (
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-st-text-muted mt-1 font-medium">
                 Daftarkan nama dan email Anda untuk akses laporan servis &amp; bon
               </p>
             )}
@@ -115,8 +116,8 @@ export const LoginScreen: React.FC = () => {
 
           {/* Error Message */}
           {errorMsg && (
-            <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-lg font-medium flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 shrink-0"></span>
+            <div className="mb-4 p-3 bg-rose-50 border-2 border-rose-600 text-rose-800 text-xs rounded-xl font-bold flex items-center gap-2 shadow-[2px_2px_0px_#991b1b]">
+              <span className="w-2 h-2 rounded-full bg-rose-600 shrink-0"></span>
               <span>{errorMsg}</span>
             </div>
           )}
@@ -126,7 +127,7 @@ export const LoginScreen: React.FC = () => {
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               {/* Email Field */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
                   Email
                 </label>
                 <div className="relative">
@@ -136,15 +137,15 @@ export const LoginScreen: React.FC = () => {
                     placeholder="nama@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full text-xs pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-medium text-slate-900 transition-colors"
+                    className="w-full text-xs pl-10 pr-3.5 py-2.5 bg-st-cream border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted focus:outline-none focus:border-st-primary shadow-inner transition-colors"
                   />
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <Mail className="w-4 h-4 text-st-dark absolute left-3.5 top-3" />
                 </div>
               </div>
 
               {/* Password Field with Eye Toggle */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
                   Password
                 </label>
                 <div className="relative">
@@ -154,13 +155,13 @@ export const LoginScreen: React.FC = () => {
                     placeholder="Masukkan password Anda"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full text-xs pl-9 pr-10 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-medium text-slate-900 transition-colors"
+                    className="w-full text-xs pl-10 pr-11 py-2.5 bg-st-cream border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted focus:outline-none focus:border-st-primary shadow-inner transition-colors"
                   />
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <Lock className="w-4 h-4 text-st-dark absolute left-3.5 top-3" />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    className="absolute right-3.5 top-2.5 text-st-dark hover:text-st-primary focus:outline-none"
                     title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -173,14 +174,14 @@ export const LoginScreen: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-2.5 bg-[#15803D] hover:bg-[#166534] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors disabled:opacity-50 mt-2 flex items-center justify-center gap-1.5"
+                className="w-full py-3 bg-st-primary hover:bg-st-dark text-white text-xs font-extrabold rounded-xl border-2 border-st-dark shadow-[3px_3px_0px_#14402c] active:translate-y-0.5 transition-all disabled:opacity-50 mt-2 flex items-center justify-center gap-2 uppercase tracking-wider"
               >
                 {isSubmitting ? 'Memverifikasi Akun...' : 'Masuk ke Sistem'}
               </motion.button>
 
               {/* Link ke Registrasi */}
-              <div className="pt-3 text-center border-t border-slate-100">
-                <p className="text-xs text-slate-500">
+              <div className="pt-4 text-center border-t-2 border-st-dark/15">
+                <p className="text-xs text-st-text-muted font-medium">
                   Klien baru belum punya akun?{' '}
                   <button
                     type="button"
@@ -188,7 +189,7 @@ export const LoginScreen: React.FC = () => {
                       setIsRegisterMode(true);
                       setErrorMsg(null);
                     }}
-                    className="text-emerald-700 hover:text-emerald-900 font-semibold hover:underline"
+                    className="text-st-primary hover:text-st-dark font-extrabold underline transition-colors"
                   >
                     Daftar / Registrasi di sini
                   </button>
@@ -200,7 +201,7 @@ export const LoginScreen: React.FC = () => {
             <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
               {/* Nama Lengkap */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
                   Nama Lengkap / Instansi
                 </label>
                 <div className="relative">
@@ -210,15 +211,15 @@ export const LoginScreen: React.FC = () => {
                     placeholder="Contoh: Bpk. Bambang / CV Mandiri"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full text-xs pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-medium text-slate-900 transition-colors"
+                    className="w-full text-xs pl-10 pr-3.5 py-2.5 bg-st-cream border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted focus:outline-none focus:border-st-primary shadow-inner transition-colors"
                   />
-                  <User className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <User className="w-4 h-4 text-st-dark absolute left-3.5 top-3" />
                 </div>
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
                   Alamat Email
                 </label>
                 <div className="relative">
@@ -228,15 +229,15 @@ export const LoginScreen: React.FC = () => {
                     placeholder="nama@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full text-xs pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-medium text-slate-900 transition-colors"
+                    className="w-full text-xs pl-10 pr-3.5 py-2.5 bg-st-cream border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted focus:outline-none focus:border-st-primary shadow-inner transition-colors"
                   />
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <Mail className="w-4 h-4 text-st-dark absolute left-3.5 top-3" />
                 </div>
               </div>
 
               {/* Buat Password */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
                   Buat Password
                 </label>
                 <div className="relative">
@@ -246,13 +247,13 @@ export const LoginScreen: React.FC = () => {
                     placeholder="Minimal 4 karakter"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full text-xs pl-9 pr-10 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-medium text-slate-900 transition-colors"
+                    className="w-full text-xs pl-10 pr-11 py-2.5 bg-st-cream border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted focus:outline-none focus:border-st-primary shadow-inner transition-colors"
                   />
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <Lock className="w-4 h-4 text-st-dark absolute left-3.5 top-3" />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    className="absolute right-3.5 top-2.5 text-st-dark hover:text-st-primary focus:outline-none"
                     title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -262,7 +263,7 @@ export const LoginScreen: React.FC = () => {
 
               {/* Konfirmasi Password */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
                   Konfirmasi Password
                 </label>
                 <div className="relative">
@@ -272,13 +273,13 @@ export const LoginScreen: React.FC = () => {
                     placeholder="Ulangi password di atas"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full text-xs pl-9 pr-10 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-medium text-slate-900 transition-colors"
+                    className="w-full text-xs pl-10 pr-11 py-2.5 bg-st-cream border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted focus:outline-none focus:border-st-primary shadow-inner transition-colors"
                   />
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <Lock className="w-4 h-4 text-st-dark absolute left-3.5 top-3" />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    className="absolute right-3.5 top-2.5 text-st-dark hover:text-st-primary focus:outline-none"
                     title={showConfirmPassword ? 'Sembunyikan password' : 'Lihat password'}
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -291,14 +292,14 @@ export const LoginScreen: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-2.5 bg-[#15803D] hover:bg-[#166534] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors disabled:opacity-50 mt-2 flex items-center justify-center gap-1.5"
+                className="w-full py-3 bg-st-primary hover:bg-st-dark text-white text-xs font-extrabold rounded-xl border-2 border-st-dark shadow-[3px_3px_0px_#14402c] active:translate-y-0.5 transition-all disabled:opacity-50 mt-2 flex items-center justify-center gap-2 uppercase tracking-wider"
               >
                 <span>{isSubmitting ? 'Mendaftarkan Akun...' : 'Daftar Sekarang'}</span>
               </motion.button>
 
               {/* Link ke Login */}
-              <div className="pt-4 text-center border-t border-slate-100">
-                <p className="text-xs text-slate-500">
+              <div className="pt-4 text-center border-t-2 border-st-dark/15">
+                <p className="text-xs text-st-text-muted font-medium">
                   Sudah punya akun?{' '}
                   <button
                     type="button"
@@ -306,7 +307,7 @@ export const LoginScreen: React.FC = () => {
                       setIsRegisterMode(false);
                       setErrorMsg(null);
                     }}
-                    className="text-emerald-700 hover:text-emerald-900 font-semibold hover:underline"
+                    className="text-st-primary hover:text-st-dark font-extrabold underline transition-colors"
                   >
                     Masuk di sini
                   </button>
@@ -314,11 +315,6 @@ export const LoginScreen: React.FC = () => {
               </div>
             </form>
           )}
-
-          <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-slate-400 text-[11px]">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Terkoneksi aman dengan Cloud PostgreSQL Supabase</span>
-          </div>
         </div>
       </motion.div>
     </div>

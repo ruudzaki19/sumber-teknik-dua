@@ -5,8 +5,6 @@ import {
   Clock,
   Wrench,
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
   ArrowRight,
   MessageCircle,
   ShieldCheck,
@@ -214,14 +212,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     return () => clearInterval(timer);
   }, [isPaused]);
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? SERVICES.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % SERVICES.length);
-  };
-
   // Scroll reveal animation variants (fade + slide-up 36px)
   const sectionVariants: Variants = {
     hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 36 },
@@ -287,7 +277,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-st-primary hover:bg-st-dark text-white rounded-xl font-bold text-sm border-2 border-st-dark shadow-[4px_4px_0px_#14402c] transition-colors"
               >
                 <Phone className="w-4 h-4 text-white" />
-                <span>Konsultasi Servis (WhatsApp)</span>
+                <span>Konsultasi Servis</span>
               </motion.a>
 
               <motion.button
@@ -334,43 +324,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onMouseLeave={() => setIsPaused(false)}
               className="bg-st-white rounded-[24px] p-4 sm:p-5 border-[3px] border-st-dark shadow-[8px_8px_0px_#14402c] space-y-4"
             >
-              {/* Carousel Header & Counter */}
-              <div className="flex items-center justify-between pb-3 border-b-2 border-st-dark">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-st-primary"></span>
-                  <span className="text-xs font-extrabold uppercase tracking-wide text-st-dark">
-                    Layanan #{activeService.index}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="px-3 py-1 bg-st-pale border-2 border-st-dark rounded-lg text-xs font-bold text-st-dark font-mono tabular-nums">
-                    <span>{activeService.index}</span>
-                    <span className="text-st-text-muted mx-1">/</span>
-                    <span>05</span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={handlePrev}
-                      className="w-8 h-8 rounded-lg bg-st-white hover:bg-st-cream-dark text-st-dark border-2 border-st-dark flex items-center justify-center font-bold transition-colors active:translate-y-0.5"
-                      title="Layanan Sebelumnya"
-                      aria-label="Sebelumnya"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={handleNext}
-                      className="w-8 h-8 rounded-lg bg-st-primary hover:bg-st-dark text-white border-2 border-st-dark flex items-center justify-center font-bold transition-colors active:translate-y-0.5"
-                      title="Layanan Berikutnya"
-                      aria-label="Berikutnya"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
               {/* Showcase Photo Frame */}
               <div className="relative rounded-[20px] overflow-hidden border-[3px] border-st-dark bg-st-pale aspect-[4/3] group">
                 <AnimatePresence mode="wait">

@@ -291,49 +291,36 @@ export const App: React.FC = () => {
       {/* ============================================================== */}
       {/* 1. NAVIGASI UTAMA (3 MENU NAVBAR) - SOLID FOREST GREEN */}
       {/* ============================================================== */}
-      <header className="bg-st-primary text-white sticky top-0 z-40 border-b-2 border-st-dark relative">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-sora">
-          {/* Logo & Brand Info */}
-          <div className="flex items-center justify-between sm:justify-start gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center border-2 border-st-dark shrink-0">
+      <header className="bg-st-primary text-white sticky top-0 z-40 border-b-2 border-st-dark relative font-sora">
+        <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          {/* Left: Logo & Brand Info (Tanpa Badge Admin/User) */}
+          <div className="flex items-center justify-between md:justify-start gap-3 shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border-2 border-st-dark shrink-0 shadow-[2px_2px_0px_#14402c]">
                 <img src="/logo-resmi.png" alt="ST" className="w-full h-full object-contain" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-base sm:text-lg font-extrabold tracking-tight uppercase text-white">
-                    SUMBER TEKNIK DUA
-                  </h1>
-                  <span
-                    className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-bold inline-flex items-center gap-1.5 ${
-                      isAdmin
-                        ? 'bg-amber-400/20 text-amber-200 border border-amber-400/30'
-                        : 'bg-st-dark/80 text-st-pale border border-st-dark'
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${isAdmin ? 'bg-amber-400' : 'bg-emerald-300'}`}></span>
-                    {isAdmin ? 'Admin' : 'User / Klien'}
-                  </span>
-                </div>
-              </div>
+              <h1 className="text-sm sm:text-base font-extrabold tracking-tight uppercase text-white whitespace-nowrap">
+                SUMBER TEKNIK DUA
+              </h1>
             </div>
 
-            {/* User Profile & Logout (Mobile) */}
-            <div className="sm:hidden flex items-center gap-2">
+            {/* Mobile Logout Button (Merah, Logo Saja) */}
+            <div className="md:hidden flex items-center gap-2">
               <motion.button
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={logout}
-                className="p-2 bg-st-dark hover:bg-black text-white rounded-lg transition-colors border border-st-dark"
+                className="p-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all border-2 border-st-dark shadow-[2px_2px_0px_#14402c] active:translate-y-0.5"
                 title="Keluar Akun"
+                aria-label="Keluar"
               >
-                <LogOut className="w-4 h-4 text-st-pale" />
+                <LogOut className="w-4 h-4 text-white" />
               </motion.button>
             </div>
           </div>
 
-          {/* 3 Navigasi Menu Tabs with Smooth layoutId Pill & User Section (Desktop) */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-emerald-700/60">
-            <nav className="relative flex items-center gap-1 bg-st-dark p-1 rounded-xl border border-st-dark w-full sm:w-auto justify-between sm:justify-start">
+          {/* Center: 3 Navigasi Menu Tabs (Posisi di Tengah Navbar) */}
+          <div className="flex-1 flex justify-center items-center w-full md:w-auto">
+            <nav className="relative flex items-center gap-1 bg-st-dark p-1 rounded-xl border-2 border-st-dark w-full md:w-auto justify-between md:justify-center shadow-[2px_2px_0px_#14402c]">
               {navTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -341,8 +328,8 @@ export const App: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`relative px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 z-10 ${
-                      isActive ? 'text-st-text font-bold' : 'text-st-pale hover:text-white'
+                    className={`relative px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 z-10 whitespace-nowrap ${
+                      isActive ? 'text-st-text' : 'text-st-pale hover:text-white'
                     }`}
                   >
                     {isActive && (
@@ -358,22 +345,22 @@ export const App: React.FC = () => {
                 );
               })}
             </nav>
+          </div>
 
-            {/* User Profile & Logout (Desktop) */}
-            <div className="hidden sm:flex items-center gap-2.5 pl-2 border-l border-emerald-700/60">
-              <span className="text-xs font-semibold text-emerald-100 max-w-[120px] truncate">
-                {user.name}
-              </span>
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                onClick={logout}
-                className="p-1.5 sm:px-2.5 sm:py-1.5 bg-emerald-900/60 hover:bg-emerald-900 text-white rounded-lg transition-colors inline-flex items-center gap-1.5 text-xs font-medium border border-emerald-700/60"
-                title="Keluar Akun"
-              >
-                <LogOut className="w-3.5 h-3.5 text-emerald-200" />
-                <span className="hidden md:inline">Keluar</span>
-              </motion.button>
-            </div>
+          {/* Right: Nama Akun & Tombol Keluar Merah (Desktop) */}
+          <div className="hidden md:flex items-center gap-3 shrink-0 justify-end">
+            <span className="text-xs font-bold text-st-pale whitespace-nowrap max-w-[180px] truncate">
+              {user.name}
+            </span>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={logout}
+              className="p-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all border-2 border-st-dark shadow-[2px_2px_0px_#14402c] active:translate-y-0.5 flex items-center justify-center"
+              title="Keluar Akun"
+              aria-label="Keluar"
+            >
+              <LogOut className="w-4 h-4 text-white" />
+            </motion.button>
           </div>
         </div>
       </header>
