@@ -209,10 +209,6 @@ export const BonListView: React.FC<BonListViewProps> = ({
                         Teknisi: <strong className="font-bold">{bon.namaTeknisi || 'Yulianto'}</strong>
                       </span>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold bg-st-pale text-st-dark border border-st-dark shadow-[1px_1px_0px_#14402c]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-st-primary"></span>
-                      Tercatat Resmi
-                    </span>
                   </div>
 
                   {/* Items summary */}

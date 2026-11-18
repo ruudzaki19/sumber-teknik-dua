@@ -105,15 +105,24 @@ export const BonModal: React.FC<BonModalProps> = ({
       row.banyaknya = value;
       const numMatch = String(value).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
       const qty = numMatch ? parseFloat(numMatch[0]) : 1;
-      row.jumlah = Math.round(qty * (row.hargaSatuan || 0));
+      if (row.hargaSatuan && row.hargaSatuan > 0) {
+        row.jumlah = Math.round(qty * row.hargaSatuan);
+      }
     } else if (field === 'hargaSatuan') {
-      // Izinkan pengetikan titik ribuan seperti "80.000" atau angka mentah "80000"
+      // Izinkan pengetikan titik ribuan seperti "80.000" atau angka mentah "80000" (opsional)
       const cleanStr = String(value).replace(/[^0-9]/g, '');
       const price = cleanStr ? parseInt(cleanStr, 10) : 0;
       row.hargaSatuan = price;
       const numMatch = String(row.banyaknya).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
       const qty = numMatch ? parseFloat(numMatch[0]) : 1;
-      row.jumlah = Math.round(qty * price);
+      if (price > 0) {
+        row.jumlah = Math.round(qty * price);
+      }
+    } else if (field === 'jumlah') {
+      // Izinkan pengisian jumlah langsung dengan format titik ribuan
+      const cleanStr = String(value).replace(/[^0-9]/g, '');
+      const total = cleanStr ? parseInt(cleanStr, 10) : 0;
+      row.jumlah = total;
     } else if (field === 'keterangan') {
       row.keterangan = value;
     }
@@ -312,7 +321,22 @@ export const BonModal: React.FC<BonModalProps> = ({
                         />
                       </td>
 
-                      {/* Harga Satuan */}
+                      {/* Harga Satuan (Opsional) */}
+                      <td className="p-2 border-r border-st-dark/20">
+                        <div className="relative">
+                          <span className="absolute left-2.5 top-1.5 text-st-text-muted font-bold text-xs pointer-events-none select-none">Rp</span>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="0 (opsional)"
+                            value={row.hargaSatuan ? row.hargaSatuan.toLocaleString('id-ID') : ''}
+                            onChange={(e) => handleItemChange(idx, 'hargaSatuan', e.target.value)}
+                            className="w-full pl-8 pr-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-right font-mono tabular-nums font-bold text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors placeholder:text-st-text-muted/60"
+                          />
+                        </div>
+                      </td>
+
+                      {/* Jumlah (Bisa Terhitung Otomatis atau Diisi Langsung) */}
                       <td className="p-2 border-r border-st-dark/20">
                         <div className="relative">
                           <span className="absolute left-2.5 top-1.5 text-st-text-muted font-bold text-xs pointer-events-none select-none">Rp</span>
@@ -320,16 +344,11 @@ export const BonModal: React.FC<BonModalProps> = ({
                             type="text"
                             inputMode="numeric"
                             placeholder="0"
-                            value={row.hargaSatuan ? row.hargaSatuan.toLocaleString('id-ID') : ''}
-                            onChange={(e) => handleItemChange(idx, 'hargaSatuan', e.target.value)}
-                            className="w-full pl-8 pr-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-right font-mono tabular-nums font-bold text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors"
+                            value={row.jumlah ? row.jumlah.toLocaleString('id-ID') : ''}
+                            onChange={(e) => handleItemChange(idx, 'jumlah', e.target.value)}
+                            className="w-full pl-8 pr-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-right font-mono tabular-nums font-extrabold text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors"
                           />
                         </div>
-                      </td>
-
-                      {/* Jumlah (Banyaknya x Harga Satuan) */}
-                      <td className="p-2 border-r border-st-dark/20 text-right font-mono tabular-nums font-extrabold text-st-dark bg-st-cream/40">
-                        {formatRupiah(row.jumlah)}
                       </td>
 
                       {/* Aksi */}
