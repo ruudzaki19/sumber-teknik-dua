@@ -309,15 +309,31 @@ export const dataService = {
           .order('created_at', { ascending: true });
 
         if (!bonErr && bonsData) {
-          const allItems: BonItem[] = (itemsData || []).map(it => ({
-            id: it.id,
-            bonId: it.bon_id,
-            banyaknya: it.banyaknya != null ? String(it.banyaknya) : '1',
-            keterangan: it.keterangan || '',
-            hargaSatuan: Number(it.harga_satuan) || 0,
-            jumlah: Number(it.jumlah) || 0,
-            createdAt: Number(it.created_at)
-          }));
+          const allItems: BonItem[] = (itemsData || []).map(it => {
+            let rawKeterangan = it.keterangan || '';
+            let parsedBanyaknya = it.banyaknya != null ? String(it.banyaknya) : '1';
+
+            // Decode custom text banyaknya if encoded in marker inside keterangan
+            const match = rawKeterangan.match(/__QTY:([^_]+)__/);
+            if (match) {
+              try {
+                parsedBanyaknya = decodeURIComponent(match[1]);
+              } catch {
+                parsedBanyaknya = match[1];
+              }
+              rawKeterangan = rawKeterangan.replace(/__QTY:[^_]+__/, '').trim();
+            }
+
+            return {
+              id: it.id,
+              bonId: it.bon_id,
+              banyaknya: parsedBanyaknya,
+              keterangan: rawKeterangan,
+              hargaSatuan: Number(it.harga_satuan) || 0,
+              jumlah: Number(it.jumlah) || 0,
+              createdAt: Number(it.created_at)
+            };
+          });
 
           const bons: Bon[] = bonsData.map(b => ({
             id: b.id,
@@ -372,15 +388,30 @@ export const dataService = {
             .eq('bon_id', bonId)
             .order('created_at', { ascending: true });
 
-          const items: BonItem[] = (itData || []).map(it => ({
-            id: it.id,
-            bonId: it.bon_id,
-            banyaknya: it.banyaknya != null ? String(it.banyaknya) : '1',
-            keterangan: it.keterangan || '',
-            hargaSatuan: Number(it.harga_satuan) || 0,
-            jumlah: Number(it.jumlah) || 0,
-            createdAt: Number(it.created_at)
-          }));
+          const items: BonItem[] = (itData || []).map(it => {
+            let rawKeterangan = it.keterangan || '';
+            let parsedBanyaknya = it.banyaknya != null ? String(it.banyaknya) : '1';
+
+            const match = rawKeterangan.match(/__QTY:([^_]+)__/);
+            if (match) {
+              try {
+                parsedBanyaknya = decodeURIComponent(match[1]);
+              } catch {
+                parsedBanyaknya = match[1];
+              }
+              rawKeterangan = rawKeterangan.replace(/__QTY:[^_]+__/, '').trim();
+            }
+
+            return {
+              id: it.id,
+              bonId: it.bon_id,
+              banyaknya: parsedBanyaknya,
+              keterangan: rawKeterangan,
+              hargaSatuan: Number(it.harga_satuan) || 0,
+              jumlah: Number(it.jumlah) || 0,
+              createdAt: Number(it.created_at)
+            };
+          });
 
           const bon: Bon = {
             id: bData.id,
@@ -453,6 +484,7 @@ export const dataService = {
         }
 
         if (bonData.items.length > 0) {
+          // 1. Direct attempt: pass string banyaknya
           const insertItems = bonData.items.map((it, idx) => ({
             id: `item-${Date.now().toString(36)}-${idx}`,
             bon_id: id,
@@ -462,7 +494,39 @@ export const dataService = {
             jumlah: Number(it.jumlah) || 0,
             created_at: now + idx
           }));
-          await supabase.from('bon_items').insert(insertItems);
+          const { error: insertErr } = await supabase.from('bon_items').insert(insertItems);
+
+          // 2. If rejected because column banyaknya in Supabase is NUMERIC (code 22P02)
+          if (insertErr) {
+            console.warn('Supabase bon_items direct insert error, using numeric fallback with encoded qty:', insertErr);
+
+            const fallbackItems = bonData.items.map((it, idx) => {
+              const rawBanyaknya = it.banyaknya != null ? String(it.banyaknya).trim() : '1';
+              const numMatch = rawBanyaknya.replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
+              const numericQty = numMatch ? parseFloat(numMatch[0]) : 1;
+
+              const isPureNumber = /^\d+(\.\d+)?$/.test(rawBanyaknya);
+              let safeKeterangan = it.keterangan || '';
+              if (!isPureNumber && rawBanyaknya) {
+                safeKeterangan = `${safeKeterangan} __QTY:${encodeURIComponent(rawBanyaknya)}__`;
+              }
+
+              return {
+                id: `item-${Date.now().toString(36)}-${idx}`,
+                bon_id: id,
+                banyaknya: numericQty,
+                keterangan: safeKeterangan,
+                harga_satuan: Number(it.hargaSatuan) || 0,
+                jumlah: Number(it.jumlah) || 0,
+                created_at: now + idx
+              };
+            });
+
+            const { error: fbErr } = await supabase.from('bon_items').insert(fallbackItems);
+            if (fbErr) {
+              console.error('Supabase bon_items fallback insert error:', fbErr);
+            }
+          }
         }
       } catch (err) {
         console.warn('Supabase saveBon error:', err);

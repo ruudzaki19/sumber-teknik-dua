@@ -221,20 +221,24 @@ export const BonListView: React.FC<BonListViewProps> = ({
                       Rincian Pekerjaan ({itemCount} Item)
                     </span>
                     <div className="space-y-1.5">
-                      {(bon.items || []).slice(0, 3).map((it, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between text-xs bg-st-cream/80 p-2.5 rounded-xl border border-st-dark/25"
-                        >
-                          <span className="font-medium text-st-text truncate max-w-[220px]">
-                            <strong className="tabular-nums font-extrabold text-st-dark">{it.banyaknya}x</strong>{' '}
-                            {it.keterangan}
-                          </span>
-                          <span className="font-mono tabular-nums text-st-primary font-extrabold shrink-0">
-                            {formatRupiah(it.jumlah)}
-                          </span>
-                        </div>
-                      ))}
+                      {(bon.items || []).slice(0, 3).map((it, idx) => {
+                        const qtyStr = String(it.banyaknya || '1').trim();
+                        const formattedQty = /^\d+(\.\d+)?$/.test(qtyStr) ? `${qtyStr}x` : qtyStr;
+                        return (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between text-xs bg-st-cream/80 p-2.5 rounded-xl border border-st-dark/25"
+                          >
+                            <span className="font-medium text-st-text truncate max-w-[220px]">
+                              <strong className="tabular-nums font-extrabold text-st-dark">{formattedQty}</strong>{' '}
+                              {it.keterangan}
+                            </span>
+                            <span className="font-mono tabular-nums text-st-primary font-extrabold shrink-0">
+                              {formatRupiah(it.jumlah)}
+                            </span>
+                          </div>
+                        );
+                      })}
                       {itemCount > 3 && (
                         <p className="text-[11px] text-st-text-muted italic text-center pt-0.5 font-medium">
                           +{itemCount - 3} item lainnya...

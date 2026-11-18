@@ -292,14 +292,14 @@ export const App: React.FC = () => {
       {/* 1. NAVIGASI UTAMA (3 MENU NAVBAR) - SOLID FOREST GREEN */}
       {/* ============================================================== */}
       <header className="bg-st-primary text-white sticky top-0 z-40 border-b-2 border-st-dark relative font-sora">
-        <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
           {/* Left: Logo & Brand Info (Tanpa Badge Admin/User) */}
           <div className="flex items-center justify-between md:justify-start gap-3 shrink-0">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center border-2 border-st-dark shrink-0 shadow-[2px_2px_0px_#14402c]">
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white p-1 flex items-center justify-center border-2 border-st-dark shrink-0 shadow-[2px_2px_0px_#14402c]">
                 <img src="/logo-resmi.png" alt="ST" className="w-full h-full object-contain" />
               </div>
-              <h1 className="text-sm sm:text-base font-extrabold tracking-tight uppercase text-white whitespace-nowrap">
+              <h1 className="text-xs sm:text-base font-extrabold tracking-tight uppercase text-white whitespace-nowrap">
                 SUMBER TEKNIK DUA
               </h1>
             </div>
@@ -309,18 +309,18 @@ export const App: React.FC = () => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={logout}
-                className="p-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all border-2 border-st-dark shadow-[2px_2px_0px_#14402c] active:translate-y-0.5"
+                className="p-1.5 sm:p-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all border-2 border-st-dark shadow-[2px_2px_0px_#14402c] active:translate-y-0.5"
                 title="Keluar Akun"
                 aria-label="Keluar"
               >
-                <LogOut className="w-4 h-4 text-white" />
+                <LogOut className="w-3.5 h-3.5 text-white" />
               </motion.button>
             </div>
           </div>
 
-          {/* Center: 3 Navigasi Menu Tabs (Posisi di Tengah Navbar) */}
+          {/* Center: 3 Navigasi Menu Tabs (Posisi di Tengah Navbar, Pas di Layar HP) */}
           <div className="flex-1 flex justify-center items-center w-full md:w-auto">
-            <nav className="relative flex items-center gap-1 bg-st-dark p-1 rounded-xl border-2 border-st-dark w-full md:w-auto justify-between md:justify-center shadow-[2px_2px_0px_#14402c]">
+            <nav className="relative flex items-center gap-0.5 sm:gap-1 bg-st-dark p-1 rounded-xl border-2 border-st-dark w-full md:w-auto justify-between md:justify-center shadow-[2px_2px_0px_#14402c]">
               {navTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -328,7 +328,7 @@ export const App: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`relative px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 z-10 whitespace-nowrap ${
+                    className={`relative px-2 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-colors flex items-center justify-center gap-1 sm:gap-1.5 z-10 flex-1 md:flex-initial whitespace-nowrap ${
                       isActive ? 'text-st-text' : 'text-st-pale hover:text-white'
                     }`}
                   >
@@ -339,8 +339,20 @@ export const App: React.FC = () => {
                         transition={{ type: "spring", stiffness: 450, damping: 32 }}
                       />
                     )}
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-st-primary' : 'text-st-pale'}`} />
-                    <span>{tab.label}</span>
+                    <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-st-primary' : 'text-st-pale'}`} />
+                    <span>
+                      {tab.id === 'pemeliharaan' ? (
+                        <>
+                          <span className="hidden sm:inline">Kartu </span>Pemeliharaan
+                        </>
+                      ) : tab.id === 'bon' ? (
+                        <>
+                          <span className="hidden sm:inline">Pencatatan </span>Bon
+                        </>
+                      ) : (
+                        tab.label
+                      )}
+                    </span>
                   </button>
                 );
               })}

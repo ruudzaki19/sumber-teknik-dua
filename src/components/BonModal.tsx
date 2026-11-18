@@ -107,7 +107,9 @@ export const BonModal: React.FC<BonModalProps> = ({
       const qty = numMatch ? parseFloat(numMatch[0]) : 1;
       row.jumlah = Math.round(qty * (row.hargaSatuan || 0));
     } else if (field === 'hargaSatuan') {
-      const price = Math.max(0, parseFloat(value) || 0);
+      // Izinkan pengetikan titik ribuan seperti "80.000" atau angka mentah "80000"
+      const cleanStr = String(value).replace(/[^0-9]/g, '');
+      const price = cleanStr ? parseInt(cleanStr, 10) : 0;
       row.hargaSatuan = price;
       const numMatch = String(row.banyaknya).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
       const qty = numMatch ? parseFloat(numMatch[0]) : 1;
@@ -313,13 +315,12 @@ export const BonModal: React.FC<BonModalProps> = ({
                       {/* Harga Satuan */}
                       <td className="p-2 border-r border-st-dark/20">
                         <div className="relative">
-                          <span className="absolute left-2.5 top-1.5 text-st-text-muted font-bold text-xs">Rp</span>
+                          <span className="absolute left-2.5 top-1.5 text-st-text-muted font-bold text-xs pointer-events-none select-none">Rp</span>
                           <input
-                            type="number"
-                            min="0"
-                            step="1000"
+                            type="text"
+                            inputMode="numeric"
                             placeholder="0"
-                            value={row.hargaSatuan || ''}
+                            value={row.hargaSatuan ? row.hargaSatuan.toLocaleString('id-ID') : ''}
                             onChange={(e) => handleItemChange(idx, 'hargaSatuan', e.target.value)}
                             className="w-full pl-8 pr-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-right font-mono tabular-nums font-bold text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors"
                           />
