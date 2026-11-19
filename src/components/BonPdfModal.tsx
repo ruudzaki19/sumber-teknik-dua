@@ -59,15 +59,21 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
+        width: 794,
+        height: 1123,
         windowWidth: 794,
-        windowHeight: 1140,
+        windowHeight: 1123,
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0,
         onclone: (clonedDoc) => {
           const clonedElement = clonedDoc.getElementById('printable-bon');
           if (clonedElement) {
             if (clonedElement.parentElement) {
               clonedElement.parentElement.style.width = '794px';
-              clonedElement.parentElement.style.height = 'auto';
-              clonedElement.parentElement.style.minHeight = '1140px';
+              clonedElement.parentElement.style.height = '1123px';
+              clonedElement.parentElement.style.minHeight = '1123px';
             }
             clonedElement.style.transform = 'none';
             clonedElement.style.webkitTransform = 'none';
@@ -75,17 +81,16 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
             clonedElement.style.width = '794px';
             clonedElement.style.minWidth = '794px';
             clonedElement.style.maxWidth = '794px';
-            clonedElement.style.height = 'auto';
-            clonedElement.style.minHeight = '1140px';
+            clonedElement.style.height = '1123px';
+            clonedElement.style.minHeight = '1123px';
             clonedElement.style.margin = '0 auto';
-            clonedElement.style.padding = '34px 42px 64px 42px';
+            clonedElement.style.padding = '34px 42px 48px 42px';
             clonedElement.style.boxSizing = 'border-box';
 
-            // Angkat teks tabel dan baris jumlah secara presisi di canvas capture
-            // agar hasil gambar JPG 100% vertikal di tengah-tengah sel seperti di pratinjau
+            // Penyesuaian halus posisi optik teks di canvas agar pas di tengah sel
             const cellContents = clonedElement.querySelectorAll('.bon-cell-content');
             cellContents.forEach((el: any) => {
-              el.style.transform = 'translateY(-6px)';
+              el.style.transform = 'translateY(-3px)';
             });
           }
         }
@@ -543,7 +548,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             textAlign: 'center',
                             fontWeight: 'bold',
                             fontFamily: '"Times New Roman", Times, serif',
-                            fontSize: '19px',
+                            fontSize: '15.5px',
                             color: '#111827'
                           }}
                         >
@@ -576,7 +581,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             boxSizing: 'border-box',
                             fontWeight: 'bold',
                             fontFamily: '"Times New Roman", Times, serif',
-                            fontSize: '19px',
+                            fontSize: '15.5px',
                             color: '#111827',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -613,10 +618,10 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                               boxSizing: 'border-box'
                             }}
                           >
-                            <span style={{ color: greenText, fontWeight: 700, fontSize: '14.5px' }}>
+                            <span style={{ color: greenText, fontWeight: 700, fontSize: '13.5px' }}>
                               Rp.
                             </span>
-                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '19px', color: '#111827' }}>
+                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '15.5px', color: '#111827' }}>
                               {formatNumber(item.hargaSatuan)}
                             </span>
                           </div>
@@ -649,10 +654,10 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                               boxSizing: 'border-box'
                             }}
                           >
-                            <span style={{ color: greenText, fontWeight: 700, fontSize: '14.5px' }}>
+                            <span style={{ color: greenText, fontWeight: 700, fontSize: '13.5px' }}>
                               Rp.
                             </span>
-                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '19.5px', color: '#111827' }}>
+                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '16px', color: '#111827' }}>
                               {formatNumber(item.jumlah)}
                             </span>
                           </div>
@@ -698,7 +703,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           width: '100%',
                           height: '100%',
                           fontWeight: 900,
-                          fontSize: '16.5px',
+                          fontSize: '15px',
                           color: greenText,
                           textTransform: 'uppercase',
                           letterSpacing: '0.5px',
@@ -734,12 +739,12 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           width: '100%',
                           height: '100%',
                           fontWeight: 'bold',
-                          fontSize: '20px',
+                          fontSize: '17px',
                           color: '#111827',
                           fontFamily: '"Times New Roman", Times, serif'
                         }}
                       >
-                        <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>Rp.</span>
+                        <span style={{ color: greenText, fontWeight: 700, fontSize: '14px' }}>Rp.</span>
                         <span>{formatNumber(bon.totalJumlah)}</span>
                       </div>
                     </div>
