@@ -78,6 +78,13 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
             clonedElement.style.margin = '0 auto';
             clonedElement.style.padding = '36px 42px';
             clonedElement.style.boxSizing = 'border-box';
+
+            // Angkat teks tabel dan baris jumlah secara presisi di canvas capture
+            // agar hasil gambar JPG 100% vertikal di tengah-tengah sel seperti di pratinjau
+            const cellContents = clonedElement.querySelectorAll('.bon-cell-content');
+            cellContents.forEach((el: any) => {
+              el.style.transform = 'translateY(-7.5px)';
+            });
           }
         }
       });
@@ -399,154 +406,175 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                   </div>
                 </div>
 
-                {/* ================= TABEL 13 BARIS LINE SOLID 1.2PX (PURE FLEXBOX DIV - VERTIKAL TENGAH SEMPURNA) ================= */}
-                <div style={{ width: '100%', marginBottom: '0px' }}>
+                {/* ================= TABEL 13 BARIS LINE SOLID 1.2PX (STRUKTUR INTEGRASI PRESISI, TANPA MENCONG) ================= */}
+                <div style={{ width: '710px', margin: '0 auto', boxSizing: 'border-box' }}>
+                  {/* Header Tabel */}
                   <div
                     style={{
-                      width: '100%',
-                      border: solidBorder,
+                      display: 'flex',
+                      width: '710px',
+                      height: '40px',
+                      borderTop: solidBorder,
+                      borderBottom: solidBorder,
                       backgroundColor: '#ffffff',
                       boxSizing: 'border-box'
                     }}
                   >
-                    {/* Header Tabel */}
+                    {/* Header 1: BANYAKNYA */}
                     <div
                       style={{
+                        width: '120px',
+                        flexShrink: 0,
+                        height: '100%',
+                        borderLeft: solidBorder,
+                        borderRight: solidBorder,
                         display: 'flex',
-                        width: '100%',
-                        height: '40px',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '15px',
+                        fontWeight: 900,
+                        color: greenText,
+                        letterSpacing: '0.5px',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      BANYAKNYA
+                    </div>
+
+                    {/* Header 2: KETERANGAN */}
+                    <div
+                      style={{
+                        width: '280px',
+                        flexShrink: 0,
+                        height: '100%',
+                        borderRight: solidBorder,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '15px',
+                        fontWeight: 900,
+                        color: greenText,
+                        letterSpacing: '0.5px',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      KETERANGAN
+                    </div>
+
+                    {/* Header 3: HARGA SATUAN */}
+                    <div
+                      style={{
+                        width: '145px',
+                        flexShrink: 0,
+                        height: '100%',
+                        borderRight: solidBorder,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '15px',
+                        fontWeight: 900,
+                        color: greenText,
+                        letterSpacing: '0.5px',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      HARGA SATUAN
+                    </div>
+
+                    {/* Header 4: JUMLAH */}
+                    <div
+                      style={{
+                        width: '165px',
+                        flexShrink: 0,
+                        height: '100%',
+                        borderRight: solidBorder,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '15px',
+                        fontWeight: 900,
+                        color: greenText,
+                        letterSpacing: '0.5px',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      JUMLAH
+                    </div>
+                  </div>
+
+                  {/* 13 Baris Data */}
+                  {displayRows.map((item, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: 'flex',
+                        width: '710px',
+                        height: '37px',
                         borderBottom: solidBorder,
                         backgroundColor: '#ffffff',
                         boxSizing: 'border-box'
                       }}
                     >
-                      {/* Header 1: BANYAKNYA */}
+                      {/* Kolom 1: Banyaknya */}
                       <div
                         style={{
                           width: '120px',
                           flexShrink: 0,
                           height: '100%',
+                          borderLeft: solidBorder,
                           borderRight: solidBorder,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '15px',
-                          fontWeight: 900,
-                          color: greenText,
-                          letterSpacing: '0.5px',
                           boxSizing: 'border-box'
                         }}
                       >
-                        BANYAKNYA
-                      </div>
-
-                      {/* Header 2: KETERANGAN */}
-                      <div
-                        style={{
-                          flex: 1,
-                          height: '100%',
-                          borderRight: solidBorder,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '15px',
-                          fontWeight: 900,
-                          color: greenText,
-                          letterSpacing: '0.5px',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        KETERANGAN
-                      </div>
-
-                      {/* Header 3: HARGA SATUAN */}
-                      <div
-                        style={{
-                          width: '145px',
-                          flexShrink: 0,
-                          height: '100%',
-                          borderRight: solidBorder,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '15px',
-                          fontWeight: 900,
-                          color: greenText,
-                          letterSpacing: '0.5px',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        HARGA SATUAN
-                      </div>
-
-                      {/* Header 4: JUMLAH */}
-                      <div
-                        style={{
-                          width: '165px',
-                          flexShrink: 0,
-                          height: '100%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '15px',
-                          fontWeight: 900,
-                          color: greenText,
-                          letterSpacing: '0.5px',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        JUMLAH
-                      </div>
-                    </div>
-
-                    {/* 13 Baris Data */}
-                    {displayRows.map((item, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          width: '100%',
-                          height: '37px',
-                          borderBottom: index < displayRows.length - 1 ? solidBorder : 'none',
-                          backgroundColor: '#ffffff',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        {/* Kolom 1: Banyaknya - Vertikal Tengah Sempurna */}
                         <div
+                          className="bon-cell-content"
                           style={{
-                            width: '120px',
-                            flexShrink: 0,
-                            height: '100%',
-                            borderRight: solidBorder,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            width: '100%',
+                            height: '100%',
                             boxSizing: 'border-box',
                             textAlign: 'center',
                             fontWeight: 'bold',
                             fontFamily: '"Times New Roman", Times, serif',
-                            fontSize: '20px',
+                            fontSize: '22px',
                             color: '#111827'
                           }}
                         >
                           {item ? item.banyaknya : ''}
                         </div>
+                      </div>
 
-                        {/* Kolom 2: Keterangan - Vertikal Tengah Sempurna */}
+                      {/* Kolom 2: Keterangan */}
+                      <div
+                        style={{
+                          width: '280px',
+                          flexShrink: 0,
+                          height: '100%',
+                          borderRight: solidBorder,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-start',
+                          padding: '0 14px',
+                          boxSizing: 'border-box'
+                        }}
+                      >
                         <div
+                          className="bon-cell-content"
                           style={{
-                            flex: 1,
-                            height: '100%',
-                            borderRight: solidBorder,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'flex-start',
-                            padding: '0 14px',
+                            width: '100%',
+                            height: '100%',
                             boxSizing: 'border-box',
                             fontWeight: 'bold',
                             fontFamily: '"Times New Roman", Times, serif',
-                            fontSize: '20px',
+                            fontSize: '22px',
                             color: '#111827',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -555,110 +583,163 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         >
                           {item ? item.keterangan : ''}
                         </div>
-
-                        {/* Kolom 3: Harga Satuan - Vertikal Tengah Sempurna */}
-                        <div
-                          style={{
-                            width: '145px',
-                            flexShrink: 0,
-                            height: '100%',
-                            borderRight: solidBorder,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '0 10px',
-                            boxSizing: 'border-box'
-                          }}
-                        >
-                          {item && (item.hargaSatuan || item.hargaSatuan === 0) ? (
-                            <>
-                              <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>
-                                Rp.
-                              </span>
-                              <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '20px', color: '#111827' }}>
-                                {formatNumber(item.hargaSatuan)}
-                              </span>
-                            </>
-                          ) : null}
-                        </div>
-
-                        {/* Kolom 4: Jumlah - Vertikal Tengah Sempurna */}
-                        <div
-                          style={{
-                            width: '165px',
-                            flexShrink: 0,
-                            height: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '0 10px',
-                            boxSizing: 'border-box'
-                          }}
-                        >
-                          {item && (item.jumlah || item.jumlah === 0) ? (
-                            <>
-                              <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>
-                                Rp.
-                              </span>
-                              <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '20.5px', color: '#111827' }}>
-                                {formatNumber(item.jumlah)}
-                              </span>
-                            </>
-                          ) : null}
-                        </div>
                       </div>
-                    ))}
-                  </div>
 
-                  {/* ================= BARIS JUMLAH & RP DI BAWAH TABEL ================= */}
-                  <div style={{ display: 'flex', width: '100%', boxSizing: 'border-box' }}>
-                    {/* Kolom 1 & 2 di bawah tabel kosong tanpa border */}
-                    <div style={{ flex: '1 1 auto' }}></div>
+                      {/* Kolom 3: Harga Satuan */}
+                      <div
+                        style={{
+                          width: '145px',
+                          flexShrink: 0,
+                          height: '100%',
+                          borderRight: solidBorder,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0 10px',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        {item && (item.hargaSatuan || item.hargaSatuan === 0) ? (
+                          <div
+                            className="bon-cell-content"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              width: '100%',
+                              height: '100%',
+                              boxSizing: 'border-box'
+                            }}
+                          >
+                            <span style={{ color: greenText, fontWeight: 700, fontSize: '16px' }}>
+                              Rp.
+                            </span>
+                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '22px', color: '#111827' }}>
+                              {formatNumber(item.hargaSatuan)}
+                            </span>
+                          </div>
+                        ) : null}
+                      </div>
 
-                    {/* Kolom 3: JUMLAH */}
+                      {/* Kolom 4: Jumlah */}
+                      <div
+                        style={{
+                          width: '165px',
+                          flexShrink: 0,
+                          height: '100%',
+                          borderRight: solidBorder,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0 10px',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        {item && (item.jumlah || item.jumlah === 0) ? (
+                          <div
+                            className="bon-cell-content"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              width: '100%',
+                              height: '100%',
+                              boxSizing: 'border-box'
+                            }}
+                          >
+                            <span style={{ color: greenText, fontWeight: 700, fontSize: '16px' }}>
+                              Rp.
+                            </span>
+                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '22.5px', color: '#111827' }}>
+                              {formatNumber(item.jumlah)}
+                            </span>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* ================= BARIS JUMLAH & RP DI BAWAH TABEL (SEJAJAR LURUS SEMPURNA) ================= */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      width: '710px',
+                      height: '40px',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    {/* Kolom 1: Kosong tanpa border */}
+                    <div style={{ width: '120px', flexShrink: 0, boxSizing: 'border-box' }}></div>
+
+                    {/* Kolom 2: Kosong tanpa border */}
+                    <div style={{ width: '280px', flexShrink: 0, boxSizing: 'border-box' }}></div>
+
+                    {/* Kolom 3: JUMLAH (Garis Kanan Sejajar Lurus Kolom 3 di Atasnya) */}
                     <div
                       style={{
                         width: '145px',
                         flexShrink: 0,
-                        height: '40px',
+                        height: '100%',
+                        borderRight: solidBorder,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontWeight: 900,
-                        fontSize: '16px',
-                        color: greenText,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        fontFamily: '"Times New Roman", Times, serif',
                         boxSizing: 'border-box'
                       }}
                     >
-                      JUMLAH
+                      <div
+                        className="bon-cell-content"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '100%',
+                          height: '100%',
+                          fontWeight: 900,
+                          fontSize: '17px',
+                          color: greenText,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          fontFamily: '"Times New Roman", Times, serif'
+                        }}
+                      >
+                        JUMLAH
+                      </div>
                     </div>
 
-                    {/* Kolom 4: Rp. [Total] dengan Garis Solid 1.2px Hijau */}
+                    {/* Kolom 4: Rp. [Total] (Garis Kanan & Bawah Solid 1.2px, Kotak Tertutup Sempurna) */}
                     <div
                       style={{
                         width: '165px',
                         flexShrink: 0,
-                        height: '40px',
+                        height: '100%',
+                        borderRight: solidBorder,
+                        borderBottom: solidBorder,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         padding: '0 10px',
-                        borderLeft: solidBorder,
-                        borderRight: solidBorder,
-                        borderBottom: solidBorder,
-                        fontWeight: 'bold',
-                        fontSize: '21px',
-                        color: '#111827',
-                        fontFamily: '"Times New Roman", Times, serif',
                         boxSizing: 'border-box',
                         backgroundColor: '#ffffff'
                       }}
                     >
-                      <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>Rp.</span>
-                      <span>{formatNumber(bon.totalJumlah)}</span>
+                      <div
+                        className="bon-cell-content"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          height: '100%',
+                          fontWeight: 'bold',
+                          fontSize: '22px',
+                          color: '#111827',
+                          fontFamily: '"Times New Roman", Times, serif'
+                        }}
+                      >
+                        <span style={{ color: greenText, fontWeight: 700, fontSize: '16px' }}>Rp.</span>
+                        <span>{formatNumber(bon.totalJumlah)}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
