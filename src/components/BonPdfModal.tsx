@@ -60,13 +60,14 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
         logging: false,
         backgroundColor: '#ffffff',
         windowWidth: 794,
-        windowHeight: 1120,
+        windowHeight: 1140,
         onclone: (clonedDoc) => {
           const clonedElement = clonedDoc.getElementById('printable-bon');
           if (clonedElement) {
             if (clonedElement.parentElement) {
               clonedElement.parentElement.style.width = '794px';
               clonedElement.parentElement.style.height = 'auto';
+              clonedElement.parentElement.style.minHeight = '1140px';
             }
             clonedElement.style.transform = 'none';
             clonedElement.style.webkitTransform = 'none';
@@ -75,15 +76,16 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
             clonedElement.style.minWidth = '794px';
             clonedElement.style.maxWidth = '794px';
             clonedElement.style.height = 'auto';
+            clonedElement.style.minHeight = '1140px';
             clonedElement.style.margin = '0 auto';
-            clonedElement.style.padding = '36px 42px';
+            clonedElement.style.padding = '34px 42px 64px 42px';
             clonedElement.style.boxSizing = 'border-box';
 
             // Angkat teks tabel dan baris jumlah secara presisi di canvas capture
             // agar hasil gambar JPG 100% vertikal di tengah-tengah sel seperti di pratinjau
             const cellContents = clonedElement.querySelectorAll('.bon-cell-content');
             cellContents.forEach((el: any) => {
-              el.style.transform = 'translateY(-7.5px)';
+              el.style.transform = 'translateY(-6px)';
             });
           }
         }
@@ -174,7 +176,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
           <div
             style={{
               width: `${794 * previewScale}px`,
-              height: `${1120 * previewScale}px`,
+              height: `${1140 * previewScale}px`,
               position: 'relative'
             }}
           >
@@ -186,9 +188,9 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                 width: '794px',
                 minWidth: '794px',
                 maxWidth: '794px',
-                minHeight: '1090px',
+                minHeight: '1140px',
                 backgroundColor: '#ffffff',
-                padding: '36px 42px',
+                padding: '36px 42px 64px 42px',
                 boxSizing: 'border-box',
                 fontFamily: 'Arial, Helvetica, sans-serif',
                 transform: `scale(${previewScale})`,
@@ -207,7 +209,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     justifyContent: 'space-between',
                     alignItems: 'flex-start',
                     width: '100%',
-                    marginBottom: '22px'
+                    marginBottom: '18px'
                   }}
                 >
                   {/* Kiri: Kop Surat Resmi Gambar 1 HD */}
@@ -541,7 +543,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             textAlign: 'center',
                             fontWeight: 'bold',
                             fontFamily: '"Times New Roman", Times, serif',
-                            fontSize: '22px',
+                            fontSize: '19px',
                             color: '#111827'
                           }}
                         >
@@ -574,7 +576,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             boxSizing: 'border-box',
                             fontWeight: 'bold',
                             fontFamily: '"Times New Roman", Times, serif',
-                            fontSize: '22px',
+                            fontSize: '19px',
                             color: '#111827',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -611,10 +613,10 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                               boxSizing: 'border-box'
                             }}
                           >
-                            <span style={{ color: greenText, fontWeight: 700, fontSize: '16px' }}>
+                            <span style={{ color: greenText, fontWeight: 700, fontSize: '14.5px' }}>
                               Rp.
                             </span>
-                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '22px', color: '#111827' }}>
+                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '19px', color: '#111827' }}>
                               {formatNumber(item.hargaSatuan)}
                             </span>
                           </div>
@@ -647,10 +649,10 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                               boxSizing: 'border-box'
                             }}
                           >
-                            <span style={{ color: greenText, fontWeight: 700, fontSize: '16px' }}>
+                            <span style={{ color: greenText, fontWeight: 700, fontSize: '14.5px' }}>
                               Rp.
                             </span>
-                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '22.5px', color: '#111827' }}>
+                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '19.5px', color: '#111827' }}>
                               {formatNumber(item.jumlah)}
                             </span>
                           </div>
@@ -696,7 +698,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           width: '100%',
                           height: '100%',
                           fontWeight: 900,
-                          fontSize: '17px',
+                          fontSize: '16.5px',
                           color: greenText,
                           textTransform: 'uppercase',
                           letterSpacing: '0.5px',
@@ -732,12 +734,12 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           width: '100%',
                           height: '100%',
                           fontWeight: 'bold',
-                          fontSize: '22px',
+                          fontSize: '20px',
                           color: '#111827',
                           fontFamily: '"Times New Roman", Times, serif'
                         }}
                       >
-                        <span style={{ color: greenText, fontWeight: 700, fontSize: '16px' }}>Rp.</span>
+                        <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>Rp.</span>
                         <span>{formatNumber(bon.totalJumlah)}</span>
                       </div>
                     </div>
@@ -750,7 +752,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     display: 'flex',
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
-                    marginTop: '28px',
+                    marginTop: '22px',
                     padding: '0 10px',
                     position: 'relative'
                   }}
@@ -823,7 +825,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
               </div>
 
               {/* Minimal spacer */}
-              <div style={{ height: '10px' }}></div>
+              <div style={{ height: '36px' }}></div>
             </div>
           </div>
         </div>
