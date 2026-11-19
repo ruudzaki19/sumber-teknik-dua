@@ -140,10 +140,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
         </div>
 
         {/* Toolbar */}
-        <div className="bg-st-cream-dark p-3 sm:p-4 px-4 sm:px-6 border-b-2 border-st-dark flex items-center justify-between shrink-0">
-          <span className="text-xs font-bold text-st-dark hidden sm:inline">
-            Ukuran Kertas: A4 (Resolusi Tinggi HD)
-          </span>
+        <div className="bg-st-cream-dark p-3 sm:p-4 px-4 sm:px-6 border-b-2 border-st-dark flex items-center justify-end shrink-0">
           <motion.button
             whileTap={{ scale: 0.98 }}
             onClick={handleDownloadJPG}
@@ -254,7 +251,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontWeight: 'bold',
                           fontFamily: '"Times New Roman", Times, serif',
                           fontSize: '17px',
-                          paddingBottom: '2px',
+                          paddingBottom: '4px',
+                          lineHeight: '1.2',
                           paddingLeft: '4px',
                           minHeight: '20px'
                         }}
@@ -290,7 +288,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontWeight: 'bold',
                           fontFamily: '"Times New Roman", Times, serif',
                           fontSize: '17px',
-                          paddingBottom: '2px',
+                          paddingBottom: '4px',
+                          lineHeight: '1.2',
                           paddingLeft: '4px',
                           minHeight: '20px'
                         }}
@@ -306,7 +305,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         borderBottom: '1.4px dotted #1b6837',
                         display: 'flex',
                         alignItems: 'flex-end',
-                        paddingBottom: '2px'
+                        paddingBottom: '4px'
                       }}
                     >
                       {/* Spacer 88px agar teks baris 2 sejajar lurus dengan tanggal & baris 1 */}
@@ -319,6 +318,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontFamily: '"Times New Roman", Times, serif',
                           fontSize: '17px',
                           paddingLeft: '4px',
+                          lineHeight: '1.2',
                           minHeight: '20px'
                         }}
                       >
@@ -333,7 +333,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         borderBottom: '1.4px dotted #1b6837',
                         display: 'flex',
                         alignItems: 'flex-end',
-                        paddingBottom: '2px'
+                        paddingBottom: '4px'
                       }}
                     >
                       {/* Spacer 88px agar teks baris 3 sejajar lurus dengan tanggal & baris 1 */}
@@ -346,6 +346,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontFamily: '"Times New Roman", Times, serif',
                           fontSize: '17px',
                           paddingLeft: '4px',
+                          lineHeight: '1.2',
                           minHeight: '20px'
                         }}
                       >
@@ -380,7 +381,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontWeight: 'bold',
                           fontFamily: '"Times New Roman", Times, serif',
                           fontSize: '17px',
-                          paddingBottom: '2px',
+                          paddingBottom: '4px',
+                          lineHeight: '1.2',
                           paddingLeft: '4px',
                           minHeight: '20px'
                         }}
@@ -534,44 +536,74 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             backgroundColor: '#ffffff'
                           }}
                         >
-                          {/* Kolom 1: Banyaknya (Bisa Huruf atau Angka Bebas - Times New Roman 17px) */}
+                          {/* Kolom 1: Banyaknya - Vertikal Tengah Optik, Times New Roman 20px */}
                           <td
                             style={{
-                              textAlign: 'center',
-                              fontWeight: 'bold',
-                              fontFamily: '"Times New Roman", Times, serif',
-                              fontSize: '17px',
                               border: solidBorder,
+                              padding: 0,
+                              height: '37px',
                               verticalAlign: 'middle',
-                              padding: '4px 6px',
-                              color: '#111827'
+                              backgroundColor: '#ffffff'
                             }}
                           >
-                            {item ? item.banyaknya : ''}
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '100%',
+                                minHeight: '37px',
+                                padding: '0 6px',
+                                boxSizing: 'border-box',
+                                textAlign: 'center',
+                                fontWeight: 'bold',
+                                fontFamily: '"Times New Roman", Times, serif',
+                                fontSize: '20px',
+                                color: '#111827'
+                              }}
+                            >
+                              {item ? item.banyaknya : ''}
+                            </div>
                           </td>
 
-                          {/* Kolom 2: Keterangan (TANPA AUTO CAPSLOCK, Times New Roman 17px Formal) */}
+                          {/* Kolom 2: Keterangan - Vertikal Tengah Optik, Times New Roman 20px */}
                           <td
                             style={{
-                              padding: '4px 14px',
                               border: solidBorder,
+                              padding: 0,
+                              height: '37px',
                               verticalAlign: 'middle',
-                              fontWeight: 'bold',
-                              fontFamily: '"Times New Roman", Times, serif',
-                              fontSize: '17px',
-                              color: '#111827'
+                              backgroundColor: '#ffffff'
                             }}
                           >
-                            {item ? item.keterangan : ''}
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'flex-start',
+                                height: '100%',
+                                minHeight: '37px',
+                                padding: '0 14px',
+                                boxSizing: 'border-box',
+                                fontWeight: 'bold',
+                                fontFamily: '"Times New Roman", Times, serif',
+                                fontSize: '20px',
+                                color: '#111827'
+                              }}
+                            >
+                              {item ? item.keterangan : ''}
+                            </div>
                           </td>
 
-                          {/* Kolom 3: Harga Satuan (Auto Ada Rp. - Times New Roman 17.5px) */}
+                          {/* Kolom 3: Harga Satuan - Vertikal Tengah Optik, Times New Roman 20px */}
                           <td
                             style={{
-                              padding: '4px 10px',
+                              width: '145px',
                               border: solidBorder,
+                              padding: 0,
+                              height: '37px',
                               verticalAlign: 'middle',
-                              color: '#111827'
+                              backgroundColor: '#ffffff'
                             }}
                           >
                             {item && (item.hargaSatuan || item.hargaSatuan === 0) ? (
@@ -580,26 +612,32 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'space-between',
+                                  height: '100%',
+                                  minHeight: '37px',
+                                  padding: '0 10px',
+                                  boxSizing: 'border-box',
                                   width: '100%'
                                 }}
                               >
-                                <span style={{ color: greenText, fontWeight: 700, fontSize: '14px' }}>
+                                <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>
                                   Rp.
                                 </span>
-                                <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '17.5px' }}>
+                                <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '20px', color: '#111827' }}>
                                   {formatNumber(item.hargaSatuan)}
                                 </span>
                               </div>
                             ) : ''}
                           </td>
 
-                          {/* Kolom 4: Jumlah (Auto Ada Rp. - Times New Roman 17.5px) */}
+                          {/* Kolom 4: Jumlah - Vertikal Tengah Optik, Times New Roman 20.5px */}
                           <td
                             style={{
-                              padding: '4px 10px',
+                              width: '165px',
                               border: solidBorder,
+                              padding: 0,
+                              height: '37px',
                               verticalAlign: 'middle',
-                              color: '#111827'
+                              backgroundColor: '#ffffff'
                             }}
                           >
                             {item && (item.jumlah || item.jumlah === 0) ? (
@@ -608,13 +646,17 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'space-between',
+                                  height: '100%',
+                                  minHeight: '37px',
+                                  padding: '0 10px',
+                                  boxSizing: 'border-box',
                                   width: '100%'
                                 }}
                               >
-                                <span style={{ color: greenText, fontWeight: 700, fontSize: '14px' }}>
+                                <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>
                                   Rp.
                                 </span>
-                                <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '17.5px' }}>
+                                <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '20.5px', color: '#111827' }}>
                                   {formatNumber(item.jumlah)}
                                 </span>
                               </div>
@@ -634,13 +676,13 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     <div
                       style={{
                         width: '145px',
-                        height: '38px',
+                        height: '40px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         borderRight: solidBorder,
                         fontWeight: 900,
-                        fontSize: '15px',
+                        fontSize: '16px',
                         color: greenText,
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px',
@@ -650,11 +692,11 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       JUMLAH
                     </div>
 
-                    {/* Kolom 4: Rp. [Total] dengan Garis Solid 2px Hijau (Times New Roman 18px) */}
+                    {/* Kolom 4: Rp. [Total] dengan Garis Solid 2px Hijau (Times New Roman 21px) */}
                     <div
                       style={{
                         width: '165px',
-                        height: '38px',
+                        height: '40px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
@@ -663,14 +705,14 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         borderRight: solidBorder,
                         borderBottom: solidBorder,
                         fontWeight: 'bold',
-                        fontSize: '18px',
+                        fontSize: '21px',
                         color: '#111827',
                         fontFamily: '"Times New Roman", Times, serif',
                         boxSizing: 'border-box',
                         backgroundColor: '#ffffff'
                       }}
                     >
-                      <span style={{ color: greenText, fontWeight: 700, fontSize: '14px' }}>Rp.</span>
+                      <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>Rp.</span>
                       <span>{formatNumber(bon.totalJumlah)}</span>
                     </div>
                   </div>

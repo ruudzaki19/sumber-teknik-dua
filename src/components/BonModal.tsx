@@ -252,21 +252,17 @@ export const BonModal: React.FC<BonModalProps> = ({
               </div>
             </div>
 
-            {/* Kanan: Kepada Yth (Textarea Bisa Enter s.d 3 Baris) */}
+            {/* Kanan: Kepada Yth */}
             <div className="flex flex-col">
-              <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5 flex items-center justify-between">
-                <span>Kepada Yth.</span>
-                <span className="text-[10px] text-st-primary font-bold lowercase tracking-normal">
-                  (bisa enter s.d 3 baris)
-                </span>
+              <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
+                Kepada Yth.
               </label>
               <div className="relative flex-1">
                 <textarea
                   rows={3}
-                  placeholder={"Contoh:\nIbu Riri\nPT Jaya\nReni Jaya"}
                   value={kepadaYth}
                   onChange={(e) => setKepadaYth(e.target.value)}
-                  className="w-full h-full min-h-[92px] pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted/60 focus:border-st-primary focus:outline-none transition-colors resize-none leading-relaxed"
+                  className="w-full h-full min-h-[92px] pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-bold text-st-text focus:border-st-primary focus:outline-none transition-colors resize-none leading-relaxed"
                 />
                 <User className="w-4 h-4 text-st-dark absolute left-3 top-2.5 pointer-events-none" />
               </div>

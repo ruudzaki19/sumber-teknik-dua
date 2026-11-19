@@ -191,7 +191,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                 <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Tangerang,
                 </span>
-                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-serif font-bold text-sm sm:text-base pb-0.5 pl-1 min-h-[20px]">
+                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-serif font-bold text-sm sm:text-base pb-1 pl-1 min-h-[20px] leading-tight">
                   {bon.tanggal || ''}
                 </span>
               </div>
@@ -201,23 +201,23 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                 <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Kepada Yth,
                 </span>
-                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-serif font-bold text-sm sm:text-base pb-0.5 pl-1 min-h-[20px]">
+                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-serif font-bold text-sm sm:text-base pb-1 pl-1 min-h-[20px] leading-tight">
                   {line1}
                 </span>
               </div>
 
               {/* Baris 3: Garis Titik-Titik dengan Baris 2 (Misal: PT Jaya - Sejajar Tanggal) */}
-              <div className="min-h-[26px] border-b-[1.3px] border-dotted border-[#1b6837] flex items-end pb-0.5">
+              <div className="min-h-[26px] border-b-[1.3px] border-dotted border-[#1b6837] flex items-end pb-1">
                 <span className="w-20 sm:w-24 shrink-0" />
-                <span className="flex-1 text-slate-900 font-serif font-bold text-sm sm:text-base pl-1 min-h-[20px]">
+                <span className="flex-1 text-slate-900 font-serif font-bold text-sm sm:text-base pl-1 min-h-[20px] leading-tight">
                   {line2}
                 </span>
               </div>
 
               {/* Baris 4: Garis Titik-Titik dengan Baris 3 (Misal: Reni Jaya - Sejajar Tanggal) */}
-              <div className="min-h-[26px] border-b-[1.3px] border-dotted border-[#1b6837] flex items-end pb-0.5">
+              <div className="min-h-[26px] border-b-[1.3px] border-dotted border-[#1b6837] flex items-end pb-1">
                 <span className="w-20 sm:w-24 shrink-0" />
-                <span className="flex-1 text-slate-900 font-serif font-bold text-sm sm:text-base pl-1 min-h-[20px]">
+                <span className="flex-1 text-slate-900 font-serif font-bold text-sm sm:text-base pl-1 min-h-[20px] leading-tight">
                   {line3}
                 </span>
               </div>
@@ -227,7 +227,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                 <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Telp.
                 </span>
-                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-serif font-bold text-sm sm:text-base pb-0.5 pl-1 min-h-[20px]">
+                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-serif font-bold text-sm sm:text-base pb-1 pl-1 min-h-[20px] leading-tight">
                   {bon.telpPelanggan || ''}
                 </span>
               </div>
