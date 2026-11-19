@@ -59,9 +59,15 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
+        windowWidth: 794,
+        windowHeight: 1120,
         onclone: (clonedDoc) => {
           const clonedElement = clonedDoc.getElementById('printable-bon');
           if (clonedElement) {
+            if (clonedElement.parentElement) {
+              clonedElement.parentElement.style.width = '794px';
+              clonedElement.parentElement.style.height = 'auto';
+            }
             clonedElement.style.transform = 'none';
             clonedElement.style.webkitTransform = 'none';
             clonedElement.style.position = 'static';
@@ -393,282 +399,219 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                   </div>
                 </div>
 
-                {/* ================= TABEL 13 BARIS LINE SOLID 2PX KONSISTEN ================= */}
+                {/* ================= TABEL 13 BARIS LINE SOLID 1.2PX (PURE FLEXBOX DIV - VERTIKAL TENGAH SEMPURNA) ================= */}
                 <div style={{ width: '100%', marginBottom: '0px' }}>
-                  <table
+                  <div
                     style={{
                       width: '100%',
-                      borderCollapse: 'collapse',
-                      fontSize: '14.5px',
                       border: solidBorder,
-                      backgroundColor: '#ffffff'
+                      backgroundColor: '#ffffff',
+                      boxSizing: 'border-box'
                     }}
                   >
-                    <thead>
-                      <tr
+                    {/* Header Tabel */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        width: '100%',
+                        height: '40px',
+                        borderBottom: solidBorder,
+                        backgroundColor: '#ffffff',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      {/* Header 1: BANYAKNYA */}
+                      <div
                         style={{
-                          height: '40px',
-                          backgroundColor: '#ffffff'
+                          width: '120px',
+                          flexShrink: 0,
+                          height: '100%',
+                          borderRight: solidBorder,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '15px',
+                          fontWeight: 900,
+                          color: greenText,
+                          letterSpacing: '0.5px',
+                          boxSizing: 'border-box'
                         }}
                       >
-                        {/* Header 1: BANYAKNYA - Posisi Tepat di Tengah Optik */}
-                        <th
+                        BANYAKNYA
+                      </div>
+
+                      {/* Header 2: KETERANGAN */}
+                      <div
+                        style={{
+                          flex: 1,
+                          height: '100%',
+                          borderRight: solidBorder,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '15px',
+                          fontWeight: 900,
+                          color: greenText,
+                          letterSpacing: '0.5px',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        KETERANGAN
+                      </div>
+
+                      {/* Header 3: HARGA SATUAN */}
+                      <div
+                        style={{
+                          width: '145px',
+                          flexShrink: 0,
+                          height: '100%',
+                          borderRight: solidBorder,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '15px',
+                          fontWeight: 900,
+                          color: greenText,
+                          letterSpacing: '0.5px',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        HARGA SATUAN
+                      </div>
+
+                      {/* Header 4: JUMLAH */}
+                      <div
+                        style={{
+                          width: '165px',
+                          flexShrink: 0,
+                          height: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '15px',
+                          fontWeight: 900,
+                          color: greenText,
+                          letterSpacing: '0.5px',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        JUMLAH
+                      </div>
+                    </div>
+
+                    {/* 13 Baris Data */}
+                    {displayRows.map((item, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: 'flex',
+                          width: '100%',
+                          height: '37px',
+                          borderBottom: index < displayRows.length - 1 ? solidBorder : 'none',
+                          backgroundColor: '#ffffff',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        {/* Kolom 1: Banyaknya - Vertikal Tengah Sempurna */}
+                        <div
                           style={{
                             width: '120px',
-                            border: solidBorder,
-                            padding: 0,
-                            verticalAlign: 'middle',
+                            flexShrink: 0,
+                            height: '100%',
+                            borderRight: solidBorder,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxSizing: 'border-box',
                             textAlign: 'center',
-                            height: '40px'
+                            fontWeight: 'bold',
+                            fontFamily: '"Times New Roman", Times, serif',
+                            fontSize: '20px',
+                            color: '#111827'
                           }}
                         >
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '100%',
-                              width: '100%',
-                              fontSize: '15px',
-                              fontWeight: 900,
-                              color: greenText,
-                              letterSpacing: '0.5px',
-                              paddingBottom: '3px' // Menaikkan posisi teks 3px agar tepat di tengah optik sel header
-                            }}
-                          >
-                            BANYAKNYA
-                          </div>
-                        </th>
+                          {item ? item.banyaknya : ''}
+                        </div>
 
-                        {/* Header 2: KETERANGAN - Posisi Tepat di Tengah Optik */}
-                        <th
+                        {/* Kolom 2: Keterangan - Vertikal Tengah Sempurna */}
+                        <div
                           style={{
-                            border: solidBorder,
-                            padding: 0,
-                            verticalAlign: 'middle',
-                            textAlign: 'center',
-                            height: '40px'
+                            flex: 1,
+                            height: '100%',
+                            borderRight: solidBorder,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            padding: '0 14px',
+                            boxSizing: 'border-box',
+                            fontWeight: 'bold',
+                            fontFamily: '"Times New Roman", Times, serif',
+                            fontSize: '20px',
+                            color: '#111827',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
                           }}
                         >
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '100%',
-                              width: '100%',
-                              fontSize: '15px',
-                              fontWeight: 900,
-                              color: greenText,
-                              letterSpacing: '0.5px',
-                              paddingBottom: '3px' // Menaikkan posisi teks 3px agar tepat di tengah optik sel header
-                            }}
-                          >
-                            KETERANGAN
-                          </div>
-                        </th>
+                          {item ? item.keterangan : ''}
+                        </div>
 
-                        {/* Header 3: HARGA SATUAN - Posisi Tepat di Tengah Optik */}
-                        <th
+                        {/* Kolom 3: Harga Satuan - Vertikal Tengah Sempurna */}
+                        <div
                           style={{
                             width: '145px',
-                            border: solidBorder,
-                            padding: 0,
-                            verticalAlign: 'middle',
-                            textAlign: 'center',
-                            height: '40px'
+                            flexShrink: 0,
+                            height: '100%',
+                            borderRight: solidBorder,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0 10px',
+                            boxSizing: 'border-box'
                           }}
                         >
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '100%',
-                              width: '100%',
-                              fontSize: '15px',
-                              fontWeight: 900,
-                              color: greenText,
-                              letterSpacing: '0.5px',
-                              paddingBottom: '3px' // Menaikkan posisi teks 3px agar tepat di tengah optik sel header
-                            }}
-                          >
-                            HARGA SATUAN
-                          </div>
-                        </th>
+                          {item && (item.hargaSatuan || item.hargaSatuan === 0) ? (
+                            <>
+                              <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>
+                                Rp.
+                              </span>
+                              <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '20px', color: '#111827' }}>
+                                {formatNumber(item.hargaSatuan)}
+                              </span>
+                            </>
+                          ) : null}
+                        </div>
 
-                        {/* Header 4: JUMLAH - Posisi Tepat di Tengah Optik */}
-                        <th
+                        {/* Kolom 4: Jumlah - Vertikal Tengah Sempurna */}
+                        <div
                           style={{
                             width: '165px',
-                            border: solidBorder,
-                            padding: 0,
-                            verticalAlign: 'middle',
-                            textAlign: 'center',
-                            height: '40px'
+                            flexShrink: 0,
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0 10px',
+                            boxSizing: 'border-box'
                           }}
                         >
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '100%',
-                              width: '100%',
-                              fontSize: '15px',
-                              fontWeight: 900,
-                              color: greenText,
-                              letterSpacing: '0.5px',
-                              paddingBottom: '3px' // Menaikkan posisi teks 3px agar tepat di tengah optik sel header
-                            }}
-                          >
-                            JUMLAH
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {displayRows.map((item, index) => (
-                        <tr
-                          key={index}
-                          style={{
-                            height: '37px',
-                            backgroundColor: '#ffffff'
-                          }}
-                        >
-                          {/* Kolom 1: Banyaknya - Vertikal Tengah Optik, Times New Roman 20px */}
-                          <td
-                            style={{
-                              border: solidBorder,
-                              padding: 0,
-                              height: '37px',
-                              verticalAlign: 'middle',
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                height: '100%',
-                                minHeight: '37px',
-                                padding: '0 6px',
-                                boxSizing: 'border-box',
-                                textAlign: 'center',
-                                fontWeight: 'bold',
-                                fontFamily: '"Times New Roman", Times, serif',
-                                fontSize: '20px',
-                                color: '#111827'
-                              }}
-                            >
-                              {item ? item.banyaknya : ''}
-                            </div>
-                          </td>
-
-                          {/* Kolom 2: Keterangan - Vertikal Tengah Optik, Times New Roman 20px */}
-                          <td
-                            style={{
-                              border: solidBorder,
-                              padding: 0,
-                              height: '37px',
-                              verticalAlign: 'middle',
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'flex-start',
-                                height: '100%',
-                                minHeight: '37px',
-                                padding: '0 14px',
-                                boxSizing: 'border-box',
-                                fontWeight: 'bold',
-                                fontFamily: '"Times New Roman", Times, serif',
-                                fontSize: '20px',
-                                color: '#111827'
-                              }}
-                            >
-                              {item ? item.keterangan : ''}
-                            </div>
-                          </td>
-
-                          {/* Kolom 3: Harga Satuan - Vertikal Tengah Optik, Times New Roman 20px */}
-                          <td
-                            style={{
-                              width: '145px',
-                              border: solidBorder,
-                              padding: 0,
-                              height: '37px',
-                              verticalAlign: 'middle',
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            {item && (item.hargaSatuan || item.hargaSatuan === 0) ? (
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                  height: '100%',
-                                  minHeight: '37px',
-                                  padding: '0 10px',
-                                  boxSizing: 'border-box',
-                                  width: '100%'
-                                }}
-                              >
-                                <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>
-                                  Rp.
-                                </span>
-                                <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '20px', color: '#111827' }}>
-                                  {formatNumber(item.hargaSatuan)}
-                                </span>
-                              </div>
-                            ) : ''}
-                          </td>
-
-                          {/* Kolom 4: Jumlah - Vertikal Tengah Optik, Times New Roman 20.5px */}
-                          <td
-                            style={{
-                              width: '165px',
-                              border: solidBorder,
-                              padding: 0,
-                              height: '37px',
-                              verticalAlign: 'middle',
-                              backgroundColor: '#ffffff'
-                            }}
-                          >
-                            {item && (item.jumlah || item.jumlah === 0) ? (
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                  height: '100%',
-                                  minHeight: '37px',
-                                  padding: '0 10px',
-                                  boxSizing: 'border-box',
-                                  width: '100%'
-                                }}
-                              >
-                                <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>
-                                  Rp.
-                                </span>
-                                <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '20.5px', color: '#111827' }}>
-                                  {formatNumber(item.jumlah)}
-                                </span>
-                              </div>
-                            ) : ''}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          {item && (item.jumlah || item.jumlah === 0) ? (
+                            <>
+                              <span style={{ color: greenText, fontWeight: 700, fontSize: '15px' }}>
+                                Rp.
+                              </span>
+                              <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '20.5px', color: '#111827' }}>
+                                {formatNumber(item.jumlah)}
+                              </span>
+                            </>
+                          ) : null}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
                   {/* ================= BARIS JUMLAH & RP DI BAWAH TABEL ================= */}
-                  <div style={{ display: 'flex', width: '100%' }}>
+                  <div style={{ display: 'flex', width: '100%', boxSizing: 'border-box' }}>
                     {/* Kolom 1 & 2 di bawah tabel kosong tanpa border */}
                     <div style={{ flex: '1 1 auto' }}></div>
 
@@ -676,26 +619,28 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     <div
                       style={{
                         width: '145px',
+                        flexShrink: 0,
                         height: '40px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        borderRight: solidBorder,
                         fontWeight: 900,
                         fontSize: '16px',
                         color: greenText,
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px',
-                        fontFamily: '"Times New Roman", Times, serif'
+                        fontFamily: '"Times New Roman", Times, serif',
+                        boxSizing: 'border-box'
                       }}
                     >
                       JUMLAH
                     </div>
 
-                    {/* Kolom 4: Rp. [Total] dengan Garis Solid 2px Hijau (Times New Roman 21px) */}
+                    {/* Kolom 4: Rp. [Total] dengan Garis Solid 1.2px Hijau */}
                     <div
                       style={{
                         width: '165px',
+                        flexShrink: 0,
                         height: '40px',
                         display: 'flex',
                         alignItems: 'center',
