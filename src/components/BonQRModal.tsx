@@ -111,7 +111,7 @@ export const BonQRModal: React.FC<BonQRModalProps> = ({
             {(bon.kepadaYth || bon.tanggal) && (
               <div className="bg-st-cream/80 border-2 border-st-dark/30 rounded-xl p-3 w-full mb-3.5 text-center">
                 {bon.kepadaYth && (
-                  <div className="text-sm font-extrabold text-st-dark uppercase leading-tight">
+                  <div className="text-sm font-extrabold text-st-dark leading-tight whitespace-pre-line">
                     {bon.kepadaYth}
                   </div>
                 )}

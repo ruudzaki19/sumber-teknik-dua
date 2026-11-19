@@ -178,8 +178,8 @@ export const BonListView: React.FC<BonListViewProps> = ({
                         {bon.tanggal}
                       </span>
                     </div>
-                    <h3 className="text-sm sm:text-base font-extrabold uppercase text-white mt-1.5 truncate max-w-[260px] tracking-tight">
-                      {bon.kepadaYth || 'Pelanggan Umum'}
+                    <h3 className="text-sm sm:text-base font-extrabold text-white mt-1.5 truncate max-w-[260px] tracking-tight">
+                      {bon.kepadaYth ? bon.kepadaYth.split('\n').filter(Boolean).join(' - ') : 'Pelanggan Umum'}
                     </h3>
                   </div>
 

@@ -95,27 +95,36 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
     }
   };
 
+  // Split kepadaYth multi-baris (maksimal 3 baris formal sejajar)
+  const rawKepada = bon.kepadaYth || '';
+  const kepadaLines = rawKepada.split('\n').map(l => l.trim());
+  const line1 = kepadaLines[0] || '';
+  const line2 = kepadaLines[1] || '';
+  const line3 = kepadaLines.slice(2).join(' ') || '';
+
   // Garis solid 1.2px rapi & pas (tidak terlalu tebal dan konsisten)
   const solidBorder = '1.2px solid #1b6837';
   const greenText = '#1b6837';
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-st-dark/65 backdrop-blur-[2px] flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <motion.div
-        initial={{ opacity: 0, scale: 0.97, y: 8 }}
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-white rounded-xl w-full max-w-4xl overflow-hidden shadow-sm border border-slate-200 flex flex-col max-h-[96vh]"
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-st-white rounded-[24px] w-full max-w-4xl overflow-hidden shadow-[8px_8px_0px_#14402c] border-[3px] border-st-dark flex flex-col max-h-[96vh] font-sora text-st-text"
       >
-        {/* Header Bar Modal */}
-        <div className="bg-[#15803D] text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0 border-b border-[#14532D]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-900/60 border border-emerald-600/40 flex items-center justify-center">
-              <ImageIcon className="w-4 h-4 text-emerald-200" />
+        {/* Header Bar Modal - Solid Forest Green */}
+        <div className="bg-st-primary text-white p-4 sm:p-5 flex items-center justify-between shrink-0 border-b-[3px] border-st-dark">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-st-dark border-2 border-st-pale/40 flex items-center justify-center shadow-[2px_2px_0px_#14402c]">
+              <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5 text-st-light" />
             </div>
             <div>
-              <h3 className="font-bold text-sm sm:text-base text-white">Pratinjau Nota / Bon Transaksi</h3>
-              <p className="text-emerald-100 text-xs">
+              <h3 className="font-extrabold text-sm sm:text-base text-white uppercase tracking-tight">
+                Pratinjau Nota / Bon Transaksi
+              </h3>
+              <p className="text-st-pale text-[11px] font-bold">
                 Format Resmi SUMBER TEKNIK DUA (Siap Simpan ke Galeri / Unduh JPG)
               </p>
             </div>
@@ -123,22 +132,26 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
 
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-emerald-900/60 hover:bg-emerald-900 flex items-center justify-center text-white transition-colors"
+            className="w-8 h-8 rounded-xl bg-st-dark hover:bg-black border-2 border-st-dark flex items-center justify-center text-st-pale hover:text-white transition-all shadow-[1px_1px_0px_#14402c] active:translate-y-0.5"
+            title="Tutup Modal"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Toolbar */}
-        <div className="bg-slate-50 p-3 px-4 border-b border-slate-200 flex items-center justify-end shrink-0">
+        <div className="bg-st-cream-dark p-3 sm:p-4 px-4 sm:px-6 border-b-2 border-st-dark flex items-center justify-between shrink-0">
+          <span className="text-xs font-bold text-st-dark hidden sm:inline">
+            Ukuran Kertas: A4 (Resolusi Tinggi HD)
+          </span>
           <motion.button
             whileTap={{ scale: 0.98 }}
             onClick={handleDownloadJPG}
             disabled={isGenerating}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 bg-[#15803D] hover:bg-[#166534] text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs disabled:opacity-50 transition-colors"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-st-primary hover:bg-st-dark text-white text-xs sm:text-sm font-extrabold rounded-xl border-2 border-st-dark shadow-[3px_3px_0px_#14402c] active:translate-y-0.5 disabled:opacity-50 transition-all"
           >
-            <Download className="w-4 h-4" />
-            <span>{isGenerating ? 'Membuat Gambar HD...' : 'Download Gambar Bon (JPG)'}</span>
+            <Download className="w-4 h-4 text-white" />
+            <span>{isGenerating ? 'Membuat Gambar JPG...' : 'Download Gambar Bon (JPG)'}</span>
           </motion.button>
         </div>
 
@@ -239,7 +252,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           borderBottom: '1.4px dotted #1b6837',
                           color: '#111827',
                           fontWeight: 'bold',
-                          fontSize: '14.5px',
+                          fontFamily: '"Times New Roman", Times, serif',
+                          fontSize: '17px',
                           paddingBottom: '2px',
                           paddingLeft: '4px',
                           minHeight: '20px'
@@ -249,7 +263,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       </span>
                     </div>
 
-                    {/* Baris 2: Kepada Yth, [Nama Pelanggan] (TANPA AUTO CAPSLOCK) */}
+                    {/* Baris 2: Kepada Yth, [Baris 1 Nama Pelanggan] (TANPA AUTO CAPSLOCK, Times New Roman 17px) */}
                     <div
                       style={{
                         display: 'flex',
@@ -274,31 +288,70 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           borderBottom: '1.4px dotted #1b6837',
                           color: '#111827',
                           fontWeight: 'bold',
-                          fontSize: '14.5px',
+                          fontFamily: '"Times New Roman", Times, serif',
+                          fontSize: '17px',
                           paddingBottom: '2px',
                           paddingLeft: '4px',
                           minHeight: '20px'
                         }}
                       >
-                        {bon.kepadaYth || ''}
+                        {line1}
                       </span>
                     </div>
 
-                    {/* Baris 3: Garis Titik-Titik Kosong */}
+                    {/* Baris 3: Garis Titik-Titik dengan Baris 2 (Misal: PT Jaya - Sejajar Tanggal) */}
                     <div
                       style={{
-                        minHeight: '20px',
-                        borderBottom: '1.4px dotted #1b6837'
+                        minHeight: '26px',
+                        borderBottom: '1.4px dotted #1b6837',
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        paddingBottom: '2px'
                       }}
-                    />
+                    >
+                      {/* Spacer 88px agar teks baris 2 sejajar lurus dengan tanggal & baris 1 */}
+                      <span style={{ width: '88px', flexShrink: 0 }} />
+                      <span
+                        style={{
+                          flex: 1,
+                          color: '#111827',
+                          fontWeight: 'bold',
+                          fontFamily: '"Times New Roman", Times, serif',
+                          fontSize: '17px',
+                          paddingLeft: '4px',
+                          minHeight: '20px'
+                        }}
+                      >
+                        {line2}
+                      </span>
+                    </div>
 
-                    {/* Baris 4: Garis Titik-Titik Kosong */}
+                    {/* Baris 4: Garis Titik-Titik dengan Baris 3 (Misal: Reni Jaya - Sejajar Tanggal) */}
                     <div
                       style={{
-                        minHeight: '20px',
-                        borderBottom: '1.4px dotted #1b6837'
+                        minHeight: '26px',
+                        borderBottom: '1.4px dotted #1b6837',
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        paddingBottom: '2px'
                       }}
-                    />
+                    >
+                      {/* Spacer 88px agar teks baris 3 sejajar lurus dengan tanggal & baris 1 */}
+                      <span style={{ width: '88px', flexShrink: 0 }} />
+                      <span
+                        style={{
+                          flex: 1,
+                          color: '#111827',
+                          fontWeight: 'bold',
+                          fontFamily: '"Times New Roman", Times, serif',
+                          fontSize: '17px',
+                          paddingLeft: '4px',
+                          minHeight: '20px'
+                        }}
+                      >
+                        {line3}
+                      </span>
+                    </div>
 
                     {/* Baris 5: Telp. [No. HP Pelanggan] */}
                     <div
@@ -325,7 +378,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           borderBottom: '1.4px dotted #1b6837',
                           color: '#111827',
                           fontWeight: 'bold',
-                          fontSize: '14.5px',
+                          fontFamily: '"Times New Roman", Times, serif',
+                          fontSize: '17px',
                           paddingBottom: '2px',
                           paddingLeft: '4px',
                           minHeight: '20px'
@@ -480,12 +534,13 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             backgroundColor: '#ffffff'
                           }}
                         >
-                          {/* Kolom 1: Banyaknya (Bisa Huruf atau Angka Bebas) */}
+                          {/* Kolom 1: Banyaknya (Bisa Huruf atau Angka Bebas - Times New Roman 17px) */}
                           <td
                             style={{
                               textAlign: 'center',
                               fontWeight: 'bold',
-                              fontSize: '14.5px',
+                              fontFamily: '"Times New Roman", Times, serif',
+                              fontSize: '17px',
                               border: solidBorder,
                               verticalAlign: 'middle',
                               padding: '4px 6px',
@@ -495,21 +550,22 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             {item ? item.banyaknya : ''}
                           </td>
 
-                          {/* Kolom 2: Keterangan (TANPA AUTO CAPSLOCK) */}
+                          {/* Kolom 2: Keterangan (TANPA AUTO CAPSLOCK, Times New Roman 17px Formal) */}
                           <td
                             style={{
                               padding: '4px 14px',
                               border: solidBorder,
                               verticalAlign: 'middle',
                               fontWeight: 'bold',
-                              fontSize: '14.5px',
+                              fontFamily: '"Times New Roman", Times, serif',
+                              fontSize: '17px',
                               color: '#111827'
                             }}
                           >
                             {item ? item.keterangan : ''}
                           </td>
 
-                          {/* Kolom 3: Harga Satuan (Auto Ada Rp.) */}
+                          {/* Kolom 3: Harga Satuan (Auto Ada Rp. - Times New Roman 17.5px) */}
                           <td
                             style={{
                               padding: '4px 10px',
@@ -527,17 +583,17 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                                   width: '100%'
                                 }}
                               >
-                                <span style={{ color: greenText, fontWeight: 700, fontSize: '13px' }}>
+                                <span style={{ color: greenText, fontWeight: 700, fontSize: '14px' }}>
                                   Rp.
                                 </span>
-                                <span style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: '14.5px' }}>
+                                <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '17.5px' }}>
                                   {formatNumber(item.hargaSatuan)}
                                 </span>
                               </div>
                             ) : ''}
                           </td>
 
-                          {/* Kolom 4: Jumlah (Auto Ada Rp.) */}
+                          {/* Kolom 4: Jumlah (Auto Ada Rp. - Times New Roman 17.5px) */}
                           <td
                             style={{
                               padding: '4px 10px',
@@ -555,10 +611,10 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                                   width: '100%'
                                 }}
                               >
-                                <span style={{ color: greenText, fontWeight: 700, fontSize: '13px' }}>
+                                <span style={{ color: greenText, fontWeight: 700, fontSize: '14px' }}>
                                   Rp.
                                 </span>
-                                <span style={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '14.5px' }}>
+                                <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '17.5px' }}>
                                   {formatNumber(item.jumlah)}
                                 </span>
                               </div>
@@ -584,16 +640,17 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         justifyContent: 'center',
                         borderRight: solidBorder,
                         fontWeight: 900,
-                        fontSize: '14.5px',
+                        fontSize: '15px',
                         color: greenText,
                         textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
+                        letterSpacing: '0.5px',
+                        fontFamily: '"Times New Roman", Times, serif'
                       }}
                     >
                       JUMLAH
                     </div>
 
-                    {/* Kolom 4: Rp. [Total] dengan Garis Solid 2px Hijau */}
+                    {/* Kolom 4: Rp. [Total] dengan Garis Solid 2px Hijau (Times New Roman 18px) */}
                     <div
                       style={{
                         width: '165px',
@@ -605,15 +662,15 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         borderLeft: solidBorder,
                         borderRight: solidBorder,
                         borderBottom: solidBorder,
-                        fontWeight: 900,
-                        fontSize: '15px',
+                        fontWeight: 'bold',
+                        fontSize: '18px',
                         color: '#111827',
-                        fontFamily: 'monospace',
+                        fontFamily: '"Times New Roman", Times, serif',
                         boxSizing: 'border-box',
                         backgroundColor: '#ffffff'
                       }}
                     >
-                      <span style={{ color: greenText, fontWeight: 900, fontSize: '14px' }}>Rp.</span>
+                      <span style={{ color: greenText, fontWeight: 700, fontSize: '14px' }}>Rp.</span>
                       <span>{formatNumber(bon.totalJumlah)}</span>
                     </div>
                   </div>

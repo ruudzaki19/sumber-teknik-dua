@@ -213,56 +213,62 @@ export const BonModal: React.FC<BonModalProps> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 text-xs">
-          {/* Metadata Top Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-st-cream/80 p-4 rounded-2xl border-2 border-st-dark">
-            {/* Tanggal */}
-            <div>
-              <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
-                Tanggal
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  required
-                  value={tanggal}
-                  onChange={(e) => setTanggal(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-bold tabular-nums text-st-text focus:border-st-primary focus:outline-none transition-colors"
-                />
-                <Calendar className="w-4 h-4 text-st-dark absolute left-3 top-2.5 pointer-events-none" />
+          {/* Metadata Top Grid: Kiri (Tanggal & Telp), Kanan (Kepada Yth - Textarea 3 Baris) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-st-cream/80 p-4 rounded-2xl border-2 border-st-dark">
+            {/* Kiri: Tanggal & Telp Pelanggan */}
+            <div className="space-y-3">
+              {/* Tanggal */}
+              <div>
+                <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
+                  Tanggal
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    value={tanggal}
+                    onChange={(e) => setTanggal(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-bold tabular-nums text-st-text focus:border-st-primary focus:outline-none transition-colors"
+                  />
+                  <Calendar className="w-4 h-4 text-st-dark absolute left-3 top-2.5 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Telp. Pelanggan */}
+              <div>
+                <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
+                  No. Telp Pelanggan
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="08xxxxxxxxxx"
+                    value={telpPelanggan}
+                    onChange={(e) => setTelpPelanggan(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-mono tabular-nums font-bold text-st-text placeholder:text-st-text-muted focus:border-st-primary focus:outline-none transition-colors"
+                  />
+                  <Phone className="w-4 h-4 text-st-dark absolute left-3 top-2.5 pointer-events-none" />
+                </div>
               </div>
             </div>
 
-            {/* Kepada Yth (Opsional) */}
-            <div>
-              <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
-                Kepada Yth.
+            {/* Kanan: Kepada Yth (Textarea Bisa Enter s.d 3 Baris) */}
+            <div className="flex flex-col">
+              <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5 flex items-center justify-between">
+                <span>Kepada Yth.</span>
+                <span className="text-[10px] text-st-primary font-bold lowercase tracking-normal">
+                  (bisa enter s.d 3 baris)
+                </span>
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Nama Pelanggan"
+              <div className="relative flex-1">
+                <textarea
+                  rows={3}
+                  placeholder={"Contoh:\nIbu Riri\nPT Jaya\nReni Jaya"}
                   value={kepadaYth}
                   onChange={(e) => setKepadaYth(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted focus:border-st-primary focus:outline-none transition-colors"
+                  className="w-full h-full min-h-[92px] pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-bold text-st-text placeholder:text-st-text-muted/60 focus:border-st-primary focus:outline-none transition-colors resize-none leading-relaxed"
                 />
                 <User className="w-4 h-4 text-st-dark absolute left-3 top-2.5 pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Telp. Pelanggan */}
-            <div>
-              <label className="block text-xs font-extrabold uppercase tracking-wide text-st-dark mb-1.5">
-                No. Telp Pelanggan
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="08xxxxxxxxxx"
-                  value={telpPelanggan}
-                  onChange={(e) => setTelpPelanggan(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-st-white border-2 border-st-dark rounded-xl font-mono tabular-nums font-bold text-st-text placeholder:text-st-text-muted focus:border-st-primary focus:outline-none transition-colors"
-                />
-                <Phone className="w-4 h-4 text-st-dark absolute left-3 top-2.5 pointer-events-none" />
               </div>
             </div>
           </div>

@@ -97,6 +97,13 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
   const TOTAL_ROWS = 13;
   const displayRows = Array.from({ length: TOTAL_ROWS }, (_, i) => items[i] || null);
 
+  // Split kepadaYth multi-baris (maksimal 3 baris formal sejajar)
+  const rawKepada = bon.kepadaYth || '';
+  const kepadaLines = rawKepada.split('\n').map(l => l.trim());
+  const line1 = kepadaLines[0] || '';
+  const line2 = kepadaLines[1] || '';
+  const line3 = kepadaLines.slice(2).join(' ') || '';
+
   const solidBorder = '1.2px solid #1b6837';
   const greenText = '#1b6837';
 
@@ -184,33 +191,43 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                 <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Tangerang,
                 </span>
-                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[14px] pb-0.5 pl-1 min-h-[20px]">
+                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-serif font-bold text-sm sm:text-base pb-0.5 pl-1 min-h-[20px]">
                   {bon.tanggal || ''}
                 </span>
               </div>
 
-              {/* Baris 2: Kepada Yth, [Nama Pelanggan] (TANPA AUTO CAPSLOCK) */}
+              {/* Baris 2: Kepada Yth, [Baris 1 Nama Pelanggan] (TANPA AUTO CAPSLOCK) */}
               <div className="flex items-end min-h-[26px]">
                 <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Kepada Yth,
                 </span>
-                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[14px] pb-0.5 pl-1 min-h-[20px]">
-                  {bon.kepadaYth || ''}
+                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-serif font-bold text-sm sm:text-base pb-0.5 pl-1 min-h-[20px]">
+                  {line1}
                 </span>
               </div>
 
-              {/* Baris 3: Garis Titik-Titik Kosong */}
-              <div className="min-h-[20px] border-b-[1.3px] border-dotted border-[#1b6837]" />
+              {/* Baris 3: Garis Titik-Titik dengan Baris 2 (Misal: PT Jaya - Sejajar Tanggal) */}
+              <div className="min-h-[26px] border-b-[1.3px] border-dotted border-[#1b6837] flex items-end pb-0.5">
+                <span className="w-20 sm:w-24 shrink-0" />
+                <span className="flex-1 text-slate-900 font-serif font-bold text-sm sm:text-base pl-1 min-h-[20px]">
+                  {line2}
+                </span>
+              </div>
 
-              {/* Baris 4: Garis Titik-Titik Kosong */}
-              <div className="min-h-[20px] border-b-[1.3px] border-dotted border-[#1b6837]" />
+              {/* Baris 4: Garis Titik-Titik dengan Baris 3 (Misal: Reni Jaya - Sejajar Tanggal) */}
+              <div className="min-h-[26px] border-b-[1.3px] border-dotted border-[#1b6837] flex items-end pb-0.5">
+                <span className="w-20 sm:w-24 shrink-0" />
+                <span className="flex-1 text-slate-900 font-serif font-bold text-sm sm:text-base pl-1 min-h-[20px]">
+                  {line3}
+                </span>
+              </div>
 
               {/* Baris 5: Telp. [No. HP Pelanggan] */}
               <div className="flex items-end min-h-[26px]">
                 <span className="text-[#1b6837] font-bold text-xs sm:text-[14px] whitespace-nowrap mr-2">
                   Telp.
                 </span>
-                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-bold text-xs sm:text-[14px] pb-0.5 pl-1 min-h-[20px]">
+                <span className="flex-1 border-b-[1.3px] border-dotted border-[#1b6837] text-slate-900 font-serif font-bold text-sm sm:text-base pb-0.5 pl-1 min-h-[20px]">
                   {bon.telpPelanggan || ''}
                 </span>
               </div>
@@ -221,7 +238,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
           <div className="overflow-x-auto border-[1.2px] border-emerald-800 rounded-none">
             <table className="w-full text-xs sm:text-sm text-left border-collapse border-[1.2px] border-emerald-800">
               <thead>
-                <tr className="bg-white border-b-[1.2px] border-emerald-800 text-emerald-800 font-black text-center text-xs sm:text-sm h-10">
+                <tr className="bg-white border-b-[1.2px] border-emerald-800 text-emerald-800 font-black text-center text-xs sm:text-sm h-10 font-serif">
                   <th className="w-24 sm:w-28 border-r-[1.2px] border-emerald-800 p-0 text-center align-middle">
                     <div className="flex items-center justify-center h-full w-full pb-0.5 font-black text-emerald-800 text-xs sm:text-sm">
                       BANYAKNYA
@@ -247,13 +264,13 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
               <tbody>
                 {displayRows.map((it, idx) => (
                   <tr key={idx} className="border-b-[1.2px] border-emerald-800 h-9">
-                    {/* Banyaknya (Bisa Huruf atau Angka) */}
-                    <td className="py-2 px-2 text-center font-bold text-slate-900 border-r-[1.2px] border-emerald-800">
+                    {/* Banyaknya (Bisa Huruf atau Angka - Times New Roman Formal) */}
+                    <td className="py-2 px-2 text-center font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base">
                       {it ? it.banyaknya : ''}
                     </td>
 
-                    {/* Keterangan (TANPA AUTO CAPSLOCK) */}
-                    <td className="py-2 px-3 font-bold text-slate-900 border-r-[1.2px] border-emerald-800">
+                    {/* Keterangan (TANPA AUTO CAPSLOCK - Times New Roman Formal) */}
+                    <td className="py-2 px-3 font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base">
                       {it ? it.keterangan : ''}
                     </td>
 
@@ -262,7 +279,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                       {it && (it.hargaSatuan || it.hargaSatuan === 0) ? (
                         <div className="flex items-center justify-between w-full">
                           <span className="text-emerald-800 font-bold text-[11px] sm:text-xs">Rp.</span>
-                          <span className="font-mono font-bold">{formatNumber(it.hargaSatuan)}</span>
+                          <span className="font-serif font-bold text-sm sm:text-base">{formatNumber(it.hargaSatuan)}</span>
                         </div>
                       ) : ''}
                     </td>
@@ -272,7 +289,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                       {it && (it.jumlah || it.jumlah === 0) ? (
                         <div className="flex items-center justify-between w-full">
                           <span className="text-emerald-800 font-bold text-[11px] sm:text-xs">Rp.</span>
-                          <span className="font-mono font-black">{formatNumber(it.jumlah)}</span>
+                          <span className="font-serif font-bold text-sm sm:text-base">{formatNumber(it.jumlah)}</span>
                         </div>
                       ) : ''}
                     </td>
@@ -283,11 +300,11 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
 
             {/* JUMLAH & RP Bottom Line Solid */}
             <div className="flex justify-end">
-              <div className="w-32 sm:w-36 py-2 px-3 text-center font-black text-xs sm:text-sm text-emerald-800 border-r-[1.2px] border-emerald-800 uppercase">
+              <div className="w-32 sm:w-36 py-2 px-3 text-center font-black text-xs sm:text-sm text-emerald-800 border-r-[1.2px] border-emerald-800 uppercase font-serif">
                 JUMLAH
               </div>
-              <div className="w-36 sm:w-40 py-2 px-3 flex items-center justify-between font-mono font-black text-xs sm:text-sm text-slate-900 border-l-[1.2px] border-r-[1.2px] border-b-[1.2px] border-emerald-800">
-                <span className="text-emerald-800">Rp.</span>
+              <div className="w-36 sm:w-40 py-2 px-3 flex items-center justify-between font-serif font-bold text-sm sm:text-base text-slate-900 border-l-[1.2px] border-r-[1.2px] border-b-[1.2px] border-emerald-800">
+                <span className="text-emerald-800 font-serif">Rp.</span>
                 <span>{formatNumber(bon.totalJumlah)}</span>
               </div>
             </div>
