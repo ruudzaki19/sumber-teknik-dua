@@ -162,17 +162,35 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
     rowHeight: number;
   }
 
+  // Ukuran kotak pas sesuai isi teks (tanpa space kosong yang makan tempat di bawah)
+  const getItemRowHeight = (lines: number): number => {
+    if (lines <= 1) return 37;
+    return (lines * 21) + 12; // 2 baris: 54px, 3 baris: 75px, 4 baris: 96px
+  };
+
   const processedRows: ProcessedRow[] = items.map(it => {
     const lines = calculateKeteranganLines(it.keterangan);
     return {
       item: it,
       linesCount: lines,
-      rowHeight: lines * ROW_UNIT_HEIGHT
+      rowHeight: getItemRowHeight(lines)
     };
   });
 
-  const totalConsumedUnits = processedRows.reduce((sum, r) => sum + r.linesCount, 0);
-  const emptyRowsCount = Math.max(0, TOTAL_PHYSICAL_ROWS - totalConsumedUnits);
+  const TOTAL_TABLE_HEIGHT = 481; // 13 * 37px tepat
+  const totalItemsHeight = processedRows.reduce((sum, r) => sum + r.rowHeight, 0);
+  const remainingTableHeight = Math.max(0, TOTAL_TABLE_HEIGHT - totalItemsHeight);
+  const numEmptyRows = remainingTableHeight > 0 ? Math.max(1, Math.round(remainingTableHeight / 37)) : 0;
+
+  const emptyRowHeights: number[] = [];
+  if (numEmptyRows > 0) {
+    const baseHeight = Math.floor(remainingTableHeight / numEmptyRows);
+    const remPixels = remainingTableHeight - (baseHeight * numEmptyRows);
+    for (let i = 0; i < numEmptyRows; i++) {
+      emptyRowHeights.push(i === numEmptyRows - 1 ? baseHeight + remPixels : baseHeight);
+    }
+  }
+
   const anyItemHasManualRp = items.some(it => isManualRp(it.hargaSatuan) || isManualRp(it.jumlah));
 
   // Split kepadaYth multi-baris (maksimal 3 baris formal sejajar)
@@ -342,7 +360,6 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
               <tbody>
                 {processedRows.map((r, idx) => {
                   const it = r.item;
-                  const isMulti = r.linesCount > 1;
 
                   return (
                     <tr
@@ -350,46 +367,36 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                       className="border-b-[1.2px] border-emerald-800"
                       style={{ height: `${r.rowHeight}px` }}
                     >
-                      {/* Banyaknya (Bisa Huruf atau Angka - Times New Roman Formal) */}
+                      {/* Banyaknya (Selalu di Tengah Vertikal) */}
                       <td
-                        className="p-0 text-center font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base align-top"
+                        className="p-0 text-center font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base align-middle"
                         style={{ height: `${r.rowHeight}px` }}
                       >
-                        <div
-                          className="flex items-center justify-center w-full"
-                          style={{ height: `${ROW_UNIT_HEIGHT}px` }}
-                        >
+                        <div className="flex items-center justify-center w-full h-full">
                           {it ? it.banyaknya : ''}
                         </div>
                       </td>
 
-                      {/* Keterangan (Multi-baris / Auto Wrap - Times New Roman Formal) */}
+                      {/* Keterangan (Pas Sesuai Teks, Padding Seimbang Atas Bawah, Bebas Potong) */}
                       <td
-                        className={`font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base align-top ${
-                          isMulti ? 'py-1.5 px-3' : 'py-2 px-3'
-                        }`}
+                        className="py-1.5 px-3 font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base align-middle"
                         style={{ height: `${r.rowHeight}px` }}
                       >
-                        <div
-                          className={`w-full ${
-                            isMulti ? 'whitespace-pre-wrap break-words leading-snug' : 'truncate'
-                          }`}
-                        >
+                        <div className="w-full whitespace-pre-wrap break-words leading-snug">
                           {it ? it.keterangan : ''}
                         </div>
                       </td>
 
-                      {/* Harga Satuan (Manual Rp, Font Warna Hitam, Bukan Hijau) */}
+                      {/* Harga Satuan (Selalu di Tengah Vertikal, Manual Rp Warna Hitam) */}
                       <td
-                        className="p-0 border-r-[1.2px] border-emerald-800 text-slate-900 align-top"
+                        className="p-0 border-r-[1.2px] border-emerald-800 text-slate-900 align-middle"
                         style={{ height: `${r.rowHeight}px` }}
                       >
                         {it && hasPrice(it.hargaSatuan) ? (
                           <div
-                            className={`flex items-center px-2.5 w-full ${
+                            className={`flex items-center px-2.5 w-full h-full ${
                               isManualRp(it.hargaSatuan) ? 'justify-between' : 'justify-end'
                             }`}
-                            style={{ height: `${ROW_UNIT_HEIGHT}px` }}
                           >
                             {isManualRp(it.hargaSatuan) && (
                               <span className="font-serif font-bold text-xs sm:text-sm text-slate-900">
@@ -403,17 +410,16 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                         ) : null}
                       </td>
 
-                      {/* Jumlah (Manual Rp, Font Warna Hitam, Bukan Hijau) */}
+                      {/* Jumlah (Selalu di Tengah Vertikal Sesuai Permintaan, Manual Rp Warna Hitam) */}
                       <td
-                        className="p-0 text-slate-900 align-top"
+                        className="p-0 text-slate-900 align-middle"
                         style={{ height: `${r.rowHeight}px` }}
                       >
                         {it && hasPrice(it.jumlah) ? (
                           <div
-                            className={`flex items-center px-2.5 w-full ${
+                            className={`flex items-center px-2.5 w-full h-full ${
                               isManualRp(it.jumlah) ? 'justify-between' : 'justify-end'
                             }`}
-                            style={{ height: `${ROW_UNIT_HEIGHT}px` }}
                           >
                             {isManualRp(it.jumlah) && (
                               <span className="font-serif font-bold text-xs sm:text-sm text-slate-900">
@@ -430,12 +436,12 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                   );
                 })}
 
-                {/* Sisa Baris Kosong (Menjaga Total Visual Tepat 13 Satuan Baris) */}
-                {Array.from({ length: emptyRowsCount }).map((_, emptyIdx) => (
+                {/* Sisa Baris Kosong (Menjaga Total Visual Tepat 481px Presisi) */}
+                {emptyRowHeights.map((h, emptyIdx) => (
                   <tr
                     key={`empty-${emptyIdx}`}
                     className="border-b-[1.2px] border-emerald-800"
-                    style={{ height: `${ROW_UNIT_HEIGHT}px` }}
+                    style={{ height: `${h}px` }}
                   >
                     <td className="border-r-[1.2px] border-emerald-800" />
                     <td className="border-r-[1.2px] border-emerald-800" />

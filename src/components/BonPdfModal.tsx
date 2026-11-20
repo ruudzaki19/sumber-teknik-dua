@@ -109,17 +109,35 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
     rowHeight: number;
   }
 
+  // Ukuran kotak pas sesuai isi teks (tanpa space kosong yang makan tempat di bawah)
+  const getItemRowHeight = (lines: number): number => {
+    if (lines <= 1) return 37;
+    return (lines * 21) + 12; // 2 baris: 54px, 3 baris: 75px, 4 baris: 96px
+  };
+
   const processedRows: ProcessedRow[] = items.map(it => {
     const lines = calculateKeteranganLines(it.keterangan);
     return {
       item: it,
       linesCount: lines,
-      rowHeight: lines * ROW_UNIT_HEIGHT
+      rowHeight: getItemRowHeight(lines)
     };
   });
 
-  const totalConsumedUnits = processedRows.reduce((sum, r) => sum + r.linesCount, 0);
-  const emptyRowsCount = Math.max(0, TOTAL_PHYSICAL_ROWS - totalConsumedUnits);
+  const TOTAL_TABLE_HEIGHT = 481; // 13 * 37px tepat
+  const totalItemsHeight = processedRows.reduce((sum, r) => sum + r.rowHeight, 0);
+  const remainingTableHeight = Math.max(0, TOTAL_TABLE_HEIGHT - totalItemsHeight);
+  const numEmptyRows = remainingTableHeight > 0 ? Math.max(1, Math.round(remainingTableHeight / 37)) : 0;
+
+  const emptyRowHeights: number[] = [];
+  if (numEmptyRows > 0) {
+    const baseHeight = Math.floor(remainingTableHeight / numEmptyRows);
+    const remPixels = remainingTableHeight - (baseHeight * numEmptyRows);
+    for (let i = 0; i < numEmptyRows; i++) {
+      emptyRowHeights.push(i === numEmptyRows - 1 ? baseHeight + remPixels : baseHeight);
+    }
+  }
+
   const anyItemHasManualRp = items.some(it => isManualRp(it.hargaSatuan) || isManualRp(it.jumlah));
 
   const formatNumber = (val: number) => {
@@ -169,7 +187,14 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
             // Penyesuaian halus posisi optik teks di canvas agar pas di tengah sel
             const cellContents = clonedElement.querySelectorAll('.bon-cell-content');
             cellContents.forEach((el: any) => {
-              el.style.transform = 'translateY(-3px)';
+              el.style.transform = 'translateY(-2px)';
+            });
+
+            // Teks keterangan multi-baris tidak boleh digeser atau dipotong oleh canvas
+            const keteranganTexts = clonedElement.querySelectorAll('.bon-keterangan-text');
+            keteranganTexts.forEach((el: any) => {
+              el.style.transform = 'none';
+              el.style.overflow = 'visible';
             });
           }
         }
@@ -588,10 +613,9 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Baris Data (Multi-baris / Auto Wrap Mengonsumsi Baris Fisik di Bawahnya) */}
+                  {/* Baris Data (Kotak Pas Sesuai Isi Teks, Tanpa Space Makan Tempat & Jumlah di Tengah) */}
                   {processedRows.map((r, idx) => {
                     const item = r.item;
-                    const isMulti = r.linesCount > 1;
 
                     return (
                       <div
@@ -605,7 +629,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           boxSizing: 'border-box'
                         }}
                       >
-                        {/* Kolom 1: Banyaknya */}
+                        {/* Kolom 1: Banyaknya (Selalu di Tengah-Tengah Vertikal) */}
                         <div
                           style={{
                             width: '120px',
@@ -614,9 +638,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             borderLeft: solidBorder,
                             borderRight: solidBorder,
                             display: 'flex',
-                            flexDirection: 'column',
                             alignItems: 'center',
-                            justifyContent: isMulti ? 'flex-start' : 'center',
+                            justifyContent: 'center',
                             boxSizing: 'border-box'
                           }}
                         >
@@ -627,8 +650,6 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                               alignItems: 'center',
                               justifyContent: 'center',
                               width: '100%',
-                              height: `${ROW_UNIT_HEIGHT}px`,
-                              boxSizing: 'border-box',
                               textAlign: 'center',
                               fontWeight: 'bold',
                               fontFamily: '"Times New Roman", Times, serif',
@@ -640,7 +661,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           </div>
                         </div>
 
-                        {/* Kolom 2: Keterangan (Multi-baris / Auto Wrap mengonsumsi baris fisik di bawahnya) */}
+                        {/* Kolom 2: Keterangan (Pas Sesuai Teks, Padding Seimbang Atas Bawah, Bebas Potong) */}
                         <div
                           style={{
                             width: '280px',
@@ -648,33 +669,31 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             height: '100%',
                             borderRight: solidBorder,
                             display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'flex-start',
-                            justifyContent: isMulti ? 'flex-start' : 'center',
-                            padding: isMulti ? '7px 14px' : '0 14px',
+                            alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            padding: '6px 14px',
                             boxSizing: 'border-box'
                           }}
                         >
                           <div
-                            className="bon-cell-content"
+                            className="bon-keterangan-text"
                             style={{
                               width: '100%',
                               fontWeight: 'bold',
                               fontFamily: '"Times New Roman", Times, serif',
-                              fontSize: '15.5px',
+                              fontSize: '15px',
                               color: '#111827',
-                              lineHeight: isMulti ? '22px' : 'normal',
-                              whiteSpace: isMulti ? 'pre-wrap' : 'nowrap',
+                              lineHeight: '21px',
+                              whiteSpace: 'pre-wrap',
                               wordBreak: 'break-word',
-                              overflow: 'hidden',
-                              textOverflow: isMulti ? 'clip' : 'ellipsis'
+                              overflow: 'visible'
                             }}
                           >
                             {item ? item.keterangan : ''}
                           </div>
                         </div>
 
-                        {/* Kolom 3: Harga Satuan (Manual Rp, Font Warna Hitam #111827, Bukan Hijau) */}
+                        {/* Kolom 3: Harga Satuan (Selalu di Tengah-Tengah Vertikal, Manual Rp Warna Hitam) */}
                         <div
                           style={{
                             width: '145px',
@@ -682,9 +701,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             height: '100%',
                             borderRight: solidBorder,
                             display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'stretch',
-                            justifyContent: isMulti ? 'flex-start' : 'center',
+                            alignItems: 'center',
+                            justifyContent: isManualRp(item?.hargaSatuan) ? 'space-between' : 'flex-end',
                             padding: '0 10px',
                             boxSizing: 'border-box'
                           }}
@@ -697,7 +715,6 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                                 alignItems: 'center',
                                 justifyContent: isManualRp(item.hargaSatuan) ? 'space-between' : 'flex-end',
                                 width: '100%',
-                                height: `${ROW_UNIT_HEIGHT}px`,
                                 boxSizing: 'border-box',
                                 fontFamily: '"Times New Roman", Times, serif',
                                 fontWeight: 'bold',
@@ -715,7 +732,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           ) : null}
                         </div>
 
-                        {/* Kolom 4: Jumlah (Manual Rp, Font Warna Hitam #111827, Bukan Hijau) */}
+                        {/* Kolom 4: Jumlah (Selalu di Tengah-Tengah Vertikal Sesuai Permintaan, Manual Rp Warna Hitam) */}
                         <div
                           style={{
                             width: '165px',
@@ -723,9 +740,8 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             height: '100%',
                             borderRight: solidBorder,
                             display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'stretch',
-                            justifyContent: isMulti ? 'flex-start' : 'center',
+                            alignItems: 'center',
+                            justifyContent: isManualRp(item?.jumlah) ? 'space-between' : 'flex-end',
                             padding: '0 10px',
                             boxSizing: 'border-box'
                           }}
@@ -738,7 +754,6 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                                 alignItems: 'center',
                                 justifyContent: isManualRp(item.jumlah) ? 'space-between' : 'flex-end',
                                 width: '100%',
-                                height: `${ROW_UNIT_HEIGHT}px`,
                                 boxSizing: 'border-box',
                                 fontFamily: '"Times New Roman", Times, serif',
                                 fontWeight: 'bold',
@@ -759,14 +774,14 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     );
                   })}
 
-                  {/* Sisa Baris Kosong (Menjaga Total Visual Tepat 13 Satuan Baris = 481px) */}
-                  {Array.from({ length: emptyRowsCount }).map((_, emptyIdx) => (
+                  {/* Sisa Baris Kosong (Menjaga Total Visual Tepat 481px Presisi Tanpa Miring) */}
+                  {emptyRowHeights.map((h, emptyIdx) => (
                     <div
                       key={`empty-${emptyIdx}`}
                       style={{
                         display: 'flex',
                         width: '710px',
-                        height: `${ROW_UNIT_HEIGHT}px`,
+                        height: `${h}px`,
                         borderBottom: solidBorder,
                         backgroundColor: '#ffffff',
                         boxSizing: 'border-box'
