@@ -47,7 +47,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
     if (!text || !text.trim()) return 1;
     const rawLines = text.split('\n');
     let totalLines = 0;
-    const MAX_CHARS_PER_LINE = 28; // Estimasi presisi lebar kolom 280px Times New Roman bold 15.5px
+    const MAX_CHARS_PER_LINE = 33; // Estimasi presisi lebar kolom 280px Times New Roman bold 15.5px
 
     for (const rawLine of rawLines) {
       const trimmed = rawLine.trim();
@@ -184,17 +184,23 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
             clonedElement.style.padding = '34px 42px 48px 42px';
             clonedElement.style.boxSizing = 'border-box';
 
-            // Penyesuaian halus posisi optik teks di canvas agar pas di tengah sel
+            // Penyesuaian halus posisi optik teks di canvas agar pas tepat 50/50 di tengah sel (seimbang atas & bawah)
             const cellContents = clonedElement.querySelectorAll('.bon-cell-content');
             cellContents.forEach((el: any) => {
-              el.style.transform = 'translateY(-3px)';
+              el.style.transform = 'translateY(-8px)';
             });
 
             // Teks keterangan multi-baris digeser ke atas agar persis di tengah seperti pratinjau (tidak mepet bawah)
             const keteranganTexts = clonedElement.querySelectorAll('.bon-keterangan-text');
             keteranganTexts.forEach((el: any) => {
-              el.style.transform = 'translateY(-3px)';
+              el.style.transform = 'translateY(-8px)';
               el.style.overflow = 'visible';
+            });
+
+            // Header tabel juga digeser agar tepat 50/50 di tengah vertikal
+            const headerCells = clonedElement.querySelectorAll('.bon-header-cell');
+            headerCells.forEach((el: any) => {
+              el.style.transform = 'translateY(-7px)';
             });
           }
         }
@@ -542,14 +548,20 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '15px',
-                        fontWeight: 900,
-                        color: greenText,
-                        letterSpacing: '0.5px',
                         boxSizing: 'border-box'
                       }}
                     >
-                      BANYAKNYA
+                      <div
+                        className="bon-header-cell"
+                        style={{
+                          fontSize: '15px',
+                          fontWeight: 900,
+                          color: greenText,
+                          letterSpacing: '0.5px'
+                        }}
+                      >
+                        BANYAKNYA
+                      </div>
                     </div>
 
                     {/* Header 2: KETERANGAN */}
@@ -562,14 +574,20 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '15px',
-                        fontWeight: 900,
-                        color: greenText,
-                        letterSpacing: '0.5px',
                         boxSizing: 'border-box'
                       }}
                     >
-                      KETERANGAN
+                      <div
+                        className="bon-header-cell"
+                        style={{
+                          fontSize: '15px',
+                          fontWeight: 900,
+                          color: greenText,
+                          letterSpacing: '0.5px'
+                        }}
+                      >
+                        KETERANGAN
+                      </div>
                     </div>
 
                     {/* Header 3: HARGA SATUAN */}
@@ -582,14 +600,20 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '15px',
-                        fontWeight: 900,
-                        color: greenText,
-                        letterSpacing: '0.5px',
                         boxSizing: 'border-box'
                       }}
                     >
-                      HARGA SATUAN
+                      <div
+                        className="bon-header-cell"
+                        style={{
+                          fontSize: '15px',
+                          fontWeight: 900,
+                          color: greenText,
+                          letterSpacing: '0.5px'
+                        }}
+                      >
+                        HARGA SATUAN
+                      </div>
                     </div>
 
                     {/* Header 4: JUMLAH */}
@@ -602,14 +626,20 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '15px',
-                        fontWeight: 900,
-                        color: greenText,
-                        letterSpacing: '0.5px',
                         boxSizing: 'border-box'
                       }}
                     >
-                      JUMLAH
+                      <div
+                        className="bon-header-cell"
+                        style={{
+                          fontSize: '15px',
+                          fontWeight: 900,
+                          color: greenText,
+                          letterSpacing: '0.5px'
+                        }}
+                      >
+                        JUMLAH
+                      </div>
                     </div>
                   </div>
 
@@ -683,7 +713,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                               fontFamily: '"Times New Roman", Times, serif',
                               fontSize: '15px',
                               color: '#111827',
-                              lineHeight: '21px',
+                              lineHeight: '20px',
                               whiteSpace: 'pre-wrap',
                               wordBreak: 'break-word',
                               overflow: 'visible'

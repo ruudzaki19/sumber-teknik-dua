@@ -100,7 +100,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
     if (!text || !text.trim()) return 1;
     const rawLines = text.split('\n');
     let totalLines = 0;
-    const MAX_CHARS_PER_LINE = 28;
+    const MAX_CHARS_PER_LINE = 33;
 
     for (const rawLine of rawLines) {
       const trimmed = rawLine.trim();
