@@ -165,7 +165,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
   // Ukuran kotak pas sesuai isi teks (tanpa space kosong yang makan tempat di bawah)
   const getItemRowHeight = (lines: number): number => {
     if (lines <= 1) return 37;
-    return (lines * 21) + 12; // 2 baris: 54px, 3 baris: 75px, 4 baris: 96px
+    return (lines * 22) + 14; // 2 baris: 58px, 3 baris: 80px, 4 baris: 102px
   };
 
   const processedRows: ProcessedRow[] = items.map(it => {
@@ -379,7 +379,7 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
 
                       {/* Keterangan (Pas Sesuai Teks, Padding Seimbang Atas Bawah, Bebas Potong) */}
                       <td
-                        className="py-1.5 px-3 font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base align-middle"
+                        className="py-0 px-3 font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base align-middle"
                         style={{ height: `${r.rowHeight}px` }}
                       >
                         <div className="w-full whitespace-pre-wrap break-words leading-snug">

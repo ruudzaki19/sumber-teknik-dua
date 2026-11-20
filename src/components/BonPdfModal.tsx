@@ -112,7 +112,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
   // Ukuran kotak pas sesuai isi teks (tanpa space kosong yang makan tempat di bawah)
   const getItemRowHeight = (lines: number): number => {
     if (lines <= 1) return 37;
-    return (lines * 21) + 12; // 2 baris: 54px, 3 baris: 75px, 4 baris: 96px
+    return (lines * 22) + 14; // 2 baris: 58px, 3 baris: 80px, 4 baris: 102px
   };
 
   const processedRows: ProcessedRow[] = items.map(it => {
@@ -187,13 +187,13 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
             // Penyesuaian halus posisi optik teks di canvas agar pas di tengah sel
             const cellContents = clonedElement.querySelectorAll('.bon-cell-content');
             cellContents.forEach((el: any) => {
-              el.style.transform = 'translateY(-2px)';
+              el.style.transform = 'translateY(-3px)';
             });
 
-            // Teks keterangan multi-baris tidak boleh digeser atau dipotong oleh canvas
+            // Teks keterangan multi-baris digeser ke atas agar persis di tengah seperti pratinjau (tidak mepet bawah)
             const keteranganTexts = clonedElement.querySelectorAll('.bon-keterangan-text');
             keteranganTexts.forEach((el: any) => {
-              el.style.transform = 'none';
+              el.style.transform = 'translateY(-3px)';
               el.style.overflow = 'visible';
             });
           }
@@ -671,7 +671,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'flex-start',
-                            padding: '6px 14px',
+                            padding: '0 14px',
                             boxSizing: 'border-box'
                           }}
                         >
