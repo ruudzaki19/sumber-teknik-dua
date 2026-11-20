@@ -36,12 +36,22 @@ export const BonListView: React.FC<BonListViewProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const formatRupiah = (val: number) => {
+  const formatRupiah = (val: number | string | undefined | null) => {
+    if (val === undefined || val === null || val === '') return 'Rp 0';
+    if (typeof val === 'number') {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+      }).format(val || 0);
+    }
+    const cleanStr = String(val).replace(/[^0-9]/g, '');
+    const num = cleanStr ? parseInt(cleanStr, 10) : 0;
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
       maximumFractionDigits: 0
-    }).format(val || 0);
+    }).format(num);
   };
 
   const q = searchQuery.trim().toLowerCase();

@@ -14,8 +14,8 @@ interface BonModalProps {
       items: Array<{
         banyaknya: string | number;
         keterangan: string;
-        hargaSatuan: number;
-        jumlah: number;
+        hargaSatuan: number | string;
+        jumlah: number | string;
       }>;
     }
   ) => void;
@@ -25,8 +25,8 @@ interface BonModalProps {
 interface ItemRow {
   banyaknya: string | number;
   keterangan: string;
-  hargaSatuan: number;
-  jumlah: number;
+  hargaSatuan: number | string;
+  jumlah: number | string;
 }
 
 export const BonModal: React.FC<BonModalProps> = ({
@@ -41,7 +41,7 @@ export const BonModal: React.FC<BonModalProps> = ({
   const [kepadaYth, setKepadaYth] = useState('');
   const [telpPelanggan, setTelpPelanggan] = useState('');
   const [items, setItems] = useState<ItemRow[]>([
-    { banyaknya: 1, keterangan: '', hargaSatuan: 0, jumlah: 0 }
+    { banyaknya: 1, keterangan: '', hargaSatuan: '', jumlah: '' }
   ]);
 
   // Format Helper
@@ -72,26 +72,30 @@ export const BonModal: React.FC<BonModalProps> = ({
       if (bon.items && bon.items.length > 0) {
         setItems(
           bon.items.map(it => {
-            const numMatch = String(it.banyaknya).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
-            const qty = numMatch ? parseFloat(numMatch[0]) : 1;
-            const price = Number(it.hargaSatuan) || 0;
+            const hs = it.hargaSatuan !== undefined && it.hargaSatuan !== null && it.hargaSatuan !== 0
+              ? (typeof it.hargaSatuan === 'number' ? it.hargaSatuan.toLocaleString('id-ID') : String(it.hargaSatuan))
+              : '';
+            const jm = it.jumlah !== undefined && it.jumlah !== null && it.jumlah !== 0
+              ? (typeof it.jumlah === 'number' ? it.jumlah.toLocaleString('id-ID') : String(it.jumlah))
+              : '';
+
             return {
               banyaknya: it.banyaknya != null ? it.banyaknya : 1,
               keterangan: it.keterangan || '',
-              hargaSatuan: price,
-              jumlah: it.jumlah != null ? Number(it.jumlah) : Math.round(qty * price)
+              hargaSatuan: hs,
+              jumlah: jm
             };
           })
         );
       } else {
-        setItems([{ banyaknya: 1, keterangan: '', hargaSatuan: 0, jumlah: 0 }]);
+        setItems([{ banyaknya: 1, keterangan: '', hargaSatuan: '', jumlah: '' }]);
       }
     } else {
       setNomorBon(generateBonNumber());
       setTanggal(getIndonesianDate());
       setKepadaYth('');
       setTelpPelanggan('');
-      setItems([{ banyaknya: 1, keterangan: '', hargaSatuan: 0, jumlah: 0 }]);
+      setItems([{ banyaknya: 1, keterangan: '', hargaSatuan: '', jumlah: '' }]);
     }
   }, [bon, isOpen]);
 
@@ -105,24 +109,29 @@ export const BonModal: React.FC<BonModalProps> = ({
       row.banyaknya = value;
       const numMatch = String(value).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
       const qty = numMatch ? parseFloat(numMatch[0]) : 1;
-      if (row.hargaSatuan && row.hargaSatuan > 0) {
-        row.jumlah = Math.round(qty * row.hargaSatuan);
+
+      const hsStr = String(row.hargaSatuan || '').trim();
+      const cleanDigits = hsStr.replace(/[^0-9]/g, '');
+      const price = cleanDigits ? parseInt(cleanDigits, 10) : 0;
+      if (price > 0) {
+        const hasRp = /rp/i.test(hsStr);
+        const total = Math.round(qty * price);
+        row.jumlah = hasRp ? `Rp ${total.toLocaleString('id-ID')}` : total.toLocaleString('id-ID');
       }
     } else if (field === 'hargaSatuan') {
-      // Izinkan pengetikan titik ribuan seperti "80.000" atau angka mentah "80000" (opsional)
-      const cleanStr = String(value).replace(/[^0-9]/g, '');
-      const price = cleanStr ? parseInt(cleanStr, 10) : 0;
-      row.hargaSatuan = price;
+      row.hargaSatuan = value;
+      const cleanDigits = String(value).replace(/[^0-9]/g, '');
+      const price = cleanDigits ? parseInt(cleanDigits, 10) : 0;
+
       const numMatch = String(row.banyaknya).replace(',', '.').match(/[-+]?[0-9]*\.?[0-9]+/);
       const qty = numMatch ? parseFloat(numMatch[0]) : 1;
       if (price > 0) {
-        row.jumlah = Math.round(qty * price);
+        const hasRp = /rp/i.test(String(value));
+        const total = Math.round(qty * price);
+        row.jumlah = hasRp ? `Rp ${total.toLocaleString('id-ID')}` : total.toLocaleString('id-ID');
       }
     } else if (field === 'jumlah') {
-      // Izinkan pengisian jumlah langsung dengan format titik ribuan
-      const cleanStr = String(value).replace(/[^0-9]/g, '');
-      const total = cleanStr ? parseInt(cleanStr, 10) : 0;
-      row.jumlah = total;
+      row.jumlah = value;
     } else if (field === 'keterangan') {
       row.keterangan = value;
     }
@@ -131,20 +140,39 @@ export const BonModal: React.FC<BonModalProps> = ({
     setItems(updated);
   };
 
+  const handleBlurFormat = (index: number, field: 'hargaSatuan' | 'jumlah') => {
+    const updated = [...items];
+    const row = { ...updated[index] };
+    const val = String(row[field] || '').trim();
+    if (!val) return;
+
+    const clean = val.replace(/[^0-9]/g, '');
+    if (clean) {
+      const hasRp = /rp/i.test(val);
+      const formatted = parseInt(clean, 10).toLocaleString('id-ID');
+      row[field] = hasRp ? `Rp ${formatted}` : formatted;
+      updated[index] = row;
+      setItems(updated);
+    }
+  };
+
   const handleAddItem = () => {
-    setItems([...items, { banyaknya: 1, keterangan: '', hargaSatuan: 0, jumlah: 0 }]);
+    setItems([...items, { banyaknya: 1, keterangan: '', hargaSatuan: '', jumlah: '' }]);
   };
 
   const handleRemoveItem = (index: number) => {
     if (items.length <= 1) {
-      setItems([{ banyaknya: 1, keterangan: '', hargaSatuan: 0, jumlah: 0 }]);
+      setItems([{ banyaknya: 1, keterangan: '', hargaSatuan: '', jumlah: '' }]);
       return;
     }
     const updated = items.filter((_, idx) => idx !== index);
     setItems(updated);
   };
 
-  const totalCalculated = items.reduce((sum, item) => sum + (item.jumlah || 0), 0);
+  const totalCalculated = items.reduce((sum, item) => {
+    const cleanStr = String(item.jumlah || '').replace(/[^0-9]/g, '');
+    return sum + (cleanStr ? parseInt(cleanStr, 10) : 0);
+  }, 0);
 
   const formatRupiah = (val: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -157,7 +185,17 @@ export const BonModal: React.FC<BonModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validItems = items.filter(it => it.keterangan.trim().length > 0);
+    const validItems = items
+      .filter(it => it.keterangan.trim().length > 0)
+      .map(it => {
+        return {
+          banyaknya: it.banyaknya != null ? it.banyaknya : 1,
+          keterangan: it.keterangan.trim(),
+          hargaSatuan: it.hargaSatuan != null ? it.hargaSatuan : '',
+          jumlah: it.jumlah != null ? it.jumlah : ''
+        };
+      });
+
     if (validItems.length === 0) {
       alert('Mohon isi minimal 1 baris keterangan pekerjaan / item bon.');
       return;
@@ -313,44 +351,38 @@ export const BonModal: React.FC<BonModalProps> = ({
 
                       {/* Keterangan */}
                       <td className="p-2 border-r border-st-dark/20">
-                        <input
-                          type="text"
+                        <textarea
+                          rows={Math.max(1, (row.keterangan.match(/\n/g) || []).length + 1)}
                           required
-                          placeholder="Uraian perbaikan / suku cadang"
+                          placeholder="Uraian perbaikan / suku cadang (bisa Enter)"
                           value={row.keterangan}
                           onChange={(e) => handleItemChange(idx, 'keterangan', e.target.value)}
-                          className="w-full px-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg font-medium text-st-text focus:border-st-primary focus:bg-white focus:outline-none transition-colors"
+                          className="w-full px-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg font-medium text-st-text focus:border-st-primary focus:bg-white focus:outline-none transition-colors resize-y leading-relaxed text-xs"
                         />
                       </td>
 
                       {/* Harga Satuan (Opsional) */}
                       <td className="p-2 border-r border-st-dark/20">
-                        <div className="relative">
-                          <span className="absolute left-2.5 top-1.5 text-st-text-muted font-bold text-xs pointer-events-none select-none">Rp</span>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            placeholder="0 (opsional)"
-                            value={row.hargaSatuan ? row.hargaSatuan.toLocaleString('id-ID') : ''}
-                            onChange={(e) => handleItemChange(idx, 'hargaSatuan', e.target.value)}
-                            className="w-full pl-8 pr-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-right font-mono tabular-nums font-bold text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors placeholder:text-st-text-muted/60"
-                          />
-                        </div>
+                        <input
+                          type="text"
+                          placeholder="0 (opsional)"
+                          value={row.hargaSatuan !== undefined && row.hargaSatuan !== null ? String(row.hargaSatuan) : ''}
+                          onChange={(e) => handleItemChange(idx, 'hargaSatuan', e.target.value)}
+                          onBlur={() => handleBlurFormat(idx, 'hargaSatuan')}
+                          className="w-full px-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-right font-mono tabular-nums font-bold text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors placeholder:text-st-text-muted/60"
+                        />
                       </td>
 
                       {/* Jumlah (Bisa Terhitung Otomatis atau Diisi Langsung) */}
                       <td className="p-2 border-r border-st-dark/20">
-                        <div className="relative">
-                          <span className="absolute left-2.5 top-1.5 text-st-text-muted font-bold text-xs pointer-events-none select-none">Rp</span>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            placeholder="0"
-                            value={row.jumlah ? row.jumlah.toLocaleString('id-ID') : ''}
-                            onChange={(e) => handleItemChange(idx, 'jumlah', e.target.value)}
-                            className="w-full pl-8 pr-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-right font-mono tabular-nums font-extrabold text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors"
-                          />
-                        </div>
+                        <input
+                          type="text"
+                          placeholder="0"
+                          value={row.jumlah !== undefined && row.jumlah !== null ? String(row.jumlah) : ''}
+                          onChange={(e) => handleItemChange(idx, 'jumlah', e.target.value)}
+                          onBlur={() => handleBlurFormat(idx, 'jumlah')}
+                          className="w-full px-2.5 py-1.5 bg-st-cream border-2 border-st-dark/40 rounded-lg text-right font-mono tabular-nums font-extrabold text-st-dark focus:border-st-primary focus:bg-white focus:outline-none transition-colors"
+                        />
                       </td>
 
                       {/* Aksi */}

@@ -324,13 +324,27 @@ export const dataService = {
               rawKeterangan = rawKeterangan.replace(/__QTY:[^_]+__/, '').trim();
             }
 
+            let parsedHs: number | string = Number(it.harga_satuan) || 0;
+            const hsMatch = rawKeterangan.match(/__RP_HS:([^_]+)__/);
+            if (hsMatch) {
+              try { parsedHs = decodeURIComponent(hsMatch[1]); } catch { parsedHs = hsMatch[1]; }
+              rawKeterangan = rawKeterangan.replace(/__RP_HS:[^_]+__/, '').trim();
+            }
+
+            let parsedJm: number | string = Number(it.jumlah) || 0;
+            const jmMatch = rawKeterangan.match(/__RP_JM:([^_]+)__/);
+            if (jmMatch) {
+              try { parsedJm = decodeURIComponent(jmMatch[1]); } catch { parsedJm = jmMatch[1]; }
+              rawKeterangan = rawKeterangan.replace(/__RP_JM:[^_]+__/, '').trim();
+            }
+
             return {
               id: it.id,
               bonId: it.bon_id,
               banyaknya: parsedBanyaknya,
               keterangan: rawKeterangan,
-              hargaSatuan: Number(it.harga_satuan) || 0,
-              jumlah: Number(it.jumlah) || 0,
+              hargaSatuan: parsedHs,
+              jumlah: parsedJm,
               createdAt: Number(it.created_at)
             };
           });
@@ -402,13 +416,27 @@ export const dataService = {
               rawKeterangan = rawKeterangan.replace(/__QTY:[^_]+__/, '').trim();
             }
 
+            let parsedHs: number | string = Number(it.harga_satuan) || 0;
+            const hsMatch = rawKeterangan.match(/__RP_HS:([^_]+)__/);
+            if (hsMatch) {
+              try { parsedHs = decodeURIComponent(hsMatch[1]); } catch { parsedHs = hsMatch[1]; }
+              rawKeterangan = rawKeterangan.replace(/__RP_HS:[^_]+__/, '').trim();
+            }
+
+            let parsedJm: number | string = Number(it.jumlah) || 0;
+            const jmMatch = rawKeterangan.match(/__RP_JM:([^_]+)__/);
+            if (jmMatch) {
+              try { parsedJm = decodeURIComponent(jmMatch[1]); } catch { parsedJm = jmMatch[1]; }
+              rawKeterangan = rawKeterangan.replace(/__RP_JM:[^_]+__/, '').trim();
+            }
+
             return {
               id: it.id,
               bonId: it.bon_id,
               banyaknya: parsedBanyaknya,
               keterangan: rawKeterangan,
-              hargaSatuan: Number(it.harga_satuan) || 0,
-              jumlah: Number(it.jumlah) || 0,
+              hargaSatuan: parsedHs,
+              jumlah: parsedJm,
               createdAt: Number(it.created_at)
             };
           });
@@ -450,16 +478,24 @@ export const dataService = {
       items: Array<{
         banyaknya: string | number;
         keterangan: string;
-        hargaSatuan: number;
-        jumlah: number;
+        hargaSatuan: number | string;
+        jumlah: number | string;
       }>;
     }
   ): Promise<string> {
     const id = bonData.id || `bon-${Date.now().toString(36)}`;
     const now = Date.now();
 
+    // Helper parse number from numeric or string e.g. "80.000", "Rp 80.000"
+    const parseAmount = (val: number | string | undefined | null): number => {
+      if (val === undefined || val === null || val === '') return 0;
+      if (typeof val === 'number') return isNaN(val) ? 0 : val;
+      const clean = String(val).replace(/[^0-9]/g, '');
+      return clean ? parseInt(clean, 10) : 0;
+    };
+
     // Calculate total from items
-    const calculatedTotal = bonData.items.reduce((sum, it) => sum + (Number(it.jumlah) || 0), 0);
+    const calculatedTotal = bonData.items.reduce((sum, it) => sum + parseAmount(it.jumlah), 0);
 
     const bonPayload = {
       nomor_bon: bonData.nomorBon,
@@ -484,19 +520,31 @@ export const dataService = {
         }
 
         if (bonData.items.length > 0) {
-          // 1. Direct attempt: pass string banyaknya
-          const insertItems = bonData.items.map((it, idx) => ({
-            id: `item-${Date.now().toString(36)}-${idx}`,
-            bon_id: id,
-            banyaknya: it.banyaknya != null ? String(it.banyaknya) : '1',
-            keterangan: it.keterangan || '',
-            harga_satuan: Number(it.hargaSatuan) || 0,
-            jumlah: Number(it.jumlah) || 0,
-            created_at: now + idx
-          }));
+          const insertItems = bonData.items.map((it, idx) => {
+            let safeKeterangan = it.keterangan || '';
+            const rawHs = String(it.hargaSatuan || '').trim();
+            const rawJm = String(it.jumlah || '').trim();
+            if (rawHs && /rp/i.test(rawHs)) {
+              safeKeterangan += ` __RP_HS:${encodeURIComponent(rawHs)}__`;
+            }
+            if (rawJm && /rp/i.test(rawJm)) {
+              safeKeterangan += ` __RP_JM:${encodeURIComponent(rawJm)}__`;
+            }
+
+            return {
+              id: `item-${Date.now().toString(36)}-${idx}`,
+              bon_id: id,
+              banyaknya: it.banyaknya != null ? String(it.banyaknya) : '1',
+              keterangan: safeKeterangan,
+              harga_satuan: parseAmount(it.hargaSatuan),
+              jumlah: parseAmount(it.jumlah),
+              created_at: now + idx
+            };
+          });
+
           const { error: insertErr } = await supabase.from('bon_items').insert(insertItems);
 
-          // 2. If rejected because column banyaknya in Supabase is NUMERIC (code 22P02)
+          // Fallback if column 'banyaknya' in Supabase is strictly NUMERIC
           if (insertErr) {
             console.warn('Supabase bon_items direct insert error, using numeric fallback with encoded qty:', insertErr);
 
@@ -511,13 +559,22 @@ export const dataService = {
                 safeKeterangan = `${safeKeterangan} __QTY:${encodeURIComponent(rawBanyaknya)}__`;
               }
 
+              const rawHs = String(it.hargaSatuan || '').trim();
+              const rawJm = String(it.jumlah || '').trim();
+              if (rawHs && /rp/i.test(rawHs)) {
+                safeKeterangan += ` __RP_HS:${encodeURIComponent(rawHs)}__`;
+              }
+              if (rawJm && /rp/i.test(rawJm)) {
+                safeKeterangan += ` __RP_JM:${encodeURIComponent(rawJm)}__`;
+              }
+
               return {
                 id: `item-${Date.now().toString(36)}-${idx}`,
                 bon_id: id,
                 banyaknya: numericQty,
                 keterangan: safeKeterangan,
-                harga_satuan: Number(it.hargaSatuan) || 0,
-                jumlah: Number(it.jumlah) || 0,
+                harga_satuan: parseAmount(it.hargaSatuan),
+                jumlah: parseAmount(it.jumlah),
                 created_at: now + idx
               };
             });
@@ -569,8 +626,8 @@ export const dataService = {
         bonId: id,
         banyaknya: it.banyaknya != null ? String(it.banyaknya) : '1',
         keterangan: it.keterangan || '',
-        hargaSatuan: Number(it.hargaSatuan) || 0,
-        jumlah: Number(it.jumlah) || 0,
+        hargaSatuan: it.hargaSatuan !== undefined && it.hargaSatuan !== null ? it.hargaSatuan : parseAmount(it.hargaSatuan),
+        jumlah: it.jumlah !== undefined && it.jumlah !== null ? it.jumlah : parseAmount(it.jumlah),
         createdAt: now + idx
       }));
       await db.bonItems.bulkAdd(localInsertItems);

@@ -93,9 +93,87 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
   }
 
   const items = bon.items || [];
-  // 13 baris persis format fisik resmi
-  const TOTAL_ROWS = 13;
-  const displayRows = Array.from({ length: TOTAL_ROWS }, (_, i) => items[i] || null);
+  const TOTAL_PHYSICAL_ROWS = 13;
+  const ROW_UNIT_HEIGHT = 36; // px
+
+  const calculateKeteranganLines = (text: string): number => {
+    if (!text || !text.trim()) return 1;
+    const rawLines = text.split('\n');
+    let totalLines = 0;
+    const MAX_CHARS_PER_LINE = 28;
+
+    for (const rawLine of rawLines) {
+      const trimmed = rawLine.trim();
+      if (!trimmed) {
+        totalLines += 1;
+        continue;
+      }
+      const words = trimmed.split(/\s+/);
+      let currentLineLen = 0;
+      let lineCountForThis = 1;
+
+      for (const w of words) {
+        if (w.length > MAX_CHARS_PER_LINE) {
+          if (currentLineLen > 0) {
+            lineCountForThis += 1;
+            currentLineLen = 0;
+          }
+          lineCountForThis += Math.floor(w.length / MAX_CHARS_PER_LINE);
+          currentLineLen = w.length % MAX_CHARS_PER_LINE;
+        } else if (currentLineLen === 0) {
+          currentLineLen = w.length;
+        } else if (currentLineLen + 1 + w.length <= MAX_CHARS_PER_LINE) {
+          currentLineLen += 1 + w.length;
+        } else {
+          lineCountForThis += 1;
+          currentLineLen = w.length;
+        }
+      }
+      totalLines += lineCountForThis;
+    }
+
+    return Math.max(1, totalLines);
+  };
+
+  const hasPrice = (val: string | number | undefined | null): boolean => {
+    if (val === undefined || val === null || val === '') return false;
+    const clean = String(val).replace(/[^0-9]/g, '');
+    if (!clean) return false;
+    return parseInt(clean, 10) > 0;
+  };
+
+  const isManualRp = (val: string | number | undefined | null): boolean => {
+    if (!val) return false;
+    return /rp/i.test(String(val));
+  };
+
+  const formatPriceValue = (val: string | number | undefined | null): string => {
+    if (!val) return '';
+    const str = String(val).trim();
+    const clean = str.replace(/[^0-9]/g, '');
+    if (!clean) return '';
+    const num = parseInt(clean, 10);
+    return new Intl.NumberFormat('id-ID').format(num);
+  };
+
+  interface ProcessedRow {
+    item: any;
+    linesCount: number;
+    rowHeight: number;
+  }
+
+  const processedRows: ProcessedRow[] = items.map(it => {
+    const lines = calculateKeteranganLines(it.keterangan);
+    return {
+      item: it,
+      linesCount: lines,
+      rowHeight: lines * ROW_UNIT_HEIGHT
+    };
+  });
+
+  const totalConsumedUnits = processedRows.reduce((sum, r) => sum + r.linesCount, 0);
+  const emptyRowsCount = Math.max(0, TOTAL_PHYSICAL_ROWS - totalConsumedUnits);
+  const anyItemHasManualRp = items.some(it => isManualRp(it.hargaSatuan) || isManualRp(it.jumlah));
 
   // Split kepadaYth multi-baris (maksimal 3 baris formal sejajar)
   const rawKepada = bon.kepadaYth || '';
@@ -262,37 +340,107 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                 </tr>
               </thead>
               <tbody>
-                {displayRows.map((it, idx) => (
-                  <tr key={idx} className="border-b-[1.2px] border-emerald-800 h-9">
-                    {/* Banyaknya (Bisa Huruf atau Angka - Times New Roman Formal) */}
-                    <td className="py-2 px-2 text-center font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base">
-                      {it ? it.banyaknya : ''}
-                    </td>
+                {processedRows.map((r, idx) => {
+                  const it = r.item;
+                  const isMulti = r.linesCount > 1;
 
-                    {/* Keterangan (TANPA AUTO CAPSLOCK - Times New Roman Formal) */}
-                    <td className="py-2 px-3 font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base">
-                      {it ? it.keterangan : ''}
-                    </td>
-
-                    {/* Harga Satuan (Auto Ada Rp.) */}
-                    <td className="py-2 px-2.5 border-r-[1.2px] border-emerald-800 text-slate-900">
-                      {it && (it.hargaSatuan || it.hargaSatuan === 0) ? (
-                        <div className="flex items-center justify-between w-full">
-                          <span className="text-emerald-800 font-bold text-[11px] sm:text-xs">Rp.</span>
-                          <span className="font-serif font-bold text-sm sm:text-base">{formatNumber(it.hargaSatuan)}</span>
+                  return (
+                    <tr
+                      key={`item-${idx}`}
+                      className="border-b-[1.2px] border-emerald-800"
+                      style={{ height: `${r.rowHeight}px` }}
+                    >
+                      {/* Banyaknya (Bisa Huruf atau Angka - Times New Roman Formal) */}
+                      <td
+                        className="p-0 text-center font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base align-top"
+                        style={{ height: `${r.rowHeight}px` }}
+                      >
+                        <div
+                          className="flex items-center justify-center w-full"
+                          style={{ height: `${ROW_UNIT_HEIGHT}px` }}
+                        >
+                          {it ? it.banyaknya : ''}
                         </div>
-                      ) : ''}
-                    </td>
+                      </td>
 
-                    {/* Jumlah (Auto Ada Rp.) */}
-                    <td className="py-2 px-2.5 text-slate-900">
-                      {it && (it.jumlah || it.jumlah === 0) ? (
-                        <div className="flex items-center justify-between w-full">
-                          <span className="text-emerald-800 font-bold text-[11px] sm:text-xs">Rp.</span>
-                          <span className="font-serif font-bold text-sm sm:text-base">{formatNumber(it.jumlah)}</span>
+                      {/* Keterangan (Multi-baris / Auto Wrap - Times New Roman Formal) */}
+                      <td
+                        className={`font-bold text-slate-900 border-r-[1.2px] border-emerald-800 font-serif text-sm sm:text-base align-top ${
+                          isMulti ? 'py-1.5 px-3' : 'py-2 px-3'
+                        }`}
+                        style={{ height: `${r.rowHeight}px` }}
+                      >
+                        <div
+                          className={`w-full ${
+                            isMulti ? 'whitespace-pre-wrap break-words leading-snug' : 'truncate'
+                          }`}
+                        >
+                          {it ? it.keterangan : ''}
                         </div>
-                      ) : ''}
-                    </td>
+                      </td>
+
+                      {/* Harga Satuan (Manual Rp, Font Warna Hitam, Bukan Hijau) */}
+                      <td
+                        className="p-0 border-r-[1.2px] border-emerald-800 text-slate-900 align-top"
+                        style={{ height: `${r.rowHeight}px` }}
+                      >
+                        {it && hasPrice(it.hargaSatuan) ? (
+                          <div
+                            className={`flex items-center px-2.5 w-full ${
+                              isManualRp(it.hargaSatuan) ? 'justify-between' : 'justify-end'
+                            }`}
+                            style={{ height: `${ROW_UNIT_HEIGHT}px` }}
+                          >
+                            {isManualRp(it.hargaSatuan) && (
+                              <span className="font-serif font-bold text-xs sm:text-sm text-slate-900">
+                                Rp.
+                              </span>
+                            )}
+                            <span className="font-serif font-bold text-sm sm:text-base">
+                              {formatPriceValue(it.hargaSatuan)}
+                            </span>
+                          </div>
+                        ) : null}
+                      </td>
+
+                      {/* Jumlah (Manual Rp, Font Warna Hitam, Bukan Hijau) */}
+                      <td
+                        className="p-0 text-slate-900 align-top"
+                        style={{ height: `${r.rowHeight}px` }}
+                      >
+                        {it && hasPrice(it.jumlah) ? (
+                          <div
+                            className={`flex items-center px-2.5 w-full ${
+                              isManualRp(it.jumlah) ? 'justify-between' : 'justify-end'
+                            }`}
+                            style={{ height: `${ROW_UNIT_HEIGHT}px` }}
+                          >
+                            {isManualRp(it.jumlah) && (
+                              <span className="font-serif font-bold text-xs sm:text-sm text-slate-900">
+                                Rp.
+                              </span>
+                            )}
+                            <span className="font-serif font-bold text-sm sm:text-base">
+                              {formatPriceValue(it.jumlah)}
+                            </span>
+                          </div>
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                })}
+
+                {/* Sisa Baris Kosong (Menjaga Total Visual Tepat 13 Satuan Baris) */}
+                {Array.from({ length: emptyRowsCount }).map((_, emptyIdx) => (
+                  <tr
+                    key={`empty-${emptyIdx}`}
+                    className="border-b-[1.2px] border-emerald-800"
+                    style={{ height: `${ROW_UNIT_HEIGHT}px` }}
+                  >
+                    <td className="border-r-[1.2px] border-emerald-800" />
+                    <td className="border-r-[1.2px] border-emerald-800" />
+                    <td className="border-r-[1.2px] border-emerald-800" />
+                    <td />
                   </tr>
                 ))}
               </tbody>
@@ -303,8 +451,14 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
               <div className="w-32 sm:w-36 py-2 px-3 text-center font-black text-xs sm:text-sm text-emerald-800 border-r-[1.2px] border-emerald-800 uppercase font-serif">
                 JUMLAH
               </div>
-              <div className="w-36 sm:w-40 py-2 px-3 flex items-center justify-between font-serif font-bold text-sm sm:text-base text-slate-900 border-l-[1.2px] border-r-[1.2px] border-b-[1.2px] border-emerald-800">
-                <span className="text-emerald-800 font-serif">Rp.</span>
+              <div
+                className={`w-36 sm:w-40 py-2 px-3 flex items-center font-serif font-bold text-sm sm:text-base text-slate-900 border-l-[1.2px] border-r-[1.2px] border-b-[1.2px] border-emerald-800 ${
+                  anyItemHasManualRp ? 'justify-between' : 'justify-end'
+                }`}
+              >
+                {anyItemHasManualRp && (
+                  <span className="font-serif text-slate-900 font-bold">Rp.</span>
+                )}
                 <span>{formatNumber(bon.totalJumlah)}</span>
               </div>
             </div>

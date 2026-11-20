@@ -57,8 +57,8 @@ export interface BonItem {
   bonId: string;
   banyaknya: string | number; // Qty / Satuan (angka atau huruf: "1", "1 Unit", "2 Pk", "Set", dll)
   keterangan: string;         // Deskripsi item / servis / sparepart
-  hargaSatuan: number;        // Nominal harga satuan (Rp)
-  jumlah: number;             // Banyaknya * HargaSatuan (Rp)
+  hargaSatuan: number | string; // Nominal harga satuan (angka atau string, e.g. "80.000" / "Rp 80.000")
+  jumlah: number | string;      // Banyaknya * HargaSatuan (angka atau string)
   createdAt?: number;
 }
 

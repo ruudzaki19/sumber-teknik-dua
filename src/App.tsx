@@ -247,8 +247,8 @@ export const App: React.FC = () => {
       items: Array<{
         banyaknya: string | number;
         keterangan: string;
-        hargaSatuan: number;
-        jumlah: number;
+        hargaSatuan: number | string;
+        jumlah: number | string;
       }>;
     }
   ) => {

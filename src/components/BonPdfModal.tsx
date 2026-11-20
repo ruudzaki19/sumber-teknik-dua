@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { X, Download, Image as ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import html2canvas from 'html2canvas';
-import { Bon } from '../types';
+import { Bon, BonItem } from '../types';
 import { FIXED_SIGNATURE_PATH } from '../db/db';
 
 interface BonPdfModalProps {
@@ -39,9 +39,88 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
   if (!isOpen) return null;
 
   const items = bon.items || [];
-  // Tepat 13 baris data di dalam tabel bon sesuai format fisik resmi
-  const TOTAL_ROWS = 13;
-  const displayRows = Array.from({ length: TOTAL_ROWS }, (_, i) => items[i] || null);
+  const TOTAL_PHYSICAL_ROWS = 13;
+  const ROW_UNIT_HEIGHT = 37;
+
+  // Hitung berapa baris fisik yang dikonsumsi oleh teks keterangan
+  const calculateKeteranganLines = (text: string): number => {
+    if (!text || !text.trim()) return 1;
+    const rawLines = text.split('\n');
+    let totalLines = 0;
+    const MAX_CHARS_PER_LINE = 28; // Estimasi presisi lebar kolom 280px Times New Roman bold 15.5px
+
+    for (const rawLine of rawLines) {
+      const trimmed = rawLine.trim();
+      if (!trimmed) {
+        totalLines += 1;
+        continue;
+      }
+      const words = trimmed.split(/\s+/);
+      let currentLineLen = 0;
+      let lineCountForThis = 1;
+
+      for (const w of words) {
+        if (w.length > MAX_CHARS_PER_LINE) {
+          if (currentLineLen > 0) {
+            lineCountForThis += 1;
+            currentLineLen = 0;
+          }
+          lineCountForThis += Math.floor(w.length / MAX_CHARS_PER_LINE);
+          currentLineLen = w.length % MAX_CHARS_PER_LINE;
+        } else if (currentLineLen === 0) {
+          currentLineLen = w.length;
+        } else if (currentLineLen + 1 + w.length <= MAX_CHARS_PER_LINE) {
+          currentLineLen += 1 + w.length;
+        } else {
+          lineCountForThis += 1;
+          currentLineLen = w.length;
+        }
+      }
+      totalLines += lineCountForThis;
+    }
+
+    return Math.max(1, totalLines);
+  };
+
+  const hasPrice = (val: string | number | undefined | null): boolean => {
+    if (val === undefined || val === null || val === '') return false;
+    const clean = String(val).replace(/[^0-9]/g, '');
+    if (!clean) return false;
+    return parseInt(clean, 10) > 0;
+  };
+
+  const isManualRp = (val: string | number | undefined | null): boolean => {
+    if (!val) return false;
+    return /rp/i.test(String(val));
+  };
+
+  const formatPriceValue = (val: string | number | undefined | null): string => {
+    if (!val) return '';
+    const str = String(val).trim();
+    const clean = str.replace(/[^0-9]/g, '');
+    if (!clean) return '';
+    const num = parseInt(clean, 10);
+    return new Intl.NumberFormat('id-ID').format(num);
+  };
+
+  interface ProcessedRow {
+    item: BonItem;
+    linesCount: number;
+    rowHeight: number;
+  }
+
+  const processedRows: ProcessedRow[] = items.map(it => {
+    const lines = calculateKeteranganLines(it.keterangan);
+    return {
+      item: it,
+      linesCount: lines,
+      rowHeight: lines * ROW_UNIT_HEIGHT
+    };
+  });
+
+  const totalConsumedUnits = processedRows.reduce((sum, r) => sum + r.linesCount, 0);
+  const emptyRowsCount = Math.max(0, TOTAL_PHYSICAL_ROWS - totalConsumedUnits);
+  const anyItemHasManualRp = items.some(it => isManualRp(it.hargaSatuan) || isManualRp(it.jumlah));
 
   const formatNumber = (val: number) => {
     if (!val && val !== 0) return '';
@@ -509,160 +588,194 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                     </div>
                   </div>
 
-                  {/* 13 Baris Data */}
-                  {displayRows.map((item, index) => (
+                  {/* Baris Data (Multi-baris / Auto Wrap Mengonsumsi Baris Fisik di Bawahnya) */}
+                  {processedRows.map((r, idx) => {
+                    const item = r.item;
+                    const isMulti = r.linesCount > 1;
+
+                    return (
+                      <div
+                        key={`item-${idx}`}
+                        style={{
+                          display: 'flex',
+                          width: '710px',
+                          height: `${r.rowHeight}px`,
+                          borderBottom: solidBorder,
+                          backgroundColor: '#ffffff',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        {/* Kolom 1: Banyaknya */}
+                        <div
+                          style={{
+                            width: '120px',
+                            flexShrink: 0,
+                            height: '100%',
+                            borderLeft: solidBorder,
+                            borderRight: solidBorder,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: isMulti ? 'flex-start' : 'center',
+                            boxSizing: 'border-box'
+                          }}
+                        >
+                          <div
+                            className="bon-cell-content"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '100%',
+                              height: `${ROW_UNIT_HEIGHT}px`,
+                              boxSizing: 'border-box',
+                              textAlign: 'center',
+                              fontWeight: 'bold',
+                              fontFamily: '"Times New Roman", Times, serif',
+                              fontSize: '15.5px',
+                              color: '#111827'
+                            }}
+                          >
+                            {item ? item.banyaknya : ''}
+                          </div>
+                        </div>
+
+                        {/* Kolom 2: Keterangan (Multi-baris / Auto Wrap mengonsumsi baris fisik di bawahnya) */}
+                        <div
+                          style={{
+                            width: '280px',
+                            flexShrink: 0,
+                            height: '100%',
+                            borderRight: solidBorder,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            justifyContent: isMulti ? 'flex-start' : 'center',
+                            padding: isMulti ? '7px 14px' : '0 14px',
+                            boxSizing: 'border-box'
+                          }}
+                        >
+                          <div
+                            className="bon-cell-content"
+                            style={{
+                              width: '100%',
+                              fontWeight: 'bold',
+                              fontFamily: '"Times New Roman", Times, serif',
+                              fontSize: '15.5px',
+                              color: '#111827',
+                              lineHeight: isMulti ? '22px' : 'normal',
+                              whiteSpace: isMulti ? 'pre-wrap' : 'nowrap',
+                              wordBreak: 'break-word',
+                              overflow: 'hidden',
+                              textOverflow: isMulti ? 'clip' : 'ellipsis'
+                            }}
+                          >
+                            {item ? item.keterangan : ''}
+                          </div>
+                        </div>
+
+                        {/* Kolom 3: Harga Satuan (Manual Rp, Font Warna Hitam #111827, Bukan Hijau) */}
+                        <div
+                          style={{
+                            width: '145px',
+                            flexShrink: 0,
+                            height: '100%',
+                            borderRight: solidBorder,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'stretch',
+                            justifyContent: isMulti ? 'flex-start' : 'center',
+                            padding: '0 10px',
+                            boxSizing: 'border-box'
+                          }}
+                        >
+                          {item && hasPrice(item.hargaSatuan) ? (
+                            <div
+                              className="bon-cell-content"
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: isManualRp(item.hargaSatuan) ? 'space-between' : 'flex-end',
+                                width: '100%',
+                                height: `${ROW_UNIT_HEIGHT}px`,
+                                boxSizing: 'border-box',
+                                fontFamily: '"Times New Roman", Times, serif',
+                                fontWeight: 'bold',
+                                fontSize: '15.5px',
+                                color: '#111827'
+                              }}
+                            >
+                              {isManualRp(item.hargaSatuan) && (
+                                <span style={{ color: '#111827', fontWeight: 'bold', fontSize: '14.5px' }}>
+                                  Rp.
+                                </span>
+                              )}
+                              <span>{formatPriceValue(item.hargaSatuan)}</span>
+                            </div>
+                          ) : null}
+                        </div>
+
+                        {/* Kolom 4: Jumlah (Manual Rp, Font Warna Hitam #111827, Bukan Hijau) */}
+                        <div
+                          style={{
+                            width: '165px',
+                            flexShrink: 0,
+                            height: '100%',
+                            borderRight: solidBorder,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'stretch',
+                            justifyContent: isMulti ? 'flex-start' : 'center',
+                            padding: '0 10px',
+                            boxSizing: 'border-box'
+                          }}
+                        >
+                          {item && hasPrice(item.jumlah) ? (
+                            <div
+                              className="bon-cell-content"
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: isManualRp(item.jumlah) ? 'space-between' : 'flex-end',
+                                width: '100%',
+                                height: `${ROW_UNIT_HEIGHT}px`,
+                                boxSizing: 'border-box',
+                                fontFamily: '"Times New Roman", Times, serif',
+                                fontWeight: 'bold',
+                                fontSize: '16px',
+                                color: '#111827'
+                              }}
+                            >
+                              {isManualRp(item.jumlah) && (
+                                <span style={{ color: '#111827', fontWeight: 'bold', fontSize: '14.5px' }}>
+                                  Rp.
+                                </span>
+                              )}
+                              <span>{formatPriceValue(item.jumlah)}</span>
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Sisa Baris Kosong (Menjaga Total Visual Tepat 13 Satuan Baris = 481px) */}
+                  {Array.from({ length: emptyRowsCount }).map((_, emptyIdx) => (
                     <div
-                      key={index}
+                      key={`empty-${emptyIdx}`}
                       style={{
                         display: 'flex',
                         width: '710px',
-                        height: '37px',
+                        height: `${ROW_UNIT_HEIGHT}px`,
                         borderBottom: solidBorder,
                         backgroundColor: '#ffffff',
                         boxSizing: 'border-box'
                       }}
                     >
-                      {/* Kolom 1: Banyaknya */}
-                      <div
-                        style={{
-                          width: '120px',
-                          flexShrink: 0,
-                          height: '100%',
-                          borderLeft: solidBorder,
-                          borderRight: solidBorder,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        <div
-                          className="bon-cell-content"
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '100%',
-                            height: '100%',
-                            boxSizing: 'border-box',
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            fontFamily: '"Times New Roman", Times, serif',
-                            fontSize: '15.5px',
-                            color: '#111827'
-                          }}
-                        >
-                          {item ? item.banyaknya : ''}
-                        </div>
-                      </div>
-
-                      {/* Kolom 2: Keterangan */}
-                      <div
-                        style={{
-                          width: '280px',
-                          flexShrink: 0,
-                          height: '100%',
-                          borderRight: solidBorder,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'flex-start',
-                          padding: '0 14px',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        <div
-                          className="bon-cell-content"
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                            width: '100%',
-                            height: '100%',
-                            boxSizing: 'border-box',
-                            fontWeight: 'bold',
-                            fontFamily: '"Times New Roman", Times, serif',
-                            fontSize: '15.5px',
-                            color: '#111827',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
-                          {item ? item.keterangan : ''}
-                        </div>
-                      </div>
-
-                      {/* Kolom 3: Harga Satuan */}
-                      <div
-                        style={{
-                          width: '145px',
-                          flexShrink: 0,
-                          height: '100%',
-                          borderRight: solidBorder,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0 10px',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        {item && (item.hargaSatuan || item.hargaSatuan === 0) ? (
-                          <div
-                            className="bon-cell-content"
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              width: '100%',
-                              height: '100%',
-                              boxSizing: 'border-box'
-                            }}
-                          >
-                            <span style={{ color: greenText, fontWeight: 700, fontSize: '13.5px' }}>
-                              Rp.
-                            </span>
-                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '15.5px', color: '#111827' }}>
-                              {formatNumber(item.hargaSatuan)}
-                            </span>
-                          </div>
-                        ) : null}
-                      </div>
-
-                      {/* Kolom 4: Jumlah */}
-                      <div
-                        style={{
-                          width: '165px',
-                          flexShrink: 0,
-                          height: '100%',
-                          borderRight: solidBorder,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0 10px',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        {item && (item.jumlah || item.jumlah === 0) ? (
-                          <div
-                            className="bon-cell-content"
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              width: '100%',
-                              height: '100%',
-                              boxSizing: 'border-box'
-                            }}
-                          >
-                            <span style={{ color: greenText, fontWeight: 700, fontSize: '13.5px' }}>
-                              Rp.
-                            </span>
-                            <span style={{ fontFamily: '"Times New Roman", Times, serif', fontWeight: 'bold', fontSize: '16px', color: '#111827' }}>
-                              {formatNumber(item.jumlah)}
-                            </span>
-                          </div>
-                        ) : null}
-                      </div>
+                      <div style={{ width: '120px', flexShrink: 0, height: '100%', borderLeft: solidBorder, borderRight: solidBorder, boxSizing: 'border-box' }} />
+                      <div style={{ width: '280px', flexShrink: 0, height: '100%', borderRight: solidBorder, boxSizing: 'border-box' }} />
+                      <div style={{ width: '145px', flexShrink: 0, height: '100%', borderRight: solidBorder, boxSizing: 'border-box' }} />
+                      <div style={{ width: '165px', flexShrink: 0, height: '100%', borderRight: solidBorder, boxSizing: 'border-box' }} />
                     </div>
                   ))}
 
@@ -714,7 +827,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       </div>
                     </div>
 
-                    {/* Kolom 4: Rp. [Total] (Garis Kanan & Bawah Solid 1.2px, Kotak Tertutup Sempurna) */}
+                    {/* Kolom 4: Total (Garis Kanan & Bawah Solid 1.2px, Kotak Tertutup Sempurna) */}
                     <div
                       style={{
                         width: '165px',
@@ -724,7 +837,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         borderBottom: solidBorder,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'space-between',
+                        justifyContent: anyItemHasManualRp ? 'space-between' : 'flex-end',
                         padding: '0 10px',
                         boxSizing: 'border-box',
                         backgroundColor: '#ffffff'
@@ -735,7 +848,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'space-between',
+                          justifyContent: anyItemHasManualRp ? 'space-between' : 'flex-end',
                           width: '100%',
                           height: '100%',
                           fontWeight: 'bold',
@@ -744,7 +857,9 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontFamily: '"Times New Roman", Times, serif'
                         }}
                       >
-                        <span style={{ color: greenText, fontWeight: 700, fontSize: '14px' }}>Rp.</span>
+                        {anyItemHasManualRp && (
+                          <span style={{ color: '#111827', fontWeight: 'bold', fontSize: '15px' }}>Rp.</span>
+                        )}
                         <span>{formatNumber(bon.totalJumlah)}</span>
                       </div>
                     </div>
