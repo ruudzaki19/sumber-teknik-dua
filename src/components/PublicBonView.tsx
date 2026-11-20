@@ -458,13 +458,9 @@ export const PublicBonView: React.FC<PublicBonViewProps> = ({ bonId, onBackClick
                 JUMLAH
               </div>
               <div
-                className={`w-36 sm:w-40 py-2 px-3 flex items-center font-serif font-bold text-sm sm:text-base text-slate-900 border-l-[1.2px] border-r-[1.2px] border-b-[1.2px] border-emerald-800 ${
-                  anyItemHasManualRp ? 'justify-between' : 'justify-end'
-                }`}
+                className="w-36 sm:w-40 py-2 px-3 flex items-center justify-between font-serif font-bold text-sm sm:text-base text-slate-900 border-l-[1.2px] border-r-[1.2px] border-b-[1.2px] border-emerald-800"
               >
-                {anyItemHasManualRp && (
-                  <span className="font-serif text-slate-900 font-bold">Rp.</span>
-                )}
+                <span className="font-serif text-slate-900 font-bold">Rp.</span>
                 <span>{formatNumber(bon.totalJumlah)}</span>
               </div>
             </div>

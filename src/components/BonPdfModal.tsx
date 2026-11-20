@@ -872,7 +872,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                       </div>
                     </div>
 
-                    {/* Kolom 4: Total (Garis Kanan & Bawah Solid 1.2px, Kotak Tertutup Sempurna) */}
+                    {/* Kolom 4: Total (Garis Kanan & Bawah Solid 1.2px, Kotak Tertutup Sempurna, Auto Rp.) */}
                     <div
                       style={{
                         width: '165px',
@@ -882,7 +882,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         borderBottom: solidBorder,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: anyItemHasManualRp ? 'space-between' : 'flex-end',
+                        justifyContent: 'space-between',
                         padding: '0 10px',
                         boxSizing: 'border-box',
                         backgroundColor: '#ffffff'
@@ -893,7 +893,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: anyItemHasManualRp ? 'space-between' : 'flex-end',
+                          justifyContent: 'space-between',
                           width: '100%',
                           height: '100%',
                           fontWeight: 'bold',
@@ -902,9 +902,7 @@ export const BonPdfModal: React.FC<BonPdfModalProps> = ({
                           fontFamily: '"Times New Roman", Times, serif'
                         }}
                       >
-                        {anyItemHasManualRp && (
-                          <span style={{ color: '#111827', fontWeight: 'bold', fontSize: '15px' }}>Rp.</span>
-                        )}
+                        <span style={{ color: '#111827', fontWeight: 'bold', fontSize: '15px' }}>Rp.</span>
                         <span>{formatNumber(bon.totalJumlah)}</span>
                       </div>
                     </div>
